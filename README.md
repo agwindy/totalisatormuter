@@ -1,4 +1,4 @@
 # totalisatormuter
 Perhitungan Totalisator 
-ini ada;ah aplikasi internal spbu 34-17603 
-di buat dengah senyyuman dan cinta 
+ini adalah aplikasi internal spbu 34-17603 
+di buat dengah senyuman dan cinta 
