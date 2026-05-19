@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Perhitungan Totalisator</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 p-6">
+
+  <div class="max-w-4xl mx-auto bg-white rounded-2xl shadow-lg p-6">
+
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-6">
+
+      <div>
+        <h1 class="text-3xl font-bold text-red-700">
+          SPBU 3417603
+        </h1>
+
+        <p class="text-gray-500">
+          Form Perhitungan Totalisator
+        </p>
+      </div>
+
+      <div class="text-right">
+        <p class="font-semibold text-gray-700">
+          Tanggal Realtime
+        </p>
+
+        <p id="tanggal" class="text-gray-500"></p>
+      </div>
+
+    </div>
+
+    <!-- Table -->
+    <div class="overflow-x-auto">
+
+      <table class="w-full border border-gray-300">
+
+        <thead class="bg-red-700 text-white">
+
+          <tr>
+            <th class="p-3 border">Mesin</th>
+            <th class="p-3 border">Totalisator Awal</th>
+            <th class="p-3 border">Kunci</th>
+            <th class="p-3 border">Totalisator Akhir</th>
+            <th class="p-3 border">Hasil</th>
+          </tr>
+
+        </thead>
+
+        <tbody>
+
+          <!-- A1 -->
+          <tr>
+
+            <td class="border p-3 font-bold">
+              A1
+            </td>
+
+            <td class="border p-3">
+
+              <input
+                type="number"
+                id="awalA1"
+                class="w-full border rounded-lg p-2"
+                placeholder="Input awal"
+              >
+
+            </td>
+
+            <td class="border p-3 text-center">
+
+              <button
+                onclick="toggleLock('awalA1', this)"
+                class="bg-red-700 hover:bg-red-800 text-white px-4 py-2 rounded-lg"
+              >
+                Kunci
+              </button>
+
+            </td>
+
+            <td class="border p-3">
+
+              <input
+                type="number"
+                id="akhirA1"
+                class="w-full border rounded-lg p-2"
+                placeholder="Input akhir"
+                oninput="hitung()"
+              >
+
+            </td>
+
+            <td
+              id="hasilA1"
+              class="border p-3 font-bold text-blue-700"
+            >
+              0
+            </td>
+
+          </tr>
+
+          <!-- A2 -->
+          <tr>
+
+            <td class="border p-3 font-bold">
+              A2
+            </td>
+
+            <td class="border p-3">
+
+              <input
+                type="number"
+                id="awalA2"
+                class="w-full border rounded-lg p-2"
+                placeholder="Input awal"
+              >
+
+            </td>
+
+            <td class="border p-3 text-center">
+
+              <button
+                onclick="toggleLock('awalA2', this)"
+                class="bg-red-700 hover:bg-red-800 text-white px-4 py-2 rounded-lg"
+              >
+                Kunci
+              </button>
+
+            </td>
+
+            <td class="border p-3">
+
+              <input
+                type="number"
+                id="akhirA2"
+                class="w-full border rounded-lg p-2"
+                placeholder="Input akhir"
+                oninput="hitung()"
+              >
+
+            </td>
+
+            <td
+              id="hasilA2"
+              class="border p-3 font-bold text-blue-700"
+            >
+              0
+            </td>
+
+          </tr>
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+    <!-- Total -->
+    <div class="mt-6 bg-blue-50 border border-blue-200 rounded-2xl p-5">
+
+      <div class="flex justify-between items-center">
+
+        <div>
+
+          <p class="text-gray-500">
+            Total Keseluruhan
+          </p>
+
+          <h2
+            id="totalSemua"
+            class="text-3xl font-bold text-blue-700"
+          >
+            0
+          </h2>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <script>
+
+    // realtime tanggal
+    function updateTanggal() {
+
+      const now = new Date();
+
+      document.getElementById("tanggal").innerText =
+        now.toLocaleString("id-ID");
+
+    }
+
+    setInterval(updateTanggal, 1000);
+
+    updateTanggal();
+
+    // lock input
+    function toggleLock(id, button) {
+
+      const input = document.getElementById(id);
+
+      input.readOnly = !input.readOnly;
+
+      if (input.readOnly) {
+
+        button.innerText = "Buka";
+
+        button.classList.remove("bg-red-700");
+
+        button.classList.add("bg-green-600");
+
+      } else {
+
+        button.innerText = "Kunci";
+
+        button.classList.remove("bg-green-600");
+
+        button.classList.add("bg-red-700");
+
+      }
+
+    }
+
+    // perhitungan
+    function hitung() {
+
+      // A1
+      const awalA1 =
+        parseFloat(document.getElementById("awalA1").value) || 0;
+
+      const akhirA1 =
+        parseFloat(document.getElementById("akhirA1").value) || 0;
+
+      const hasilA1 = akhirA1 - awalA1;
+
+      document.getElementById("hasilA1").innerText =
+        hasilA1;
+
+      // A2
+      const awalA2 =
+        parseFloat(document.getElementById("awalA2").value) || 0;
+
+      const akhirA2 =
+        parseFloat(document.getElementById("akhirA2").value) || 0;
+
+      const hasilA2 = akhirA2 - awalA2;
+
+      document.getElementById("hasilA2").innerText =
+        hasilA2;
+
+      // total
+      const total = hasilA1 + hasilA2;
+
+      document.getElementById("totalSemua").innerText =
+        total;
+
+    }
+
+  </script>
+
+</body>
+</html>
