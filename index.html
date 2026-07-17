@@ -968,12 +968,12 @@
                 </div>
             </div>
             <div class="header-sub">
-                Pertalite &nbsp;·&nbsp; <span>A1</span> &amp; <span>A2</span> &nbsp;·&nbsp; <span>📷 Scan Foto (EasyOCR)</span>
+                Pertalite &nbsp;·&nbsp; <span>A1</span> &amp; <span>A2</span> &nbsp;·&nbsp; <span>📷 Scan (Tesseract.js)</span>
             </div>
         </header>
 
         <div class="scan-tip" role="note">
-            💡 Gunakan <b>Ambil Foto Live</b> untuk memotret angka totalisator — EasyOCR akan membaca angka secara otomatis. Pastikan angka <b>terlihat jelas</b> dan <b>tegak lurus</b>.
+            💡 Gunakan <b>Ambil Foto Live</b> untuk memotret angka totalisator — <b>Tesseract.js</b> akan membaca angka langsung di browser <b>tanpa backend</b>. Pastikan angka <b>terlihat jelas</b> dan <b>tegak lurus</b>.
         </div>
 
         <!-- ═══ MESIN A1 ═══ -->
@@ -1104,7 +1104,7 @@
         </div>
 
         <footer class="app-footer">
-            <p>Made with <span>❤</span> by Ag Windy · EasyOCR</p>
+            <p>Made with <span>❤</span> by Ag Windy · Tesseract.js</p>
         </footer>
 
         <div class="toast" id="toast" role="alert" aria-live="polite">
@@ -1159,6 +1159,10 @@
 
     <input type="file" accept="image/*" capture="environment" class="sr-only" id="fallbackCameraInput" onchange="handleFileChosen(event)" />
     <input type="file" accept="image/*,.pdf" class="sr-only" id="uploadFileInput" onchange="handleFileChosen(event)" />
+
+    <!-- Tambahkan library Tesseract.js -->
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js">
+    </script>
 
     <script>
         // ─── State ───
@@ -1266,7 +1270,7 @@
         }
 
         // ══════════════════════════════════════════════════════
-        // ─── SCAN MODAL: live camera + preview + EasyOCR ───
+        // ─── SCAN MODAL: live camera + preview + Tesseract.js ───
         // ══════════════════════════════════════════════════════
 
         const FIELD_LABELS = {
@@ -1299,9 +1303,6 @@
         const modalActionsSuccess = document.getElementById('modalActionsSuccess');
         const modalActionsError = document.getElementById('modalActionsError');
         const modalFieldLabel = document.getElementById('modalFieldLabel');
-
-        // ── API base (sesuaikan jika backend berjalan di port berbeda) ──
-        const API_BASE = 'http://localhost:5000';
 
         function toggleScanMenu(event, fieldId) {
             event.stopPropagation();
@@ -1412,12 +1413,12 @@
             previewImg.classList.remove('hidden');
             statusBadge.classList.remove('hidden');
             statusSpinner.classList.remove('hidden');
-            statusText.textContent = '🔍 EasyOCR membaca angka totalisator...';
+            statusText.textContent = '🔍 Tesseract.js membaca angka totalisator...';
 
             lastCapturedBase64 = dataUrl.split(',')[1];
             lastCapturedMediaType = mediaType;
 
-            runEasyOCR(lastCapturedBase64, lastCapturedMediaType);
+            runTesseract(lastCapturedBase64, lastCapturedMediaType);
         }
 
         function retakePhoto() {
@@ -1453,43 +1454,45 @@
             currentField = null;
         }
 
-        // ─── EasyOCR via backend API ──────────────────────────────
-        async function runEasyOCR(base64Data, mediaType) {
+        // ─── Tesseract.js OCR (client-side) ──────────────────────
+        async function runTesseract(base64Data, mediaType) {
             const myToken = ++scanToken;
-
             try {
-                const response = await fetch(`${API_BASE}/ocr`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        image: base64Data,
-                        media_type: mediaType
-                    })
-                });
+                statusText.textContent = '⏳ Memuat Tesseract.js... (pertama kali butuh waktu)';
+
+                // Buat worker dengan bahasa Inggris (cukup untuk angka)
+                const worker = await Tesseract.createWorker('eng');
+
+                statusText.textContent = '🔍 Membaca angka...';
+
+                const { data: { text } } = await worker.recognize(`data:${mediaType};base64,${base64Data}`);
+                await worker.terminate();
 
                 if (myToken !== scanToken) return;
 
-                if (!response.ok) {
-                    const errText = await response.text();
-                    throw new Error(`Server error ${response.status}: ${errText}`);
-                }
+                // Ekstrak angka bulat (minimal 3 digit, karena totalisator biasanya besar)
+                const number = extractNumberFromText(text);
 
-                const data = await response.json();
-
-                if (myToken !== scanToken) return;
-
-                if (data.success && data.angka !== null && data.angka !== undefined && !isNaN(data.angka)) {
-                    lastDetectedNumber = Math.round(Number(data.angka));
-                    showModalSuccess(lastDetectedNumber);
+                if (number !== null) {
+                    lastDetectedNumber = number;
+                    showModalSuccess(number);
                 } else {
-                    const msg = data.message || 'Angka tidak terbaca dengan jelas. Coba foto lebih dekat, tegak lurus ke panel, dan hindari pantulan cahaya.';
-                    showModalError('⚠️ ' + msg);
+                    showModalError('⚠️ Tidak ditemukan angka yang jelas. Pastikan totalisator terlihat dan foto tidak buram.');
                 }
             } catch (err) {
                 if (myToken !== scanToken) return;
-                console.error('EasyOCR gagal:', err);
-                showModalError('❌ Gagal memproses foto. Pastikan backend EasyOCR berjalan di ' + API_BASE + ' dan coba lagi.');
+                console.error('Tesseract error:', err);
+                showModalError('❌ Gagal memproses foto. Coba lagi atau gunakan upload file.');
             }
+        }
+
+        function extractNumberFromText(text) {
+            // Cari semua kumpulan digit minimal 3 angka berturut-turut (abaikan koma/titik)
+            const matches = text.match(/\d{3,}/g);
+            if (!matches) return null;
+            // Ambil angka pertama yang ditemukan
+            const numStr = matches[0];
+            return parseInt(numStr, 10);
         }
 
         function showModalSuccess(number) {
@@ -1518,20 +1521,12 @@
             input.addEventListener('change', hitung);
         });
 
-        // ─── Cek koneksi ke backend ──────────────────────────────
-        async function checkBackend() {
-            try {
-                const res = await fetch(`${API_BASE}/health`);
-                if (res.ok) {
-                    console.log('✅ Backend EasyOCR tersedia');
-                } else {
-                    console.warn('⚠️ Backend tidak merespon dengan baik');
-                }
-            } catch (_) {
-                console.warn('⚠️ Backend EasyOCR tidak terdeteksi di ' + API_BASE);
-            }
+        // ─── Periksa apakah Tesseract.js dapat diakses ──────────
+        if (typeof Tesseract === 'undefined') {
+            console.warn('Tesseract.js tidak ditemukan. Pastikan library di-load.');
+        } else {
+            console.log('✅ Tesseract.js siap digunakan.');
         }
-        checkBackend();
     </script>
 
 </body>
