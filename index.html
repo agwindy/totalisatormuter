@@ -146,6 +146,21 @@
             font-weight: 500;
         }
 
+        .scan-tip {
+            background: #eef2ff;
+            border: 1px solid #e0e7ff;
+            color: #3730a3;
+            font-size: 12px;
+            line-height: 1.5;
+            padding: 10px 14px;
+            border-radius: 14px;
+            margin-bottom: 16px;
+        }
+
+        .scan-tip b {
+            font-weight: 700;
+        }
+
         .card {
             background: #ffffff;
             border-radius: 24px;
@@ -706,6 +721,10 @@
             </div>
         </header>
 
+        <div class="scan-tip" role="note">
+            💡 Saat memfoto, <b>zoom/crop rapat</b> hanya ke deretan angka totalisator — hindari ikutkan layar harga, tombol, atau tulisan lain agar hasil baca lebih akurat.
+        </div>
+
         <!-- ═══ MESIN A1 ═══ -->
         <section class="card" aria-label="Mesin A1">
             <div class="card-header">
@@ -1066,7 +1085,7 @@
                                     },
                                     {
                                         type: "text",
-                                        text: "Ini adalah foto layar digital totalisator (meteran) pompa BBM SPBU. Baca deretan angka yang tertera pada layar totalisator tersebut (biasanya berupa angka meter, bisa dengan atau tanpa titik/koma desimal). Ambil angka bulat (integer) dari nilai yang terbaca, abaikan digit desimal di belakang koma jika ada. Balas HANYA dengan format JSON murni tanpa teks lain, tanpa markdown code fence, dengan struktur persis seperti ini: {\"angka\": 123456} — jika angka tidak dapat terbaca dengan jelas, balas {\"angka\": null}."
+                                        text: "Kamu bertugas SANGAT SPESIFIK: baca HANYA angka pada display TOTALISATOR (totalizer counter) mesin pompa BBM SPBU dari foto ini, dan abaikan sepenuhnya semua elemen lain di foto.\n\nCiri-ciri display totalisator yang harus kamu cari:\n- Panel angka digital (LCD/LED) berjajar dalam SATU BARIS PANJANG, biasanya 6-8 digit.\n- Ini adalah angka KUMULATIF/AKUMULASI total liter yang sudah terjual sepanjang umur mesin (jadi biasanya angkanya BESAR, bukan angka kecil seperti harga atau volume transaksi terakhir).\n- Biasanya terletak di bagian ATAS atau tersendiri dari layar harga/volume transaksi pada dispenser, kadang berlabel kecil 'TOTALIZER', 'TOTAL', atau 'M3'/'LITER'.\n\nABAIKAN dan JANGAN pernah salah ambil dari:\n- Harga per liter (angka dengan format rupiah, biasanya diawali 'Rp' atau di bawah 20.000)\n- Volume transaksi terakhir / nominal transaksi terkini (angka yang berubah-ubah, biasanya lebih kecil, sering ada di layar utama yang besar)\n- Nomor pompa/mesin, nomor seri, tanggal, jam, merek dispenser, atau tulisan/logo apa pun\n- Angka pada struk atau kertas lain jika ada di foto\n\nJika dalam foto ada BEBERAPA baris angka, pilih baris yang paling sesuai dengan ciri totalisator di atas (baris digit terpanjang yang merepresentasikan akumulasi, bukan transaksi).\n\nBaca digit satu per satu dengan teliti dari kiri ke kanan. Jika ada titik/koma desimal, ambil hanya bagian bilangan bulatnya (buang desimal). Jika kualitas foto buram, gelap, terpotong, ada pantulan cahaya, atau kamu tidak yakin terhadap satu digit pun, JANGAN menebak — balas null.\n\nBalas HANYA dengan JSON murni, tanpa teks penjelasan apa pun, tanpa markdown code fence, persis format ini: {\"angka\": 123456} — atau jika tidak yakin/tidak terbaca jelas: {\"angka\": null}."
                                     }
                                 ]
                             }
@@ -1082,8 +1101,19 @@
                 const textBlock = (data.content || []).find(c => c.type === 'text');
                 if (!textBlock) throw new Error('Tidak ada respons teks');
 
-                const cleaned = textBlock.text.replace(/```json|```/g, '').trim();
-                const parsed = JSON.parse(cleaned);
+                let cleaned = textBlock.text.replace(/```json|```/g, '').trim();
+                let parsed = null;
+                try {
+                    parsed = JSON.parse(cleaned);
+                } catch (parseErr) {
+                    // fallback: cari pola {"angka": ...} di dalam teks apa pun balasannya
+                    const match = cleaned.match(/\{[^{}]*"angka"[^{}]*\}/);
+                    if (match) {
+                        parsed = JSON.parse(match[0]);
+                    } else {
+                        throw parseErr;
+                    }
+                }
 
                 if (parsed && parsed.angka !== null && parsed.angka !== undefined && !isNaN(parsed.angka)) {
                     const input = document.getElementById(fieldId);
