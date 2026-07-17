@@ -6,7 +6,6 @@
     <title>SPBU 34-17603 · Totalisator</title>
 
     <style>
-        /* ─── Reset & Base ─── */
         * {
             margin: 0;
             padding: 0;
@@ -23,13 +22,11 @@
             padding: 20px;
         }
 
-        /* ─── Container ─── */
         .container {
             width: 100%;
             max-width: 440px;
         }
 
-        /* ─── Header ─── */
         .app-header {
             background: linear-gradient(145deg, #0b1a2e, #14283e);
             border-radius: 28px;
@@ -130,15 +127,8 @@
         }
 
         @keyframes pulse-dot {
-            0%,
-            100% {
-                opacity: 1;
-                transform: scale(1);
-            }
-            50% {
-                opacity: 0.5;
-                transform: scale(0.85);
-            }
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(0.85); }
         }
 
         .header-sub {
@@ -156,7 +146,6 @@
             font-weight: 500;
         }
 
-        /* ─── Card ─── */
         .card {
             background: #ffffff;
             border-radius: 24px;
@@ -255,7 +244,6 @@
             color: #b91c1c;
         }
 
-        /* ─── Input Group ─── */
         .input-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -266,6 +254,7 @@
             display: flex;
             flex-direction: column;
             gap: 5px;
+            position: relative;
         }
 
         .input-group label {
@@ -291,7 +280,17 @@
             opacity: 0.6;
         }
 
-        /* ─── Scan (foto) button ─── */
+        .label-tools {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* ─── Scan (foto) button + menu ─── */
+        .scan-wrap {
+            position: relative;
+        }
+
         .scan-btn {
             border: none;
             background: #eef2ff;
@@ -327,6 +326,73 @@
         @keyframes scan-pulse {
             0%, 100% { opacity: 1; }
             50% { opacity: 0.45; }
+        }
+
+        .field-reset-btn {
+            border: none;
+            background: #f1f5f9;
+            color: #94a3b8;
+            width: 22px;
+            height: 22px;
+            border-radius: 7px;
+            cursor: pointer;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.2s ease;
+            flex-shrink: 0;
+        }
+
+        .field-reset-btn:hover {
+            background: #fee2e2;
+            color: #b91c1c;
+            transform: rotate(20deg);
+        }
+
+        .field-reset-btn:active {
+            transform: scale(0.9);
+        }
+
+        .scan-menu {
+            position: absolute;
+            top: calc(100% + 6px);
+            right: 0;
+            background: #ffffff;
+            border-radius: 14px;
+            box-shadow: 0 12px 32px rgba(11, 26, 46, 0.18);
+            border: 1px solid #e9edf2;
+            padding: 6px;
+            display: none;
+            flex-direction: column;
+            gap: 2px;
+            z-index: 20;
+            min-width: 168px;
+        }
+
+        .scan-menu.open {
+            display: flex;
+        }
+
+        .scan-menu-item {
+            border: none;
+            background: transparent;
+            color: #0b1a2e;
+            font-size: 13px;
+            font-weight: 500;
+            padding: 9px 10px;
+            border-radius: 9px;
+            cursor: pointer;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.15s ease;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .scan-menu-item:hover {
+            background: #f1f5f9;
         }
 
         .input-wrap {
@@ -378,7 +444,6 @@
             box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.10);
         }
 
-        /* ─── Result Card ─── */
         .result-card {
             background: linear-gradient(145deg, #0b1a2e, #14283e);
             border-radius: 24px;
@@ -523,7 +588,6 @@
             font-weight: 500;
         }
 
-        /* ─── Toast Notification ─── */
         .toast {
             position: fixed;
             bottom: 30px;
@@ -558,7 +622,6 @@
             flex-shrink: 0;
         }
 
-        /* ─── Footer ─── */
         .app-footer {
             text-align: center;
             margin-top: 18px;
@@ -577,124 +640,37 @@
             font-weight: 500;
         }
 
-        /* ─── Responsive ─── */
         @media (max-width: 480px) {
-            .container {
-                max-width: 100%;
-            }
-
-            .app-header {
-                padding: 20px 18px 16px;
-                border-radius: 22px;
-            }
-
-            .brand-text h1 {
-                font-size: 19px;
-            }
-
-            .brand-icon {
-                width: 38px;
-                height: 38px;
-                font-size: 18px;
-            }
-
-            .header-status {
-                font-size: 10px;
-                padding: 3px 10px 3px 8px;
-            }
-
-            .card {
-                padding: 16px 16px 18px;
-                border-radius: 20px;
-            }
-
-            .input-row {
-                grid-template-columns: 1fr 1fr;
-                gap: 10px;
-            }
-
-            .input-group input {
-                padding: 11px 12px;
-                font-size: 15px;
-                border-radius: 12px;
-            }
-
-            .result-value-wrap p {
-                font-size: 34px;
-            }
-
-            .result-value-wrap p .decimal {
-                font-size: 22px;
-            }
-
-            .result-card {
-                padding: 18px 16px 16px;
-                border-radius: 20px;
-            }
-
-            .result-left h3 {
-                font-size: 11px;
-            }
-
-            .result-unit {
-                font-size: 10px;
-                padding: 3px 10px;
-            }
-
-            .reset-icon-btn {
-                width: 32px;
-                height: 32px;
-                font-size: 14px;
-            }
-
-            .toast {
-                font-size: 13px;
-                padding: 10px 20px;
-                bottom: 20px;
-                width: calc(100% - 40px);
-                justify-content: center;
-            }
+            .container { max-width: 100%; }
+            .app-header { padding: 20px 18px 16px; border-radius: 22px; }
+            .brand-text h1 { font-size: 19px; }
+            .brand-icon { width: 38px; height: 38px; font-size: 18px; }
+            .header-status { font-size: 10px; padding: 3px 10px 3px 8px; }
+            .card { padding: 16px 16px 18px; border-radius: 20px; }
+            .input-row { grid-template-columns: 1fr 1fr; gap: 10px; }
+            .input-group input { padding: 11px 12px; font-size: 15px; border-radius: 12px; }
+            .result-value-wrap p { font-size: 34px; }
+            .result-value-wrap p .decimal { font-size: 22px; }
+            .result-card { padding: 18px 16px 16px; border-radius: 20px; }
+            .result-left h3 { font-size: 11px; }
+            .result-unit { font-size: 10px; padding: 3px 10px; }
+            .reset-icon-btn { width: 32px; height: 32px; font-size: 14px; }
+            .toast { font-size: 13px; padding: 10px 20px; bottom: 20px; width: calc(100% - 40px); justify-content: center; }
+            .scan-menu { right: -6px; }
         }
 
         @media (max-width: 380px) {
-            .input-row {
-                grid-template-columns: 1fr;
-                gap: 10px;
-            }
-
-            .header-top {
-                flex-direction: column;
-                gap: 12px;
-            }
-
-            .header-status {
-                align-self: flex-start;
-            }
-
-            .brand-text h1 {
-                font-size: 18px;
-            }
-
-            .result-value-wrap p {
-                font-size: 30px;
-            }
+            .input-row { grid-template-columns: 1fr; gap: 10px; }
+            .header-top { flex-direction: column; gap: 12px; }
+            .header-status { align-self: flex-start; }
+            .brand-text h1 { font-size: 18px; }
+            .result-value-wrap p { font-size: 30px; }
         }
 
-        /* ─── Scrollbar ─── */
-        ::-webkit-scrollbar {
-            width: 4px;
-        }
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
 
-        ::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 10px;
-        }
-
-        /* ─── Utility ─── */
         .sr-only {
             position: absolute;
             width: 1px;
@@ -711,7 +687,6 @@
 
     <div class="container">
 
-        <!-- ═══ HEADER ═══ -->
         <header class="app-header">
             <div class="header-top">
                 <div class="header-brand">
@@ -739,12 +714,8 @@
                     <h2>Mesin A1</h2>
                 </div>
                 <div class="card-actions">
-                    <button class="icon-btn lock-btn" id="lockA1" onclick="toggleLock('a1')" aria-label="Kunci totalisator A1">
-                        🔒
-                    </button>
-                    <button class="icon-btn copy-btn" onclick="copyMesin('a1')" aria-label="Salin data A1">
-                        📋
-                    </button>
+                    <button class="icon-btn lock-btn" id="lockA1" onclick="toggleLock('a1')" aria-label="Kunci totalisator A1">🔒</button>
+                    <button class="icon-btn copy-btn" onclick="copyMesin('a1')" aria-label="Salin data A1">📋</button>
                 </div>
             </div>
 
@@ -752,22 +723,42 @@
                 <div class="input-group">
                     <label for="awalA1">
                         <span class="label-left"><span class="label-icon" aria-hidden="true">◀</span> Awal</span>
-                        <button type="button" class="scan-btn" id="scanBtn-awalA1" onclick="triggerScan('awalA1')" aria-label="Scan foto angka awal A1" title="Ambil foto / upload">📷</button>
+                        <span class="label-tools">
+                            <button type="button" class="field-reset-btn" onclick="resetField('awalA1')" aria-label="Reset angka awal A1" title="Reset field ini">↺</button>
+                            <span class="scan-wrap">
+                                <button type="button" class="scan-btn" id="scanBtn-awalA1" onclick="toggleScanMenu(event,'awalA1')" aria-label="Isi dari foto/file" title="Isi dari foto / file">📷</button>
+                                <div class="scan-menu" id="scanMenu-awalA1">
+                                    <button type="button" class="scan-menu-item" onclick="triggerScan('awalA1','camera')">📷 Ambil Foto</button>
+                                    <button type="button" class="scan-menu-item" onclick="triggerScan('awalA1','upload')">🖼️ Upload File</button>
+                                </div>
+                            </span>
+                        </span>
                     </label>
                     <div class="input-wrap">
                         <input type="number" id="awalA1" oninput="hitung()" placeholder="0" step="1" min="0" />
                     </div>
-                    <input type="file" accept="image/*" capture="environment" class="sr-only" id="fileInput-awalA1" onchange="handleFotoScan(event,'awalA1')" />
+                    <input type="file" accept="image/*" capture="environment" class="sr-only" id="fileInput-awalA1-camera" onchange="handleFotoScan(event,'awalA1')" />
+                    <input type="file" accept="image/*,.pdf" class="sr-only" id="fileInput-awalA1-upload" onchange="handleFotoScan(event,'awalA1')" />
                 </div>
                 <div class="input-group">
                     <label for="akhirA1">
                         <span class="label-left"><span class="label-icon" aria-hidden="true">▶</span> Akhir</span>
-                        <button type="button" class="scan-btn" id="scanBtn-akhirA1" onclick="triggerScan('akhirA1')" aria-label="Scan foto angka akhir A1" title="Ambil foto / upload">📷</button>
+                        <span class="label-tools">
+                            <button type="button" class="field-reset-btn" onclick="resetField('akhirA1')" aria-label="Reset angka akhir A1" title="Reset field ini">↺</button>
+                            <span class="scan-wrap">
+                                <button type="button" class="scan-btn" id="scanBtn-akhirA1" onclick="toggleScanMenu(event,'akhirA1')" aria-label="Isi dari foto/file" title="Isi dari foto / file">📷</button>
+                                <div class="scan-menu" id="scanMenu-akhirA1">
+                                    <button type="button" class="scan-menu-item" onclick="triggerScan('akhirA1','camera')">📷 Ambil Foto</button>
+                                    <button type="button" class="scan-menu-item" onclick="triggerScan('akhirA1','upload')">🖼️ Upload File</button>
+                                </div>
+                            </span>
+                        </span>
                     </label>
                     <div class="input-wrap">
                         <input type="number" id="akhirA1" oninput="hitung()" placeholder="0" step="1" min="0" />
                     </div>
-                    <input type="file" accept="image/*" capture="environment" class="sr-only" id="fileInput-akhirA1" onchange="handleFotoScan(event,'akhirA1')" />
+                    <input type="file" accept="image/*" capture="environment" class="sr-only" id="fileInput-akhirA1-camera" onchange="handleFotoScan(event,'akhirA1')" />
+                    <input type="file" accept="image/*,.pdf" class="sr-only" id="fileInput-akhirA1-upload" onchange="handleFotoScan(event,'akhirA1')" />
                 </div>
             </div>
         </section>
@@ -780,12 +771,8 @@
                     <h2>Mesin A2</h2>
                 </div>
                 <div class="card-actions">
-                    <button class="icon-btn lock-btn" id="lockA2" onclick="toggleLock('a2')" aria-label="Kunci totalisator A2">
-                        🔒
-                    </button>
-                    <button class="icon-btn copy-btn" onclick="copyMesin('a2')" aria-label="Salin data A2">
-                        📋
-                    </button>
+                    <button class="icon-btn lock-btn" id="lockA2" onclick="toggleLock('a2')" aria-label="Kunci totalisator A2">🔒</button>
+                    <button class="icon-btn copy-btn" onclick="copyMesin('a2')" aria-label="Salin data A2">📋</button>
                 </div>
             </div>
 
@@ -793,22 +780,42 @@
                 <div class="input-group">
                     <label for="awalA2">
                         <span class="label-left"><span class="label-icon" aria-hidden="true">◀</span> Awal</span>
-                        <button type="button" class="scan-btn" id="scanBtn-awalA2" onclick="triggerScan('awalA2')" aria-label="Scan foto angka awal A2" title="Ambil foto / upload">📷</button>
+                        <span class="label-tools">
+                            <button type="button" class="field-reset-btn" onclick="resetField('awalA2')" aria-label="Reset angka awal A2" title="Reset field ini">↺</button>
+                            <span class="scan-wrap">
+                                <button type="button" class="scan-btn" id="scanBtn-awalA2" onclick="toggleScanMenu(event,'awalA2')" aria-label="Isi dari foto/file" title="Isi dari foto / file">📷</button>
+                                <div class="scan-menu" id="scanMenu-awalA2">
+                                    <button type="button" class="scan-menu-item" onclick="triggerScan('awalA2','camera')">📷 Ambil Foto</button>
+                                    <button type="button" class="scan-menu-item" onclick="triggerScan('awalA2','upload')">🖼️ Upload File</button>
+                                </div>
+                            </span>
+                        </span>
                     </label>
                     <div class="input-wrap">
                         <input type="number" id="awalA2" oninput="hitung()" placeholder="0" step="1" min="0" />
                     </div>
-                    <input type="file" accept="image/*" capture="environment" class="sr-only" id="fileInput-awalA2" onchange="handleFotoScan(event,'awalA2')" />
+                    <input type="file" accept="image/*" capture="environment" class="sr-only" id="fileInput-awalA2-camera" onchange="handleFotoScan(event,'awalA2')" />
+                    <input type="file" accept="image/*,.pdf" class="sr-only" id="fileInput-awalA2-upload" onchange="handleFotoScan(event,'awalA2')" />
                 </div>
                 <div class="input-group">
                     <label for="akhirA2">
                         <span class="label-left"><span class="label-icon" aria-hidden="true">▶</span> Akhir</span>
-                        <button type="button" class="scan-btn" id="scanBtn-akhirA2" onclick="triggerScan('akhirA2')" aria-label="Scan foto angka akhir A2" title="Ambil foto / upload">📷</button>
+                        <span class="label-tools">
+                            <button type="button" class="field-reset-btn" onclick="resetField('akhirA2')" aria-label="Reset angka akhir A2" title="Reset field ini">↺</button>
+                            <span class="scan-wrap">
+                                <button type="button" class="scan-btn" id="scanBtn-akhirA2" onclick="toggleScanMenu(event,'akhirA2')" aria-label="Isi dari foto/file" title="Isi dari foto / file">📷</button>
+                                <div class="scan-menu" id="scanMenu-akhirA2">
+                                    <button type="button" class="scan-menu-item" onclick="triggerScan('akhirA2','camera')">📷 Ambil Foto</button>
+                                    <button type="button" class="scan-menu-item" onclick="triggerScan('akhirA2','upload')">🖼️ Upload File</button>
+                                </div>
+                            </span>
+                        </span>
                     </label>
                     <div class="input-wrap">
                         <input type="number" id="akhirA2" oninput="hitung()" placeholder="0" step="1" min="0" />
                     </div>
-                    <input type="file" accept="image/*" capture="environment" class="sr-only" id="fileInput-akhirA2" onchange="handleFotoScan(event,'akhirA2')" />
+                    <input type="file" accept="image/*" capture="environment" class="sr-only" id="fileInput-akhirA2-camera" onchange="handleFotoScan(event,'akhirA2')" />
+                    <input type="file" accept="image/*,.pdf" class="sr-only" id="fileInput-akhirA2-upload" onchange="handleFotoScan(event,'akhirA2')" />
                 </div>
             </div>
         </section>
@@ -822,9 +829,7 @@
                 </div>
                 <div class="result-actions">
                     <span class="result-unit">Liter</span>
-                    <button class="reset-icon-btn" onclick="resetData()" aria-label="Reset semua totalisator" title="Reset semua nilai">
-                        ↺
-                    </button>
+                    <button class="reset-icon-btn" onclick="resetData()" aria-label="Reset semua totalisator" title="Reset semua nilai">↺</button>
                 </div>
             </div>
             <div class="result-value-wrap">
@@ -836,12 +841,10 @@
             </div>
         </div>
 
-        <!-- ═══ FOOTER ═══ -->
         <footer class="app-footer">
             <p>Made with <span>❤</span> by Ag Windy</p>
         </footer>
 
-        <!-- ═══ TOAST ═══ -->
         <div class="toast" id="toast" role="alert" aria-live="polite">
             <span class="toast-icon" aria-hidden="true">✓</span>
             <span id="toastMessage">Data berhasil disalin</span>
@@ -936,19 +939,23 @@
                 });
         }
 
-        // ─── Reset ───
+        // ─── Reset semua ───
         function resetData() {
-            // Kosongkan semua input
             elAwalA1.value = '';
             elAkhirA1.value = '';
             elAwalA2.value = '';
             elAkhirA2.value = '';
-
-            // Hitung ulang (akan menampilkan 0)
             hitung();
-
-            // Tampilkan notifikasi
             showToast('↺ Semua totalisator direset');
+        }
+
+        // ─── Reset satu field ───
+        function resetField(fieldId) {
+            const input = document.getElementById(fieldId);
+            if (!input) return;
+            input.value = '';
+            hitung();
+            showToast('↺ Field direset');
         }
 
         // ─── Toast ───
@@ -963,16 +970,40 @@
         }
 
         // ══════════════════════════════════════════════════════
-        // ─── SCAN FOTO → ANGKA OTOMATIS (AI Vision) ───
-        // Alur: user tekan tombol 📷 di sebelah label input →
-        // pilih ambil foto / upload file → gambar dikirim ke
-        // model AI (vision) → AI membaca angka pada layar
-        // totalisator → hasil angka otomatis mengisi input →
-        // hitung() dipanggil ulang.
+        // ─── SCAN FOTO / UPLOAD FILE → ANGKA OTOMATIS (AI Vision) ───
+        // Tombol 📷 membuka menu kecil dengan 2 opsi:
+        //   1) Ambil Foto  → buka kamera langsung (mobile)
+        //   2) Upload File → buka file explorer / galeri
+        // Gambar dikirim ke model AI (vision) → AI membaca angka
+        // pada layar totalisator → hasil otomatis mengisi input.
         // ══════════════════════════════════════════════════════
 
-        function triggerScan(fieldId) {
-            const fileInput = document.getElementById(`fileInput-${fieldId}`);
+        let openMenuId = null;
+
+        function toggleScanMenu(event, fieldId) {
+            event.stopPropagation();
+            const menu = document.getElementById(`scanMenu-${fieldId}`);
+            const isOpen = menu.classList.contains('open');
+
+            closeAllScanMenus();
+
+            if (!isOpen) {
+                menu.classList.add('open');
+                openMenuId = fieldId;
+            }
+        }
+
+        function closeAllScanMenus() {
+            document.querySelectorAll('.scan-menu').forEach(m => m.classList.remove('open'));
+            openMenuId = null;
+        }
+
+        document.addEventListener('click', closeAllScanMenus);
+
+        function triggerScan(fieldId, mode) {
+            closeAllScanMenus();
+            const inputId = mode === 'camera' ? `fileInput-${fieldId}-camera` : `fileInput-${fieldId}-upload`;
+            const fileInput = document.getElementById(inputId);
             fileInput.value = ''; // reset agar file sama bisa dipilih ulang
             fileInput.click();
         }
@@ -998,7 +1029,6 @@
                 btn.classList.remove('scanning');
                 btn.textContent = '📷';
                 btn.disabled = false;
-                // jangan buka kunci input kalau memang sedang dikunci (lock A1/A2)
                 const mesin = fieldId.toLowerCase().includes('a1') ? 'a1' : 'a2';
                 const isLocked = mesin === 'a1' ? lockA1 : lockA2;
                 input.disabled = isLocked;
