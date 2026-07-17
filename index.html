@@ -706,12 +706,13 @@
             display: block;
         }
 
+        /* ─── Kotak panduan dibuat lebih tinggi untuk 2 baris angka ─── */
         .modal-guide-frame {
             position: absolute;
-            top: 38%;
+            top: 18%;
             left: 8%;
             right: 8%;
-            height: 24%;
+            height: 60%;
             border: 2.5px dashed rgba(251, 191, 36, 0.85);
             border-radius: 10px;
             pointer-events: none;
@@ -719,7 +720,7 @@
 
         .modal-guide-label {
             position: absolute;
-            top: calc(38% - 22px);
+            top: calc(18% - 22px);
             left: 8%;
             color: #fbbf24;
             font-size: 11px;
@@ -973,7 +974,7 @@
         </header>
 
         <div class="scan-tip" role="note">
-            💡 Gunakan <b>Ambil Foto Live</b> untuk memotret angka totalisator — <b>Tesseract.js</b> akan membaca angka langsung di browser <b>tanpa backend</b>. Pastikan angka <b>terlihat jelas</b> dan <b>tegak lurus</b>.
+            💡 Gunakan <b>Ambil Foto Live</b> untuk memotret angka totalisator — Untuk membaca angka langsung di browser . Pastikan angka <b>terlihat jelas</b>, <b>tegak lurus</b>, dan berada dalam <b>area panduan kuning (2 baris)</b>.
         </div>
 
         <!-- ═══ MESIN A1 ═══ -->
@@ -1104,7 +1105,7 @@
         </div>
 
         <footer class="app-footer">
-            <p>Made with <span>❤</span> by Ag Windy · Tesseract.js</p>
+            <p>Made with <span>❤</span> by Ag Windy </p>
         </footer>
 
         <div class="toast" id="toast" role="alert" aria-live="polite">
@@ -1128,7 +1129,7 @@
             <div class="modal-viewport">
                 <video id="liveVideo" autoplay playsinline muted class="hidden"></video>
                 <img id="previewImg" class="hidden" alt="Preview foto totalisator" />
-                <div class="modal-guide-label hidden" id="guideLabel">Posisikan angka di sini</div>
+                <div class="modal-guide-label hidden" id="guideLabel">Posisikan angka totalisator (2 baris) di sini</div>
                 <div class="modal-guide-frame hidden" id="guideFrame"></div>
                 <div class="modal-status-badge hidden" id="statusBadge">
                     <span class="modal-spinner hidden" id="statusSpinner"></span>
@@ -1160,7 +1161,7 @@
     <input type="file" accept="image/*" capture="environment" class="sr-only" id="fallbackCameraInput" onchange="handleFileChosen(event)" />
     <input type="file" accept="image/*,.pdf" class="sr-only" id="uploadFileInput" onchange="handleFileChosen(event)" />
 
-    <!-- Tambahkan library Tesseract.js -->
+    <!-- Tesseract.js -->
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js">
     </script>
 
@@ -1354,7 +1355,7 @@
             guideFrame.classList.remove('hidden');
             guideLabel.classList.remove('hidden');
             statusBadge.classList.remove('hidden');
-            statusText.textContent = 'Posisikan angka totalisator di dalam kotak kuning, lalu tekan tombol ambil foto';
+            statusText.textContent = 'Posisikan angka totalisator (2 baris) di dalam kotak kuning, lalu tekan tombol ambil foto';
             captureBar.classList.remove('hidden');
 
             try {
@@ -1454,15 +1455,13 @@
             currentField = null;
         }
 
-        // ─── Tesseract.js OCR (client-side) ──────────────────────
+        // ─── Tesseract.js OCR ──────────────────────────────
         async function runTesseract(base64Data, mediaType) {
             const myToken = ++scanToken;
             try {
                 statusText.textContent = '⏳ Memuat Tesseract.js... (pertama kali butuh waktu)';
 
-                // Buat worker dengan bahasa Inggris (cukup untuk angka)
                 const worker = await Tesseract.createWorker('eng');
-
                 statusText.textContent = '🔍 Membaca angka...';
 
                 const { data: { text } } = await worker.recognize(`data:${mediaType};base64,${base64Data}`);
@@ -1470,14 +1469,14 @@
 
                 if (myToken !== scanToken) return;
 
-                // Ekstrak angka bulat (minimal 3 digit, karena totalisator biasanya besar)
+                // Ambil angka bulat (minimal 4 digit karena totalisator besar)
                 const number = extractNumberFromText(text);
 
                 if (number !== null) {
                     lastDetectedNumber = number;
                     showModalSuccess(number);
                 } else {
-                    showModalError('⚠️ Tidak ditemukan angka yang jelas. Pastikan totalisator terlihat dan foto tidak buram.');
+                    showModalError('⚠️ Tidak ditemukan angka yang jelas. Pastikan totalisator (2 baris) terlihat dan foto tidak buram.');
                 }
             } catch (err) {
                 if (myToken !== scanToken) return;
@@ -1487,10 +1486,9 @@
         }
 
         function extractNumberFromText(text) {
-            // Cari semua kumpulan digit minimal 3 angka berturut-turut (abaikan koma/titik)
-            const matches = text.match(/\d{3,}/g);
+            // Cari semua kumpulan digit minimal 4 angka (totalisator biasanya > 1000)
+            const matches = text.match(/\d{4,}/g);
             if (!matches) return null;
-            // Ambil angka pertama yang ditemukan
             const numStr = matches[0];
             return parseInt(numStr, 10);
         }
@@ -1521,7 +1519,6 @@
             input.addEventListener('change', hitung);
         });
 
-        // ─── Periksa apakah Tesseract.js dapat diakses ──────────
         if (typeof Tesseract === 'undefined') {
             console.warn('Tesseract.js tidak ditemukan. Pastikan library di-load.');
         } else {
