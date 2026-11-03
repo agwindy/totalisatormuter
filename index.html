@@ -24,7 +24,30 @@
 
         .container {
             width: 100%;
-            max-width: 440px;
+            max-width: 100%;
+        }
+
+        @media (min-width: 768px) {
+            body {
+                padding: 28px;
+                align-items: flex-start;
+            }
+            .app-header {
+                padding: 30px 34px 26px;
+            }
+            .card {
+                padding: 26px 28px 28px;
+            }
+            .result-card {
+                padding: 30px 28px 28px;
+            }
+            .tab-bar {
+                padding: 8px;
+            }
+            .tab-btn {
+                font-size: 15px;
+                padding: 14px 10px;
+            }
         }
 
         .app-header {
@@ -1052,6 +1075,57 @@
 
         .month-row {
             margin-bottom: 14px;
+        }
+
+
+        /* ═══ INPUT BESAR ═══ */
+        .input-group input {
+            padding: 15px 16px;
+            font-size: 17px;
+            border-radius: 15px;
+        }
+
+        .input-group label {
+            font-size: 13px;
+        }
+
+        table.tot {
+            min-width: 1080px;
+            font-size: 14.5px;
+        }
+
+        table.tot th {
+            padding: 12px 10px;
+            font-size: 12px;
+        }
+
+        table.tot td {
+            padding: 8px;
+        }
+
+        table.tot input {
+            min-width: 120px;
+            padding: 12px 10px;
+            font-size: 15px;
+            border-radius: 11px;
+        }
+
+        table.tot td.compute {
+            font-size: 15px;
+            padding-right: 12px;
+        }
+
+        table.tot tr.subtotal td {
+            font-size: 15px;
+        }
+
+        .result-value-wrap p {
+            font-size: 52px;
+        }
+
+        .scan-tip {
+            font-size: 13.5px;
+            padding: 13px 16px;
         }
 
         ::-webkit-scrollbar {
