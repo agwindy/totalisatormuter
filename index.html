@@ -1301,6 +1301,13 @@
             line-height: 1.9;
         }
 
+
+        .sim-chip.active {
+            border-color: #2563eb;
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+
         ::-webkit-scrollbar {
             width: 4px;
         }
@@ -1702,10 +1709,22 @@
                 🎯 Pilih target % di bawah 1% — aplikasi menghitung otomatis angka totalisator baru yang bisa langsung <b>disalin ke kolom Akhir</b> pada rincian totalisator.
             </div>
             <div class="sim-target-row">
+                <button class="sim-chip" onclick="setTargetPersen(0.1)">0,1%</button>
+                <button class="sim-chip" onclick="setTargetPersen(0.2)">0,2%</button>
+                <button class="sim-chip" onclick="setTargetPersen(0.3)">0,3%</button>
+                <button class="sim-chip" onclick="setTargetPersen(0.4)">0,4%</button>
                 <button class="sim-chip" onclick="setTargetPersen(0.5)">0,5%</button>
                 <button class="sim-chip" onclick="setTargetPersen(0.6)">0,6%</button>
                 <button class="sim-chip" onclick="setTargetPersen(0.7)">0,7%</button>
+                <button class="sim-chip" onclick="setTargetPersen(0.8)">0,8%</button>
+                <button class="sim-chip" onclick="setTargetPersen(0.9)">0,9%</button>
                 <input type="text" inputmode="decimal" id="targetPersen" value="0,5" oninput="hitungSimulasiPersen()" placeholder="Target %" aria-label="Target persentase" />
+            </div>
+            <div class="sim-target-row" style="margin-top:-4px">
+                <span style="font-size:12px;color:#64748b;font-weight:700;min-width:44px">Mode:</span>
+                <button class="sim-chip sim-mode active" data-mode="bagi" onclick="setModeSimulasi('bagi')">Bagi baris 1 &amp; 2</button>
+                <button class="sim-chip sim-mode" data-mode="baris1" onclick="setModeSimulasi('baris1')">Baris 1 saja</button>
+                <button class="sim-chip sim-mode" data-mode="baris2" onclick="setModeSimulasi('baris2')">Baris 2 saja</button>
             </div>
             <div id="hasilSimulasi"></div>
         </section>
@@ -2257,8 +2276,9 @@ let lastOver = { pl: false, px: false };
                     : `turunkan Stok Akhir \u2265 ${fmtNum.format(kurang)} liter \u2192 Hasil naik, selisih mengecil`;
 
                 // ── Opsi 2: ubah totalisator \u2014 rincian ketiga baris, siap salin ──
+                // ATURAN KHUSUS: perubahan hanya pada totalisator baris 1 & 2
                 const baris = [];
-                for (let i = 1; i <= 3; i++) {
+                for (let i = 1; i <= 2; i++) {
                     const aw = Math.round(numVal(p + 'Awal' + i));
                     const ak = Math.round(numVal(p + 'Akhir' + i));
                     if (ak > 0 || aw > 0) baris.push({ i: i, aw: aw, ak: ak, ruang: ak - aw });
@@ -3022,9 +3042,23 @@ function salinFallback(teks) {
         // ─── SIMULASI PERSENTASE: target 0,5 / 0,6 / 0,7 % ───
         // ══════════════════════════════════════════════════════
 
+        function setModeSimulasi(mode) {
+            simMode = mode;
+            document.querySelectorAll('.sim-mode').forEach(b => b.classList.toggle('active', b.dataset.mode === mode));
+            hitungSimulasiPersen();
+        }
+
         function setTargetPersen(v) {
             const input = document.getElementById('targetPersen');
             input.value = String(v).replace('.', ',');
+            hitungSimulasiPersen();
+        }
+
+        let simMode = 'bagi';
+
+        function setModeSimulasi(mode) {
+            simMode = mode;
+            document.querySelectorAll('.sim-mode').forEach(b => b.classList.toggle('active', b.dataset.mode === mode));
             hitungSimulasiPersen();
         }
 
@@ -3055,13 +3089,14 @@ function salinFallback(teks) {
                 const NAMA = p === 'pl' ? 'PERTALITE' : 'PERTAMAX';
                 const sub = parseNum(document.getElementById(p + 'Sub').textContent);
                 const hasilJual = parseNum(document.getElementById(p + 'Hasil').textContent);
+                const per = numVal(p + 'Per100') || 100;
                 if (sub <= 0) {
                     html += `<div class="scan-tip" style="margin-top:10px"><b>${NAMA}</b>: totalisator belum terisi.</div>`;
                     return;
                 }
                 const hs = Math.abs(sub - hasilJual);
-                const persenSkr = hs * 100 / sub;
-                const targetHs = sub * target / 100;
+                const persenSkr = hs * per / sub;
+                const targetHs = sub * target / per;
 
                 if (hs <= targetHs) {
                     html += `<div class="sim-hasil-box" style="background:#f0fdf4;border-color:#bbf7d0;color:#166534">` +
@@ -3070,8 +3105,12 @@ function salinFallback(teks) {
                     return;
                 }
 
-                const shift = Math.ceil(hs - targetHs);
+                // Shift minimal agar % tepat mencapai target (rumus eksak, bukan perkiraan)
+                const t = target;
                 const tambah = hasilJual > sub;
+                const shift = tambah
+                    ? Math.max(0, Math.ceil((per * hs - t * sub) / (per + t) - 1e-9))
+                    : Math.max(0, Math.ceil((per * hs - t * sub) / (per - t) - 1e-9));
                 const totalBaru = sub + (tambah ? shift : -shift);
                 if (totalBaru <= 0) {
                     html += `<div class="sim-hasil-box" style="background:#fef2f2;border-color:#fca5a5;color:#7f1d1d">` +
@@ -3081,17 +3120,38 @@ function salinFallback(teks) {
                 }
                 const persenBaru = Math.abs(totalBaru - hasilJual) * 100 / totalBaru;
 
+                // ATURAN KHUSUS: hanya baris 1 & 2 yang dapat diubah
                 const baris = [];
-                for (let i = 1; i <= 3; i++) {
+                for (let i = 1; i <= 2; i++) {
                     const aw = Math.round(numVal(p + 'Awal' + i));
                     const ak = Math.round(numVal(p + 'Akhir' + i));
                     if (ak > 0 || aw > 0) baris.push({ i: i, aw: aw, ak: ak, ruang: ak - aw });
                 }
-                if (!baris.length) {
-                    html += `<div class="scan-tip" style="margin-top:10px"><b>${NAMA}</b>: isi salah satu baris totalisator terlebih dahulu.</div>`;
-                    return;
+
+                let bagian = null;
+                if (simMode === 'bagi') {
+                    if (!baris.length) {
+                        html += `<div class="scan-tip" style="margin-top:10px"><b>${NAMA}</b>: isi totalisator baris 1 atau 2 terlebih dahulu.</div>`;
+                        return;
+                    }
+                    bagian = bagi(baris, shift, tambah ? 'ak' : 'ruang');
+                } else {
+                    const idx = simMode === 'baris1' ? 1 : 2;
+                    const d = baris.find(b => b.i === idx);
+                    if (!d) {
+                        html += `<div class="sim-hasil-box" style="background:#fef2f2;border-color:#fca5a5;color:#7f1d1d">` +
+                            `<b>${NAMA}</b> \u2014 baris ${idx} belum terisi totalisator.</div>`;
+                        return;
+                    }
+                    if (!tambah && Math.max(0, d.ruang) < shift) {
+                        html += `<div class="sim-hasil-box" style="background:#fef2f2;border-color:#fca5a5;color:#7f1d1d">` +
+                            `<b>${NAMA}</b> \u2014 baris ${idx} tidak cukup ruang (hanya ${fmtNum.format(Math.max(0, d.ruang))} L, butuh ${fmtNum.format(shift)} L). ` +
+                            `Gunakan mode <b>"Bagi baris 1 &amp; 2"</b>.</div>`;
+                        return;
+                    }
+                    bagian = [{ d: d, delta: shift }];
                 }
-                const bagian = bagi(baris, shift, tambah ? 'ak' : 'ruang');
+
                 const rowsHtml = bagian.map(({ d, delta }) => {
                     if (delta <= 0) {
                         return `\u2022 <b>Akhir baris ${d.i}</b>: <span style="color:#94a3b8">tanpa perubahan (tetap ${fmtNum.format(d.ak)})</span>`;
@@ -3101,8 +3161,10 @@ function salinFallback(teks) {
                     return `\u2022 <b>Akhir baris ${d.i}</b>: ${fmtNum.format(d.ak)} \u2192 <b>${fmtNum.format(baru)}</b> ${btnSalin(baru)} <span style="color:#64748b">(${ket})</span>`;
                 }).join('<br>');
 
+                const labelMode = simMode === 'bagi' ? '' :
+                    ` <span style="color:#64748b">(mode: baris ${simMode === 'baris1' ? '1' : '2'} saja)</span>`;
                 html += `<div class="sim-hasil-box">` +
-                    `<b>${NAMA}</b> \u2014 ${fmtPersen(persenSkr)}% \u2192 target <b>${fmtPersen(target)}%</b>: ` +
+                    `<b>${NAMA}</b>${labelMode} \u2014 ${fmtPersen(persenSkr)}% \u2192 target <b>${fmtPersen(target)}%</b>: ` +
                     `perlu <b>${tambah ? 'TAMBAH' : 'KURANGI'} ${fmtNum.format(shift)} liter</b> ` +
                     `(total ${fmtNum.format(sub)} \u2192 ${fmtNum.format(totalBaru)} L, % menjadi ${fmtPersen(persenBaru)}%)<br>` +
                     rowsHtml + `</div>`;
