@@ -1128,6 +1128,29 @@
             padding: 13px 16px;
         }
 
+
+        /* ═══ ALERT PERLENGKAPAN % ═══ */
+        .alert-banner {
+            background: #fef2f2;
+            border: 1.5px solid #fca5a5;
+            color: #991b1b;
+            border-radius: 14px;
+            padding: 13px 16px;
+            font-size: 13.5px;
+            line-height: 1.65;
+            margin-top: 14px;
+        }
+
+        .alert-banner b {
+            color: #b91c1c;
+        }
+
+        table.tot td.compute.over {
+            color: #dc2626;
+            background: #fef2f2;
+            border-radius: 8px;
+        }
+
         ::-webkit-scrollbar {
             width: 4px;
         }
@@ -1318,7 +1341,7 @@
         <div id="tab-bulanan" class="tab-pane hidden">
 
         <div class="scan-tip" role="note">
-            💡 <b>Perhitungan otomatis:</b> Total = Akhir − Awal · Total ril = ST awl + DO · Total M = Total ril + Tera · Hasil = Total M − ST akr · Hasil set = Total ÷ per 100 % × %
+            💡 <b>Perhitungan otomatis:</b> Total = Akhir − Awal · Total ril = ST awl + DO · Total M = Total ril + Tera · Hasil = Total M − ST akr · % = hasil set × per 100 % ÷ Total. <b>Aturan: % tiap produk wajib di bawah 1%</b> — jika melebihi, alert & simulasi perbaikan stok/totalisator muncul otomatis.
         </div>
 
         <!-- ═══ HEADER BULANAN ═══ -->
@@ -1500,19 +1523,21 @@
                     <tbody>
                         <tr>
                             <td style="font-weight: 600;">PL</td>
-                            <td class="compute" id="hasilSetPL">0</td>
+                            <td><input type="number" id="hsPL" oninput="hitungBulanan()" placeholder="0" min="0" /></td>
                             <td><input type="number" id="plPer100" value="100" oninput="hitungBulanan()" placeholder="100" min="0" /></td>
-                            <td><input type="text" inputmode="decimal" id="plPersen" oninput="hitungBulanan()" placeholder="0,0000" /></td>
+                            <td class="compute" id="persenPL">0</td>
                         </tr>
                         <tr>
                             <td style="font-weight: 600;">PX</td>
-                            <td class="compute" id="hasilSetPX">0</td>
+                            <td><input type="number" id="hsPX" oninput="hitungBulanan()" placeholder="0" min="0" /></td>
                             <td><input type="number" id="pxPer100" value="100" oninput="hitungBulanan()" placeholder="100" min="0" /></td>
-                            <td><input type="text" inputmode="decimal" id="pxPersen" oninput="hitungBulanan()" placeholder="0,0000" /></td>
+                            <td class="compute" id="persenPX">0</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
+            <div class="alert-banner hidden" id="alertPL" role="alert"></div>
+            <div class="alert-banner hidden" id="alertPX" role="alert"></div>
         </section>
 
         <!-- ═══ HASIL BULANAN ═══ -->
@@ -1982,6 +2007,53 @@
             if (el) el.textContent = fmtNum.format(v);
         }
 
+let lastOver = { pl: false, px: false };
+
+        function fmtPersen(n) {
+            if (!isFinite(n) || n <= 0) return '0';
+            let s = (Math.round(n * 10000) / 10000).toFixed(4);
+            s = s.replace(/0+$/, '').replace(/\.$/, '');
+            return s.replace('.', ',');
+        }
+
+        // Aturan: % produk wajib DI BAWAH 1%. Jika ≥ 1% → alert + simulasi perbaikan.
+        function checkProduk(p, sub) {
+            const KODE = p.toUpperCase();
+            const hs = numVal('hs' + KODE);
+            const per = numVal(p + 'Per100');
+            const persen = (sub > 0 && per > 0) ? hs * per / sub : 0;
+
+            const elPersen = document.getElementById('persen' + KODE);
+            elPersen.textContent = fmtPersen(persen);
+
+            const alertEl = document.getElementById('alert' + KODE);
+            if (persen >= 1 && hs > 0 && sub > 0) {
+                const batas = sub / per;                        // hasil set utk tepat 1%
+                const kelebihan = hs - batas;
+                const kurangi = Math.ceil(kelebihan);           // minimal turun (liter)
+                const tambahTot = Math.ceil(hs * per - sub) + 1; // minimal tambah totalisator (liter)
+                alertEl.innerHTML =
+                    `⚠️ <b>% ${KODE} = ${fmtPersen(persen)}% — MELEBIHI BATAS 1%!</b><br>` +
+                    `• Batas aman: hasil set &lt; ${fmtNum.format(Math.round(batas))} liter (1% dari total ${fmtNum.format(sub)} L)<br>` +
+                    `• Kelebihan saat ini: <b>${fmtNum.format(Math.ceil(kelebihan))} liter</b><br>` +
+                    `• Simulasi ubah <b>stok</b>: turunkan hasil set ≥ ${fmtNum.format(kurangi)} liter ` +
+                    `(dari ${fmtNum.format(hs)} menjadi &lt; ${fmtNum.format(Math.round(batas))})<br>` +
+                    `• Simulasi ubah <b>totalisator</b>: tambah total penjualan (kolom Akhir) ≥ ${fmtNum.format(tambahTot)} liter ` +
+                    `agar total &gt; ${fmtNum.format(hs * per)} L`;
+                alertEl.classList.remove('hidden');
+                elPersen.classList.add('over');
+                if (!lastOver[p]) {
+                    showToast(`⚠️ % ${KODE} di atas 1% — lihat simulasi perbaikan`);
+                }
+                lastOver[p] = true;
+            } else {
+                alertEl.classList.add('hidden');
+                alertEl.innerHTML = '';
+                elPersen.classList.remove('over');
+                lastOver[p] = false;
+            }
+        }
+
         function hitungBulanan() {
             // Per baris: Total = Akhir − Awal · Total ril = ST awl + DO · Total M = Total ril + Tera · Hasil = Total M − ST akr
             let plSub = 0, pxSub = 0;
@@ -2013,13 +2085,9 @@
                 if (p === 'pl') { plSub = sTot; } else { pxSub = sTot; }
             });
 
-            // Produk: Hasil set = Total ÷ per 100 % × %
-            const plPer = numVal('plPer100');
-            const pxPer = numVal('pxPer100');
-            const plPersen = parseNum(document.getElementById('plPersen').value);
-            const pxPersen = parseNum(document.getElementById('pxPersen').value);
-            setText('hasilSetPL', plPer > 0 ? Math.round(plSub / plPer * plPersen) : 0);
-            setText('hasilSetPX', pxPer > 0 ? Math.round(pxSub / pxPer * pxPersen) : 0);
+            // Produk: % = hasil set × per 100 % ÷ Total — wajib di bawah 1%
+            checkProduk('pl', plSub);
+            checkProduk('px', pxSub);
 
             setText('grandTotalBulanan', plSub + pxSub);
             const d = document.getElementById('detailBulanan');
@@ -2050,6 +2118,7 @@
                 labelBulan = `${namaBulan[parseInt(parts[1], 10) - 1]} ${parts[0]}`;
             }
             const g = id => document.getElementById(id).textContent;
+            const v = id => document.getElementById(id).value;
             const text =
                 `TOTALISATOR BULANAN \u2014 ${labelBulan}\n\n` +
                 `PERTALITE (PL)\n` +
@@ -2071,8 +2140,8 @@
                 `ST Akhir    : ${g('pxSTAkr')}\n` +
                 `Hasil       : ${g('pxHasil')}\n\n` +
                 `PRODUK\n` +
-                `PL \u2014 Hasil Set : ${g('hasilSetPL')} (per 100% = ${g('plPer100') || '100'}, % = ${document.getElementById('plPersen').value || '-'})\n` +
-                `PX \u2014 Hasil Set : ${g('hasilSetPX')} (per 100% = ${g('pxPer100') || '100'}, % = ${document.getElementById('pxPersen').value || '-'})\n\n` +
+                `PL \u2014 Hasil Set : ${v('hsPL') || '0'} L \u2192 % = ${g('persenPL')}% (batas < 1%)\n` +
+                `PX \u2014 Hasil Set : ${v('hsPX') || '0'} L \u2192 % = ${g('persenPX')}% (batas < 1%)\n\n` +
                 `TOTAL LITER BULANAN : ${g('grandTotalBulanan')} L`;
 
             const done = () => showToast('\u2705 Rekap bulanan disalin');
@@ -2123,10 +2192,10 @@
                 if (vals.some(v => v)) hasAny = true;
             }
             const per100 = document.getElementById(p + 'Per100').value.trim();
-            const persen = document.getElementById(p + 'Persen').value.trim();
-            if (persen) hasAny = true;
+            const hasilSet = document.getElementById('hs' + p.toUpperCase()).value.trim();
+            if (hasilSet) hasAny = true;
             if (!hasAny) return null;
-            return { rows: rows, per100: per100, persen: persen };
+            return { rows: rows, per100: per100, hasilSet: hasilSet };
         }
 
         function persistBulanan() {
@@ -2158,7 +2227,7 @@
                     rows[0][5] = b.stakr || '';
                 }
             }
-            return { rows: rows, per100: b.per100 || '100', persen: b.persen || '' };
+            return { rows: rows, per100: b.per100 || '100', persen: b.persen || '', hasilSet: b.hasilSet || '' };
         }
 
         function loadBulanan() {
@@ -2169,7 +2238,7 @@
                 for (let i = 1; i <= 3; i++) {
                     cols.forEach(s => setVal(p + s + i, ''));
                 }
-                setVal(p + 'Persen', '');
+                setVal('hs' + p.toUpperCase(), '');
                 setVal(p + 'Per100', '100');
             });
 
@@ -2185,7 +2254,17 @@
                         cols.forEach((s, j) => setVal(p + s + (i + 1), b.rows[i][j]));
                     }
                     setVal(p + 'Per100', b.per100);
-                    setVal(p + 'Persen', b.persen);
+                    if (b.hasilSet) {
+                        setVal('hs' + p.toUpperCase(), b.hasilSet);
+                    } else if (b.persen) {
+                        // Migrasi data lama: hasil set dihitung balik dari % yang tersimpan
+                        const perNum = parseNum(b.per100) || 100;
+                        let sub = 0;
+                        for (let i = 0; i < 3; i++) {
+                            sub += Math.max(0, parseNum(b.rows[i][1]) - parseNum(b.rows[i][0]));
+                        }
+                        setVal('hs' + p.toUpperCase(), sub > 0 ? String(Math.round(sub / perNum * parseNum(b.persen))) : '');
+                    }
                 });
             } else if (key) {
                 // Bulan baru → totalisator akhir & stok akhir bulan sebelumnya jadi awal
@@ -2199,9 +2278,8 @@
                             setVal(p + 'ST' + (i + 1), b.rows[i][5]);   // ST akr bulan lalu → ST awl bulan ini
                         }
                         setVal(p + 'Per100', b.per100);
-                        setVal(p + 'Persen', b.persen);
                     });
-                    showToast('↧ Totalisator akhir & stok akhir bulan sebelumnya otomatis terisi');
+                    showToast('↻ Totalisator akhir & stok akhir bulan sebelumnya otomatis terisi');
                 }
             }
             hitungBulanan();
@@ -2235,9 +2313,9 @@
                 bulanVal: gv('bulanBulanan'),
                 pl: block('pl'),
                 px: block('px'),
-                hsPL: gt('hasilSetPL'), hsPX: gt('hasilSetPX'),
+                hsPL: gv('hsPL'), hsPX: gv('hsPX'),
                 perPL: gv('plPer100'), perPX: gv('pxPer100'),
-                psPL: gv('plPersen'), psPX: gv('pxPersen'),
+                psPL: gt('persenPL'), psPX: gt('persenPX'),
                 grand: gt('grandTotalBulanan')
             };
         }
