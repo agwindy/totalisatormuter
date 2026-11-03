@@ -2178,37 +2178,63 @@ let lastOver = { pl: false, px: false };
                     ? `naikkan Stok Akhir \u2265 ${fmtNum.format(kurang)} liter \u2192 Hasil turun, selisih mengecil`
                     : `turunkan Stok Akhir \u2265 ${fmtNum.format(kurang)} liter \u2192 Hasil naik, selisih mengecil`;
 
-                // ── Opsi 2: ubah totalisator \u2014 3 pilihan baris ──
+                // ── Opsi 2: ubah totalisator \u2014 rincian ketiga baris, siap salin ──
                 const baris = [];
                 for (let i = 1; i <= 3; i++) {
                     const aw = Math.round(numVal(p + 'Awal' + i));
                     const ak = Math.round(numVal(p + 'Akhir' + i));
-                    if (ak > 0 || aw > 0) baris.push({ i: i, aw: aw, ak: ak });
+                    if (ak > 0 || aw > 0) baris.push({ i: i, aw: aw, ak: ak, ruang: ak - aw });
                 }
+                let tambahMode = false;
+                const bagiProporsional = (daftar, totalDelta, basisKey) => {
+                    const totalBasis = daftar.reduce((a, b) => a + Math.max(0, b[basisKey]), 0);
+                    if (totalBasis <= 0 || totalDelta <= 0) return daftar.map(d => ({ d: d, delta: 0 }));
+                    const bagian = daftar.map(d => {
+                        const raw = totalDelta * Math.max(0, d[basisKey]) / totalBasis;
+                        return { d: d, delta: Math.floor(raw), frac: raw - Math.floor(raw) };
+                    });
+                    let sisa = totalDelta - bagian.reduce((a, b) => a + b.delta, 0);
+                    bagian.slice().sort((a, b) => b.frac - a.frac).forEach(x => { if (sisa > 0) { x.delta++; sisa--; } });
+                    return bagian;
+                };
+                const renderBaris = bagian =>
+                    bagian.map(({ d, delta }) => {
+                        if (delta <= 0) {
+                            return `<b>Akhir baris ${d.i}</b>: <span style="color:#94a3b8">tanpa perubahan (tetap ${fmtNum.format(d.ak)})</span>`;
+                        }
+                        const baru = d.ak + (tambahMode ? delta : -delta);
+                        const ket = (tambahMode ? 'tambah ' : 'kurangi ') + fmtNum.format(delta);
+                        return `<b>Akhir baris ${d.i}</b>: ${fmtNum.format(d.ak)} \u2192 <b>${fmtNum.format(baru)}</b> ${btnSalin(baru)} <span style="color:#64748b">(${ket})</span>`;
+                    }).join('<br>');
+
                 let htmlTotalisator = '';
                 if (!baris.length) {
-                    htmlTotalisator = `isi salah satu baris totalisator terlebih dahulu untuk melihat 3 opsi perubahan.`;
+                    htmlTotalisator = `isi salah satu baris totalisator terlebih dahulu untuk melihat opsi perubahan.`;
+                } else if (hasilJual <= 0) {
+                    // Hasil negatif: mengubah totalisator tidak dapat memperbaiki
+                    htmlTotalisator = `Hasil perhitungan \u2264 0 liter (Stok Akhir melebihi Total M) \u2014 mengubah totalisator <b>tidak dapat</b> memperbaiki. <b>Gunakan opsi 1: turunkan Stok Akhir.</b>`;
                 } else if (hasilJual > sub) {
+                    tambahMode = true;
                     const targetT = Math.floor(hasilJual * per / (per + 1)) + 1;
                     const tambah = targetT - sub;
+                    const bagian = bagiProporsional(baris, tambah, 'ak');
+                    if (!bagian.some(b => b.delta > 0)) bagian[0].delta = tambah;
                     htmlTotalisator =
-                        `perlu <b>TAMBAH ${fmtNum.format(tambah)} liter</b> \u2014 pilih salah satu dari 3 opsi:<br>` +
-                        baris.map(u =>
-                            `<b>Akhir baris ${u.i}</b>: ${fmtNum.format(u.ak)} \u2192 <b>${fmtNum.format(u.ak + tambah)}</b> ${btnSalin(u.ak + tambah)} <span style="color:#64748b">(tambah ${fmtNum.format(tambah)})</span>`
-                        ).join('<br>') +
+                        `perlu <b>TAMBAH ${fmtNum.format(tambah)} liter</b> \u2014 rincian angka baru per baris (salin sesuai kebutuhan):<br>` +
+                        renderBaris(bagian) +
                         `<br><span style="color:#64748b">(agar total \u2265 ${fmtNum.format(targetT)} L)</span>`;
                 } else {
                     const targetT = per > 1 ? Math.ceil(hasilJual * per / (per - 1)) - 1 : sub;
-                    const sisa = sub - targetT;
+                    const sisa = Math.max(0, sub - targetT);
+                    const totalRuang = baris.reduce((a, b) => a + Math.max(0, b.ruang), 0);
+                    const bagian = bagiProporsional(baris, Math.min(sisa, totalRuang), 'ruang');
+                    let catatan = `<br><span style="color:#64748b">(agar total \u2264 ${fmtNum.format(targetT)} L)</span>`;
+                    if (totalRuang < sisa) {
+                        catatan = `<br><span style="color:#b91c1c">ruang seluruh baris hanya ${fmtNum.format(totalRuang)} liter \u2014 tidak mencukupi. Selisih sisanya wajib diperbaiki lewat Stok Akhir (opsi 1).</span>`;
+                    }
                     htmlTotalisator =
-                        `perlu <b>KURANGI ${fmtNum.format(sisa)} liter</b> \u2014 pilih salah satu dari 3 opsi:<br>` +
-                        baris.map(u => {
-                            if (u.ak - u.aw >= sisa) {
-                                return `<b>Akhir baris ${u.i}</b>: ${fmtNum.format(u.ak)} \u2192 <b>${fmtNum.format(u.ak - sisa)}</b> ${btnSalin(u.ak - sisa)} <span style="color:#64748b">(kurangi ${fmtNum.format(sisa)})</span>`;
-                            }
-                            return `<b>baris ${u.i}</b>: <span style="color:#94a3b8">tidak cukup ruang (total baris hanya ${fmtNum.format(u.ak - u.aw)} L)</span>`;
-                        }).join('<br>') +
-                        `<br><span style="color:#64748b">(agar total \u2264 ${fmtNum.format(targetT)} L)</span>`;
+                        `perlu <b>KURANGI ${fmtNum.format(sisa)} liter</b> \u2014 rincian angka baru per baris (salin sesuai kebutuhan):<br>` +
+                        renderBaris(bagian) + catatan;
                 }
 
                 alertEl.className = 'alert-banner';
