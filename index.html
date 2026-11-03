@@ -927,6 +927,133 @@
             }
         }
 
+
+        /* ═══ TAB BAR ═══ */
+        .tab-bar {
+            display: flex;
+            gap: 6px;
+            background: #e8edf4;
+            padding: 6px;
+            border-radius: 18px;
+            margin-bottom: 18px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            border: none;
+            background: transparent;
+            padding: 11px 8px;
+            border-radius: 13px;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            font-size: 13.5px;
+            color: #64748b;
+            cursor: pointer;
+            transition: 0.2s ease;
+            letter-spacing: 0.2px;
+        }
+
+        .tab-btn:hover {
+            color: #0b1a2e;
+        }
+
+        .tab-btn.active {
+            background: #0b1a2e;
+            color: #ffffff;
+            box-shadow: 0 6px 16px rgba(11, 26, 46, 0.28);
+        }
+
+        /* ═══ TABEL TOTALISATOR BULANAN ═══ */
+        .table-wrap {
+            overflow-x: auto;
+            border: 1px solid #e9edf2;
+            border-radius: 16px;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        table.tot {
+            border-collapse: collapse;
+            width: 100%;
+            min-width: 660px;
+            font-size: 13px;
+        }
+
+        table.tot th {
+            background: #0b1a2e;
+            color: #cbd5e1;
+            font-weight: 600;
+            padding: 9px 8px;
+            text-align: right;
+            white-space: nowrap;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        table.tot th:first-child {
+            text-align: left;
+        }
+
+        table.tot td {
+            padding: 5px 6px;
+            border-top: 1px solid #eef2f6;
+            text-align: right;
+            white-space: nowrap;
+            color: #334155;
+        }
+
+        table.tot td:first-child {
+            text-align: left;
+        }
+
+        table.tot input {
+            width: 100%;
+            min-width: 88px;
+            border: 1.5px solid #e2e8f0;
+            background: #fafcff;
+            padding: 7px 8px;
+            border-radius: 9px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #0b1a2e;
+            outline: none;
+            text-align: right;
+            font-family: 'Inter', sans-serif;
+            transition: 0.2s ease;
+        }
+
+        table.tot input:focus {
+            border-color: #2563eb;
+            background: #ffffff;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.07);
+        }
+
+        table.tot td.compute {
+            font-weight: 700;
+            color: #0b1a2e;
+            padding-right: 10px;
+        }
+
+        table.tot tr.subtotal td {
+            background: #f8fafc;
+            font-weight: 700;
+        }
+
+        table.tot tr.subtotal td.compute {
+            color: #b45309;
+        }
+
+        table.tot tr.subtotal td.sub-label {
+            color: #64748b;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+
+        .month-row {
+            margin-bottom: 14px;
+        }
+
         ::-webkit-scrollbar {
             width: 4px;
         }
@@ -972,6 +1099,13 @@
                 Pertalite &nbsp;·&nbsp; <span>A1</span> &amp; <span>A2</span> &nbsp;·&nbsp; <span>📷 Scan (Tesseract.js)</span>
             </div>
         </header>
+
+        <div class="tab-bar" role="tablist">
+            <button class="tab-btn active" data-tab="harian" onclick="switchTab('harian')" role="tab">⛽ Totalisator Harian</button>
+            <button class="tab-btn" data-tab="bulanan" onclick="switchTab('bulanan')" role="tab">📅 Totalisator Bulanan</button>
+        </div>
+
+        <div id="tab-harian" class="tab-pane">
 
         <div class="scan-tip" role="note">
             💡 Gunakan <b>Ambil Foto Live</b> untuk memotret angka totalisator — Untuk membaca angka langsung di browser . Pastikan angka <b>terlihat jelas</b>, <b>tegak lurus</b>, dan berada dalam <b>area panduan kuning (2 baris)</b>.
@@ -1104,6 +1238,197 @@
             </div>
         </div>
 
+        </div><!-- /tab-harian -->
+
+        <!-- ══════════════ TAB: TOTALISATOR BULANAN ══════════════ -->
+        <div id="tab-bulanan" class="tab-pane hidden">
+
+        <div class="scan-tip" role="note">
+            💡 <b>Perhitungan otomatis:</b> Total = Akhir − Awal · Total ril = ST awl + DO · Total M = Total ril + Tera · Hasil = Total M − ST akr · Hasil set = Total ÷ per 100 % × %
+        </div>
+
+        <!-- ═══ HEADER BULANAN ═══ -->
+        <section class="card" aria-label="Pengaturan bulanan">
+            <div class="card-header">
+                <div class="card-header-left">
+                    <span class="machine-badge highlight">📅</span>
+                    <h2>Totalisator Bulanan</h2>
+                </div>
+                <div class="card-actions">
+                    <button class="icon-btn" onclick="shareWA()" aria-label="Bagikan ke WhatsApp" title="Bagikan ke WhatsApp">📤</button>
+                    <button class="icon-btn copy-btn" onclick="exportExcel()" aria-label="Export Excel" title="Export Excel (.xlsx)">📗</button>
+                    <button class="icon-btn copy-btn" onclick="exportPDF()" aria-label="Export PDF" title="Export PDF">📄</button>
+                    <button class="icon-btn copy-btn" onclick="copyBulanan()" aria-label="Salin rekap bulanan" title="Salin rekap bulanan">📋</button>
+                </div>
+            </div>
+            <div class="input-group month-row">
+                <label for="bulanBulanan"><span class="label-left"><span class="label-icon" aria-hidden="true">🗓️</span> Bulan</span></label>
+                <div class="input-wrap">
+                    <input type="month" id="bulanBulanan" value="2026-10" onchange="loadBulanan()" />
+                </div>
+            </div>
+        </section>
+
+        <!-- ═══ BLOK PL ═══ -->
+        <section class="card" aria-label="Blok PL">
+            <div class="card-header">
+                <div class="card-header-left">
+                    <span class="machine-badge highlight">PL</span>
+                    <h2>Pertalite</h2>
+                </div>
+            </div>
+            <div class="table-wrap">
+                <table class="tot">
+                    <thead>
+                        <tr>
+                            <th>Awal</th><th>Akhir</th><th>Total</th>
+                            <th>ST awl</th><th>DO</th><th>Total ril</th>
+                            <th>Tera</th><th>Total M</th><th>ST akr</th><th>Hasil</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td><input type="number" id="plAwal1" oninput="hitungBulanan()" placeholder="0" min="0" /></td>
+                        <td><input type="number" id="plAkhir1" oninput="hitungBulanan()" placeholder="0" min="0" /></td>
+                        <td class="compute" id="plTot1">0</td>
+                        <td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+                    </tr>
+                    <tr>
+                        <td><input type="number" id="plAwal2" oninput="hitungBulanan()" placeholder="0" min="0" /></td>
+                        <td><input type="number" id="plAkhir2" oninput="hitungBulanan()" placeholder="0" min="0" /></td>
+                        <td class="compute" id="plTot2">0</td>
+                        <td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+                    </tr>
+                    <tr>
+                        <td><input type="number" id="plAwal3" oninput="hitungBulanan()" placeholder="0" min="0" /></td>
+                        <td><input type="number" id="plAkhir3" oninput="hitungBulanan()" placeholder="0" min="0" /></td>
+                        <td class="compute" id="plTot3">0</td>
+                        <td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+                    </tr>
+                        <tr class="subtotal">
+                            <td colspan="2" class="sub-label">Subtotal PL</td>
+                            <td class="compute" id="plSub">0</td>
+                            <td><input type="number" id="plST" oninput="hitungBulanan()" placeholder="0" min="0" /></td>
+                            <td><input type="number" id="plDO" oninput="hitungBulanan()" placeholder="0" min="0" /></td>
+                            <td class="compute" id="plRil">0</td>
+                            <td><input type="number" id="plTera" oninput="hitungBulanan()" placeholder="0" min="0" /></td>
+                            <td class="compute" id="plTM">0</td>
+                            <td><input type="number" id="plSTAkr" oninput="hitungBulanan()" placeholder="0" min="0" /></td>
+                            <td class="compute" id="plHasil">0</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- ═══ BLOK PX ═══ -->
+        <section class="card" aria-label="Blok PX">
+            <div class="card-header">
+                <div class="card-header-left">
+                    <span class="machine-badge ">PX</span>
+                    <h2>Pertamax</h2>
+                </div>
+            </div>
+            <div class="table-wrap">
+                <table class="tot">
+                    <thead>
+                        <tr>
+                            <th>Awal</th><th>Akhir</th><th>Total</th>
+                            <th>ST awl</th><th>DO</th><th>Total ril</th>
+                            <th>Tera</th><th>Total M</th><th>ST akr</th><th>Hasil</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td><input type="number" id="pxAwal1" oninput="hitungBulanan()" placeholder="0" min="0" /></td>
+                        <td><input type="number" id="pxAkhir1" oninput="hitungBulanan()" placeholder="0" min="0" /></td>
+                        <td class="compute" id="pxTot1">0</td>
+                        <td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+                    </tr>
+                    <tr>
+                        <td><input type="number" id="pxAwal2" oninput="hitungBulanan()" placeholder="0" min="0" /></td>
+                        <td><input type="number" id="pxAkhir2" oninput="hitungBulanan()" placeholder="0" min="0" /></td>
+                        <td class="compute" id="pxTot2">0</td>
+                        <td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+                    </tr>
+                    <tr>
+                        <td><input type="number" id="pxAwal3" oninput="hitungBulanan()" placeholder="0" min="0" /></td>
+                        <td><input type="number" id="pxAkhir3" oninput="hitungBulanan()" placeholder="0" min="0" /></td>
+                        <td class="compute" id="pxTot3">0</td>
+                        <td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+                    </tr>
+                        <tr class="subtotal">
+                            <td colspan="2" class="sub-label">Subtotal PX</td>
+                            <td class="compute" id="pxSub">0</td>
+                            <td><input type="number" id="pxST" oninput="hitungBulanan()" placeholder="0" min="0" /></td>
+                            <td><input type="number" id="pxDO" oninput="hitungBulanan()" placeholder="0" min="0" /></td>
+                            <td class="compute" id="pxRil">0</td>
+                            <td><input type="number" id="pxTera" oninput="hitungBulanan()" placeholder="0" min="0" /></td>
+                            <td class="compute" id="pxTM">0</td>
+                            <td><input type="number" id="pxSTAkr" oninput="hitungBulanan()" placeholder="0" min="0" /></td>
+                            <td class="compute" id="pxHasil">0</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- ═══ TABEL PRODUK / HASIL SET ═══ -->
+        <section class="card" aria-label="Produk hasil set">
+            <div class="card-header">
+                <div class="card-header-left">
+                    <span class="machine-badge">🧮</span>
+                    <h2>Produk · Hasil Set</h2>
+                </div>
+            </div>
+            <div class="table-wrap">
+                <table class="tot" style="min-width: 420px;">
+                    <thead>
+                        <tr>
+                            <th>produk</th><th>hasil set</th><th>per 100 %</th><th>%</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="font-weight: 600;">PL</td>
+                            <td class="compute" id="hasilSetPL">0</td>
+                            <td><input type="number" id="plPer100" value="100" oninput="hitungBulanan()" placeholder="100" min="0" /></td>
+                            <td><input type="text" inputmode="decimal" id="plPersen" oninput="hitungBulanan()" placeholder="0,0000" /></td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: 600;">PX</td>
+                            <td class="compute" id="hasilSetPX">0</td>
+                            <td><input type="number" id="pxPer100" value="100" oninput="hitungBulanan()" placeholder="100" min="0" /></td>
+                            <td><input type="text" inputmode="decimal" id="pxPersen" oninput="hitungBulanan()" placeholder="0,0000" /></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- ═══ HASIL BULANAN ═══ -->
+        <div class="result-card">
+            <div class="result-top">
+                <div class="result-left">
+                    <span class="icon-wrap" aria-hidden="true">🛢️</span>
+                    <h3>Total Liter Bulanan</h3>
+                </div>
+                <div class="result-actions">
+                    <span class="result-unit">Liter</span>
+                    <button class="reset-icon-btn" onclick="resetBulanan()" aria-label="Reset totalisator bulanan" title="Reset semua nilai bulanan">↺</button>
+                </div>
+            </div>
+            <div class="result-value-wrap">
+                <p id="grandTotalBulanan">0</p>
+            </div>
+            <div class="result-footer">
+                <span>PL + PX</span>
+                <span class="highlight-text" id="detailBulanan">0 L</span>
+            </div>
+        </div>
+
+        </div><!-- /tab-bulanan -->
+
         <footer class="app-footer">
             <p>Made with <span>❤</span> by Ag Windy </p>
         </footer>
@@ -1164,6 +1489,11 @@
     <!-- Tesseract.js -->
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js">
     </script>
+
+    <!-- Library Export: jsPDF + jsPDF-AutoTable + SheetJS -->
+    <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
     <script>
         // ─── State ───
@@ -1513,11 +1843,416 @@
             modalActionsError.classList.remove('hidden');
         }
 
+        // ══════════════════════════════════════════════════════
+        // ─── TOTALISATOR BULANAN ───
+        // ══════════════════════════════════════════════════════
+
+        const fmtNum = new Intl.NumberFormat('id-ID');
+
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+            document.getElementById('tab-harian').classList.toggle('hidden', tab !== 'harian');
+            document.getElementById('tab-bulanan').classList.toggle('hidden', tab !== 'bulanan');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Parse angka dengan format Indonesia (koma = desimal, titik = ribuan)
+        function parseNum(v) {
+            if (v === null || v === undefined) return 0;
+            const n = parseFloat(String(v).trim().replace(/\./g, '').replace(',', '.'));
+            return isNaN(n) ? 0 : n;
+        }
+
+        function numVal(id) {
+            const el = document.getElementById(id);
+            return el ? parseNum(el.value) : 0;
+        }
+
+        function setText(id, v) {
+            const el = document.getElementById(id);
+            if (el) el.textContent = fmtNum.format(v);
+        }
+
+        function hitungBulanan() {
+            // Total per baris + subtotal per blok
+            let plSub = 0, pxSub = 0;
+            for (let i = 1; i <= 3; i++) {
+                const plT = Math.max(0, numVal('plAkhir' + i) - numVal('plAwal' + i));
+                const pxT = Math.max(0, numVal('pxAkhir' + i) - numVal('pxAwal' + i));
+                plSub += plT;
+                pxSub += pxT;
+                setText('plTot' + i, plT);
+                setText('pxTot' + i, pxT);
+            }
+            setText('plSub', plSub);
+            setText('pxSub', pxSub);
+
+            // Sisi kanan: Total ril = ST awl + DO; Total M = Total ril + Tera; Hasil = Total M − ST akr
+            const plRil = numVal('plST') + numVal('plDO');
+            const plTM = plRil + numVal('plTera');
+            const plHasil = plTM - numVal('plSTAkr');
+            setText('plRil', plRil);
+            setText('plTM', plTM);
+            setText('plHasil', plHasil);
+
+            const pxRil = numVal('pxST') + numVal('pxDO');
+            const pxTM = pxRil + numVal('pxTera');
+            const pxHasil = pxTM - numVal('pxSTAkr');
+            setText('pxRil', pxRil);
+            setText('pxTM', pxTM);
+            setText('pxHasil', pxHasil);
+
+            // Produk: Hasil set = Total ÷ per 100 % × %
+            const plPer = numVal('plPer100');
+            const pxPer = numVal('pxPer100');
+            const plPersen = parseNum(document.getElementById('plPersen').value);
+            const pxPersen = parseNum(document.getElementById('pxPersen').value);
+            setText('hasilSetPL', plPer > 0 ? Math.round(plSub / plPer * plPersen) : 0);
+            setText('hasilSetPX', pxPer > 0 ? Math.round(pxSub / pxPer * pxPersen) : 0);
+
+            // Grand total
+            setText('grandTotalBulanan', plSub + pxSub);
+            const d = document.getElementById('detailBulanan');
+            if (d) d.textContent = `PL ${fmtNum.format(plSub)} L \u00b7 PX ${fmtNum.format(pxSub)} L`;
+            persistBulanan();
+        }
+
+        function resetBulanan() {
+            ['pl', 'px'].forEach(p => {
+                for (let i = 1; i <= 3; i++) {
+                    document.getElementById(p + 'Awal' + i).value = '';
+                    document.getElementById(p + 'Akhir' + i).value = '';
+                }
+                document.getElementById(p + 'ST').value = '';
+                document.getElementById(p + 'DO').value = '';
+                document.getElementById(p + 'Tera').value = '';
+                document.getElementById(p + 'STAkr').value = '';
+            });
+            hitungBulanan();
+            showToast('\u21ba Semua totalisator bulanan direset');
+        }
+
+        function copyBulanan() {
+            const bulanVal = document.getElementById('bulanBulanan').value;
+            let labelBulan = bulanVal || '-';
+            if (bulanVal) {
+                const [y, m] = bulanVal.split('-');
+                const namaBulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+                    'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+                labelBulan = `${namaBulan[parseInt(m, 10) - 1]} ${y}`;
+            }
+            const g = id => document.getElementById(id).textContent;
+            const text =
+                `TOTALISATOR BULANAN \u2014 ${labelBulan}\n\n` +
+                `PERTALITE (PL)\n` +
+                `Total Liter : ${g('plSub')}\n` +
+                `ST Awal     : ${fmtNum.format(numVal('plST'))}\n` +
+                `DO          : ${fmtNum.format(numVal('plDO'))}\n` +
+                `Total Ril   : ${g('plRil')}\n` +
+                `Tera        : ${fmtNum.format(numVal('plTera'))}\n` +
+                `Total M     : ${g('plTM')}\n` +
+                `ST Akhir    : ${fmtNum.format(numVal('plSTAkr'))}\n` +
+                `Hasil       : ${g('plHasil')}\n\n` +
+                `PERTAMAX (PX)\n` +
+                `Total Liter : ${g('pxSub')}\n` +
+                `ST Awal     : ${fmtNum.format(numVal('pxST'))}\n` +
+                `DO          : ${fmtNum.format(numVal('pxDO'))}\n` +
+                `Total Ril   : ${g('pxRil')}\n` +
+                `Tera        : ${fmtNum.format(numVal('pxTera'))}\n` +
+                `Total M     : ${g('pxTM')}\n` +
+                `ST Akhir    : ${fmtNum.format(numVal('pxSTAkr'))}\n` +
+                `Hasil       : ${g('pxHasil')}\n\n` +
+                `PRODUK\n` +
+                `PL \u2014 Hasil Set : ${g('hasilSetPL')} (per 100% = ${fmtNum.format(numVal('plPer100'))}, % = ${document.getElementById('plPersen').value})\n` +
+                `PX \u2014 Hasil Set : ${g('hasilSetPX')} (per 100% = ${fmtNum.format(numVal('pxPer100'))}, % = ${document.getElementById('pxPersen').value})\n\n` +
+                `TOTAL LITER BULANAN : ${g('grandTotalBulanan')} L`;
+
+            const done = () => showToast('\u2705 Rekap bulanan disalin');
+            navigator.clipboard.writeText(text).then(done).catch(() => {
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                done();
+            });
+        }
+
+
+        // ─── PENYIMPANAN LOKAL BULANAN (auto-fill antar bulan) ───
+        const BULANAN_STORE_KEY = 'spbu3417603_bulanan_v1';
+
+        function loadStore() {
+            try { return JSON.parse(localStorage.getItem(BULANAN_STORE_KEY)) || {}; }
+            catch (e) { return {}; }
+        }
+
+        function saveStore(store) {
+            try { localStorage.setItem(BULANAN_STORE_KEY, JSON.stringify(store)); } catch (e) {}
+        }
+
+        function setVal(id, v) {
+            const el = document.getElementById(id);
+            if (el) el.value = (v === undefined || v === null) ? '' : v;
+        }
+
+        function prevMonthKey(key) {
+            if (!key) return null;
+            let [y, m] = key.split('-').map(Number);
+            m -= 1;
+            if (m === 0) { m = 12; y -= 1; }
+            return `${y}-${String(m).padStart(2, '0')}`;
+        }
+
+        function blockData(p) {
+            const rows = [];
+            let hasAny = false;
+            for (let i = 1; i <= 3; i++) {
+                const aw = document.getElementById(p + 'Awal' + i).value.trim();
+                const ak = document.getElementById(p + 'Akhir' + i).value.trim();
+                rows.push([aw, ak]);
+                if (aw || ak) hasAny = true;
+            }
+            const st = document.getElementById(p + 'ST').value.trim();
+            const doVal = document.getElementById(p + 'DO').value.trim();
+            const tera = document.getElementById(p + 'Tera').value.trim();
+            const stakr = document.getElementById(p + 'STAkr').value.trim();
+            const per100 = document.getElementById(p + 'Per100').value.trim();
+            const persen = document.getElementById(p + 'Persen').value.trim();
+            if (st || doVal || tera || stakr || persen) hasAny = true;
+            if (!hasAny) return null;
+            return { rows: rows, st: st, do: doVal, tera: tera, stakr: stakr, per100: per100, persen: persen };
+        }
+
+        function persistBulanan() {
+            const key = document.getElementById('bulanBulanan').value;
+            if (!key) return;
+            const store = loadStore();
+            const pl = blockData('pl');
+            const px = blockData('px');
+            if (!pl && !px) {
+                delete store[key];
+            } else {
+                store[key] = { pl: pl, px: px };
+            }
+            saveStore(store);
+        }
+
+        function loadBulanan() {
+            const key = document.getElementById('bulanBulanan').value;
+            // Kosongkan semua field dulu
+            ['pl', 'px'].forEach(p => {
+                for (let i = 1; i <= 3; i++) {
+                    setVal(p + 'Awal' + i, '');
+                    setVal(p + 'Akhir' + i, '');
+                }
+                ['ST', 'DO', 'Tera', 'STAkr', 'Persen'].forEach(s => setVal(p + s, ''));
+                setVal(p + 'Per100', '100');
+            });
+
+            const store = loadStore();
+
+            if (key && store[key]) {
+                // Bulan ini sudah punya data tersimpan → muat kembali
+                const data = store[key];
+                ['pl', 'px'].forEach(p => {
+                    const b = data[p];
+                    if (!b) return;
+                    for (let i = 0; i < 3; i++) {
+                        setVal(p + 'Awal' + (i + 1), b.rows[i][0]);
+                        setVal(p + 'Akhir' + (i + 1), b.rows[i][1]);
+                    }
+                    setVal(p + 'ST', b.st);
+                    setVal(p + 'DO', b.do);
+                    setVal(p + 'Tera', b.tera);
+                    setVal(p + 'STAkr', b.stakr);
+                    setVal(p + 'Per100', b.per100 || '100');
+                    setVal(p + 'Persen', b.persen);
+                });
+            } else if (key) {
+                // Bulan baru → totalisator akhir & stok akhir bulan sebelumnya jadi awal
+                const prev = store[prevMonthKey(key)];
+                if (prev) {
+                    ['pl', 'px'].forEach(p => {
+                        const b = prev[p];
+                        if (!b) return;
+                        for (let i = 0; i < 3; i++) {
+                            setVal(p + 'Awal' + (i + 1), b.rows[i][1]); // Akhir bulan lalu → Awal bulan ini
+                        }
+                        setVal(p + 'ST', b.stakr); // Stok akhir (ST akr) bulan lalu → ST awl bulan ini
+                        setVal(p + 'Per100', b.per100 || '100');
+                        setVal(p + 'Persen', b.persen);
+                    });
+                    showToast('↧ Totalisator akhir & stok akhir bulan sebelumnya otomatis terisi');
+                }
+            }
+            hitungBulanan();
+        }
+
+        // ─── KOLEKSI DATA UNTUK EXPORT ───
+        function bulanLabel() {
+            const v = document.getElementById('bulanBulanan').value;
+            if (!v) return '-';
+            const parts = v.split('-');
+            const namaBulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+                'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+            return `${namaBulan[parseInt(parts[1], 10) - 1]} ${parts[0]}`;
+        }
+
+        function collectBulanan() {
+            const gv = id => document.getElementById(id).value;
+            const gt = id => document.getElementById(id).textContent;
+            const block = p => ({
+                rows: [1, 2, 3].map(i => ({ aw: gv(p + 'Awal' + i), ak: gv(p + 'Akhir' + i), tot: gt(p + 'Tot' + i) })),
+                sub: gt(p + 'Sub'), st: gv(p + 'ST'), do: gv(p + 'DO'), ril: gt(p + 'Ril'),
+                tera: gv(p + 'Tera'), tm: gt(p + 'TM'), stakr: gv(p + 'STAkr'), hasil: gt(p + 'Hasil')
+            });
+            return {
+                bulan: bulanLabel(),
+                bulanVal: gv('bulanBulanan'),
+                pl: block('pl'),
+                px: block('px'),
+                hsPL: gt('hasilSetPL'), hsPX: gt('hasilSetPX'),
+                perPL: gv('plPer100'), perPX: gv('pxPer100'),
+                psPL: gv('plPersen'), psPX: gv('pxPersen'),
+                grand: gt('grandTotalBulanan')
+            };
+        }
+
+        function rekapTextBulanan(d) {
+            const line = b =>
+                `Total Liter : ${b.sub}\nST Awal     : ${b.st || '0'}\nDO          : ${b.do || '0'}\n` +
+                `Total Ril   : ${b.ril}\nTera        : ${b.tera || '0'}\nTotal M     : ${b.tm}\n` +
+                `ST Akhir    : ${b.stakr || '0'}\nHasil       : ${b.hasil}`;
+            return `*TOTALISATOR BULANAN — ${d.bulan.toUpperCase()}*\nSPBU 34-17603\n\n` +
+                `*PERTALITE (PL)*\n${line(d.pl)}\n\n` +
+                `*PERTAMAX (PX)*\n${line(d.px)}\n\n` +
+                `*PRODUK*\nPL — Hasil Set : ${d.hsPL} (% ${d.psPL || '-'})\n` +
+                `PX — Hasil Set : ${d.hsPX} (% ${d.psPX || '-'})\n\n` +
+                `*TOTAL LITER BULANAN : ${d.grand} L*`;
+        }
+
+        // ─── EXPORT PDF ───
+        function buildPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF({ orientation: 'landscape', unit: 'pt', format: 'a4' });
+            const d = collectBulanan();
+
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(15);
+            doc.setTextColor(11, 26, 46);
+            doc.text('SPBU 34-17603 — Totalisator Bulanan', 40, 42);
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(11);
+            doc.setTextColor(100, 116, 139);
+            doc.text(`Bulan: ${d.bulan}`, 40, 60);
+            doc.setTextColor(0, 0, 0);
+
+            const head = [['Awal', 'Akhir', 'Total', 'ST awl', 'DO', 'Total ril', 'Tera', 'Total M', 'ST akr', 'Hasil']];
+            const bodyFor = b => [
+                ...b.rows.map(r => [r.aw || '', r.ak || '', r.tot, '', '', '', '', '', '', '']),
+                [{ content: 'Subtotal', colSpan: 2, styles: { fontStyle: 'bold', halign: 'left' } },
+                 b.sub, b.st || '0', b.do || '0', b.ril, b.tera || '0', b.tm, b.stakr || '0', b.hasil]
+            ];
+            const tblOpts = {
+                theme: 'grid',
+                headStyles: { fillColor: [11, 26, 46], halign: 'right', fontSize: 9 },
+                styles: { fontSize: 9, halign: 'right', cellPadding: 4 },
+                margin: { left: 40, right: 40 }
+            };
+
+            doc.autoTable({ ...tblOpts, head: head, body: bodyFor(d.pl), startY: 74 });
+            doc.autoTable({ ...tblOpts, head: head, body: bodyFor(d.px), startY: doc.lastAutoTable.finalY + 22 });
+            doc.autoTable({
+                ...tblOpts,
+                head: [['produk', 'hasil set', 'per 100 %', '%']],
+                body: [['PL', d.hsPL, d.perPL || '100', d.psPL], ['PX', d.hsPX, d.perPX || '100', d.psPX]],
+                startY: doc.lastAutoTable.finalY + 22
+            });
+
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(11);
+            doc.text(`TOTAL LITER BULANAN: ${d.grand} L`, 40, doc.lastAutoTable.finalY + 24);
+            return doc;
+        }
+
+        function exportPDF() {
+            if (!window.jspdf) {
+                showToast('❌ Library PDF belum termuat — cek koneksi lalu muat ulang halaman');
+                return;
+            }
+            const d = collectBulanan();
+            buildPDF().save(`Totalisator-Bulanan-${d.bulanVal || 'undated'}.pdf`);
+            showToast('📄 PDF berhasil diunduh');
+        }
+
+        // ─── EXPORT EXCEL ───
+        function exportExcel() {
+            if (typeof XLSX === 'undefined') {
+                showToast('❌ Library Excel belum termuat — cek koneksi lalu muat ulang halaman');
+                return;
+            }
+            const d = collectBulanan();
+            const raw = v => (v && String(v).trim() !== '') ? parseNum(v) : '';
+            const head = ['Awal', 'Akhir', 'Total', 'ST awl', 'DO', 'Total ril', 'Tera', 'Total M', 'ST akr', 'Hasil'];
+            const blockAoa = (nama, b) => [
+                [nama],
+                head,
+                ...b.rows.map(r => [raw(r.aw), raw(r.ak), raw(r.tot), '', '', '', '', '', '', '']),
+                ['Subtotal', '', raw(b.sub), raw(b.st), raw(b.do), raw(b.ril), raw(b.tera), raw(b.tm), raw(b.stakr), raw(b.hasil)],
+                []
+            ];
+            const aoa = [
+                ['SPBU 34-17603 — Totalisator Bulanan'],
+                ['Bulan:', d.bulan],
+                [],
+                ...blockAoa('PERTALITE (PL)', d.pl),
+                ...blockAoa('PERTAMAX (PX)', d.px),
+                ['PRODUK', 'hasil set', 'per 100 %', '%'],
+                ['PL', raw(d.hsPL), raw(d.perPL) || 100, d.psPL],
+                ['PX', raw(d.hsPX), raw(d.perPX) || 100, d.psPX],
+                [],
+                ['TOTAL LITER BULANAN', raw(d.grand)]
+            ];
+            const ws = XLSX.utils.aoa_to_sheet(aoa);
+            ws['!cols'] = [{ wch: 18 }, { wch: 18 }, { wch: 13 }, { wch: 13 }, { wch: 13 },
+                           { wch: 13 }, { wch: 9 }, { wch: 13 }, { wch: 13 }, { wch: 13 }];
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'Totalisator Bulanan');
+            XLSX.writeFile(wb, `Totalisator-Bulanan-${d.bulanVal || 'undated'}.xlsx`);
+            showToast('📗 Excel berhasil diunduh');
+        }
+
+        // ─── BAGIKAN KE WHATSAPP ───
+        async function shareWA() {
+            const d = collectBulanan();
+            const text = rekapTextBulanan(d);
+            if (window.jspdf) {
+                try {
+                    const blob = buildPDF().output('blob');
+                    const file = new File([blob], `Totalisator-Bulanan-${d.bulanVal || 'undated'}.pdf`, { type: 'application/pdf' });
+                    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                        await navigator.share({ files: [file], title: 'Totalisator Bulanan', text: text });
+                        return;
+                    }
+                } catch (e) {
+                    if (e && e.name === 'AbortError') return; // user membatalkan
+                }
+                // Fallback: unduh PDF + buka WhatsApp berisi teks rekap
+                try { buildPDF().save(`Totalisator-Bulanan-${d.bulanVal || 'undated'}.pdf`); } catch (e) {}
+            }
+            window.open('https://wa.me/?text=' + encodeURIComponent(text), '_blank');
+            showToast('📤 PDF diunduh & WhatsApp dibuka — lampirkan file-nya di chat');
+        }
+
         // ─── Init ───
         hitung();
         document.querySelectorAll('input[type="number"]').forEach(input => {
             input.addEventListener('change', hitung);
         });
+
+        loadBulanan();
 
         if (typeof Tesseract === 'undefined') {
             console.warn('Tesseract.js tidak ditemukan. Pastikan library di-load.');
