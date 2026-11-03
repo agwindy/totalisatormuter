@@ -1090,57 +1090,33 @@
         }
 
         table.tot {
-            width: 100%;
-            min-width: 0;
-            table-layout: fixed;
-            font-size: 14px;
+            min-width: 1080px;
+            font-size: 14.5px;
         }
 
         table.tot th {
-            padding: 10px 5px;
-            font-size: 11.5px;
+            padding: 12px 10px;
+            font-size: 12px;
         }
 
         table.tot td {
-            padding: 5px 3px;
-            overflow: hidden;
+            padding: 8px;
         }
 
         table.tot input {
-            width: 100%;
-            min-width: 0;
-            padding: 11px 7px;
-            font-size: 14px;
-            border-radius: 10px;
-        }
-
-        table.tot input::-webkit-outer-spin-button,
-        table.tot input::-webkit-inner-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
-        }
-
-        table.tot input[type='number'] {
-            -moz-appearance: textfield;
-            appearance: textfield;
+            min-width: 120px;
+            padding: 12px 10px;
+            font-size: 15px;
+            border-radius: 11px;
         }
 
         table.tot td.compute {
-            font-size: 14px;
-            padding-right: 8px;
+            font-size: 15px;
+            padding-right: 12px;
         }
 
         table.tot tr.subtotal td {
-            font-size: 14px;
-        }
-
-        @media (max-width: 720px) {
-            table.tot { font-size: 11.5px; }
-            table.tot th { font-size: 9.5px; padding: 8px 2px; letter-spacing: 0; }
-            table.tot td { padding: 3px 2px; }
-            table.tot input { padding: 9px 3px; font-size: 12.5px; border-radius: 8px; }
-            table.tot td.compute { font-size: 12.5px; padding-right: 4px; }
-            table.tot tr.subtotal td { font-size: 12.5px; }
+            font-size: 15px;
         }
 
         .result-value-wrap p {
@@ -1608,7 +1584,7 @@
                 </div>
             </div>
             <div class="table-wrap">
-                <table class="tot">
+                <table class="tot" style="min-width: 420px;">
                     <thead>
                         <tr>
                             <th>produk</th><th>hasil set</th><th>per 100 %</th><th>%</th>
@@ -2168,26 +2144,62 @@ let lastOver = { pl: false, px: false };
                 const d = hs - batas;
                 const kurang = Math.floor(d) + 1;
                 let saranStok = '';
-                let saranTot = '';
+                let htmlTotalisator = '';
+                const btnSalin = v => `<button class="modal-btn secondary" style="padding:6px 12px;font-size:12px;border-radius:9px" onclick="salinAngka(${v})">📋 Salin</button>`;
+
                 if (hasilJual > sub) {
+                    // Totalisator kurang dari Hasil \u2192 tambah total penjualan
                     saranStok = `naikkan Stok Akhir \u2265 ${fmtNum.format(kurang)} liter \u2192 Hasil turun, selisih mengecil`;
                     const targetT = Math.floor(hasilJual * per / (per + 1)) + 1;
-                    saranTot = `tambah kolom Akhir \u2265 ${fmtNum.format(targetT - sub)} liter agar total \u2265 ${fmtNum.format(targetT)} L`;
+                    const tambah = targetT - sub;
+                    let br = 0;
+                    for (let i = 1; i <= 3; i++) { if (numVal(p + 'Akhir' + i) > 0) { br = i; break; } }
+                    if (!br) br = 1;
+                    const akLama = Math.round(numVal(p + 'Akhir' + br));
+                    const akBaru = akLama + tambah;
+                    htmlTotalisator =
+                        `<b>\u26fd Simulasi ubah totalisator</b> \u2014 perlu <b>TAMBAH ${fmtNum.format(tambah)} liter</b>:<br>` +
+                        `\u2022 Ubah <b>Akhir baris ${br}</b>: ${fmtNum.format(akLama)} \u2192 <b>${fmtNum.format(akBaru)}</b> ${btnSalin(akBaru)}<br>` +
+                        `<span style="color:#64748b">(tambah ${fmtNum.format(tambah)} pada kolom Akhir baris ${br} agar total \u2265 ${fmtNum.format(targetT)} L)</span>`;
                 } else {
+                    // Totalisator melebihi Hasil \u2192 kurangi total penjualan
                     saranStok = `turunkan Stok Akhir \u2265 ${fmtNum.format(kurang)} liter \u2192 Hasil naik, selisih mengecil`;
                     const targetT = per > 1 ? Math.ceil(hasilJual * per / (per - 1)) - 1 : sub;
-                    saranTot = `kurangi kolom Akhir \u2265 ${fmtNum.format(Math.max(0, sub - targetT))} liter agar total \u2264 ${fmtNum.format(targetT)} L`;
+                    const sisa = sub - targetT;
+                    let tersisa = sisa;
+                    const ubahan = [];
+                    for (let i = 1; i <= 3 && tersisa > 0; i++) {
+                        const aw = Math.round(numVal(p + 'Awal' + i));
+                        const ak = Math.round(numVal(p + 'Akhir' + i));
+                        const ruang = ak - aw;
+                        if (ruang <= 0) continue;
+                        const potong = Math.min(ruang, tersisa);
+                        ubahan.push({ i: i, lama: ak, baru: ak - potong, potong: potong });
+                        tersisa -= potong;
+                    }
+                    if (tersisa > 0) {
+                        htmlTotalisator = `<b>\u26fd Simulasi ubah totalisator</b>: penurunan ${fmtNum.format(sisa)} liter melebihi total seluruh baris \u2014 periksa kembali data.`;
+                    } else {
+                        const items = ubahan.map(u =>
+                            `\u2022 <b>Akhir baris ${u.i}</b>: ${fmtNum.format(u.lama)} \u2192 <b>${fmtNum.format(u.baru)}</b> ${btnSalin(u.baru)} ` +
+                            `<span style="color:#64748b">(kurangi ${fmtNum.format(u.potong)})</span>`
+                        ).join('<br>');
+                        htmlTotalisator =
+                            `<b>\u26fd Simulasi ubah totalisator</b> \u2014 perlu <b>KURANGI ${fmtNum.format(sisa)} liter</b>:<br>` + items +
+                            `<br><span style="color:#64748b">(agar total \u2264 ${fmtNum.format(targetT)} L)</span>`;
+                    }
                 }
+
                 const htmlSimulasi =
                     `<div style="background:#fef2f2;border:1.5px solid #fca5a5;border-radius:12px;padding:12px 14px;color:#7f1d1d;line-height:1.7;margin-bottom:12px">` +
                     `<b style="color:#b91c1c">% ${NAMA} = ${fmtPersen(persen)}% \u2014 melebihi batas 1%!</b><br>` +
                     `Hasil set = |Total \u2212 Hasil| = |${fmtNum.format(sub)} \u2212 ${fmtNum.format(hasilJual)}| = <b>${fmtNum.format(hs)} liter</b><br>` +
                     `Batas aman: selisih &lt; ${fmtNum.format(Math.round(batas))} liter (1% dari total ${fmtNum.format(sub)} L)` +
                     `</div>` +
-                    `<div style="line-height:1.9">` +
+                    `<div style="line-height:2">` +
                     `<b>Kelebihan:</b> ${fmtNum.format(Math.ceil(d))} liter<br>` +
                     `<b>Simulasi ubah stok</b> (Stok Akhir): ${saranStok}<br>` +
-                    `<b>Simulasi ubah totalisator</b> (kolom Akhir): ${saranTot}` +
+                    htmlTotalisator +
                     `</div>` +
                     `<button class="modal-btn primary" style="width:100%;margin-top:14px" onclick="closeInfoModal()">Mengerti</button>`;
 
@@ -2805,6 +2817,28 @@ let lastOver = { pl: false, px: false };
         function closeInfoModal() {
             document.getElementById('infoModal').classList.remove('open');
             infoModalProduct = null;
+        }
+
+function salinFallback(teks) {
+            const ta = document.createElement('textarea');
+            ta.value = teks;
+            ta.style.position = 'fixed';
+            ta.style.opacity = '0';
+            document.body.appendChild(ta);
+            ta.select();
+            try { document.execCommand('copy'); } catch (e) {}
+            document.body.removeChild(ta);
+        }
+
+        function salinAngka(nilai) {
+            const teks = String(nilai);
+            const selesai = () => showToast(`\u2705 ${fmtNum.format(nilai)} disalin`);
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(teks).then(selesai).catch(() => { salinFallback(teks); selesai(); });
+            } else {
+                salinFallback(teks);
+                selesai();
+            }
         }
 
         function openRumusModal() {
