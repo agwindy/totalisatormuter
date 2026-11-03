@@ -1424,8 +1424,8 @@
                     <thead>
                         <tr>
                             <th>Awal</th><th>Akhir</th><th>Total</th>
-                            <th>ST awl</th><th>DO</th><th>Total ril</th>
-                            <th>Tera</th><th>Total M</th><th>ST akr</th><th>Hasil</th>
+                            <th>Stok Awal</th><th>DO</th><th>Total ril</th>
+                            <th>Tera</th><th>Total M</th><th>Stok Akhir</th><th>Hasil</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -1494,8 +1494,8 @@
                     <thead>
                         <tr>
                             <th>Awal</th><th>Akhir</th><th>Total</th>
-                            <th>ST awl</th><th>DO</th><th>Total ril</th>
-                            <th>Tera</th><th>Total M</th><th>ST akr</th><th>Hasil</th>
+                            <th>Stok Awal</th><th>DO</th><th>Total ril</th>
+                            <th>Tera</th><th>Total M</th><th>Stok Akhir</th><th>Hasil</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -1567,13 +1567,13 @@
                     </thead>
                     <tbody>
                         <tr>
-                            <td style="font-weight: 600;">PL</td>
+                            <td style="font-weight: 600;">PERTALITE</td>
                             <td class="compute" id="hasilSetPL">0</td>
                             <td><input type="number" id="plPer100" value="100" oninput="hitungBulanan()" placeholder="100" min="0" /></td>
                             <td class="compute" id="persenPL">0</td>
                         </tr>
                         <tr>
-                            <td style="font-weight: 600;">PX</td>
+                            <td style="font-weight: 600;">PERTAMAX</td>
                             <td class="compute" id="hasilSetPX">0</td>
                             <td><input type="number" id="pxPer100" value="100" oninput="hitungBulanan()" placeholder="100" min="0" /></td>
                             <td class="compute" id="persenPX">0</td>
@@ -2436,7 +2436,7 @@ let lastOver = { pl: false, px: false };
                 margin: { left: 40, right: 40 }
             };
             const judulBagian = label => [{ content: label, colSpan: 8, styles: { fontStyle: 'bold', fontSize: 11.5, halign: 'left', cellPadding: 5 } }];
-            const judulKolom = ['Awal', 'Akhir', 'Total', 'ST awl', 'DO', 'Tera', 'ST akr', 'Hasil']
+            const judulKolom = ['Awal', 'Akhir', 'Total', 'Stok Awal', 'DO', 'Tera', 'Stok Akhir', 'Hasil']
                 .map(h => ({ content: h, styles: { fontStyle: 'bold', halign: 'center' } }));
             const strip = v => (v && String(v).trim() !== '') ? v : '-';
             const tebal = v => ({ content: String(v), styles: { fontStyle: 'bold' } });
@@ -2456,8 +2456,8 @@ let lastOver = { pl: false, px: false };
                 return body;
             };
 
-            doc.autoTable({ ...base, body: bodyTabelFix('Rincian Totalisator', d.pl), startY: 112 });
-            doc.autoTable({ ...base, body: bodyTabelFix('Penyesuaian', d.px), startY: doc.lastAutoTable.finalY + 22 });
+            doc.autoTable({ ...base, body: bodyTabelFix('Rincian Totalisator Pertalite', d.pl), startY: 112 });
+            doc.autoTable({ ...base, body: bodyTabelFix('Rincian Totalisator Pertamax', d.px), startY: doc.lastAutoTable.finalY + 22 });
 
             // ─── Tabel Produk ───
             const baseProduk = {
@@ -2470,8 +2470,8 @@ let lastOver = { pl: false, px: false };
                 body: [
                     [{ content: 'Produk', colSpan: 4, styles: { fontStyle: 'bold', fontSize: 11.5, halign: 'left', cellPadding: 5 } }],
                     ['Produk', 'Hasil Set', 'Per 100 %', '%'].map(h => ({ content: h, styles: { fontStyle: 'bold' } })),
-                    ['PL', d.hsPL, d.perPL || '100', d.psPL],
-                    ['PX', d.hsPX, d.perPX || '100', d.psPX]
+                    ['PERTALITE', d.hsPL, d.perPL || '100', d.psPL],
+                    ['PERTAMAX', d.hsPX, d.perPX || '100', d.psPX]
                 ],
                 startY: doc.lastAutoTable.finalY + 22
             });
