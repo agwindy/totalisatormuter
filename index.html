@@ -1233,6 +1233,17 @@
             color: #15803d;
         }
 
+
+        .result-value-wrap.rekap-persen {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px 30px;
+        }
+
+        .result-value-wrap.rekap-persen p {
+            font-size: 30px;
+        }
+
         ::-webkit-scrollbar {
             width: 4px;
         }
@@ -1625,21 +1636,23 @@
         <div class="result-card">
             <div class="result-top">
                 <div class="result-left">
-                    <span class="icon-wrap" aria-hidden="true">🛢️</span>
-                    <h3>Total Liter Bulanan</h3>
+                    <span class="icon-wrap" aria-hidden="true">📊</span>
+                    <h3>Rincian Persentase</h3>
                 </div>
                 <div class="result-actions">
-                    <span class="result-unit">Liter</span>
+                    <span class="result-unit">Batas &lt; 1%</span>
                     <button class="reset-icon-btn" onclick="resetBulanan()" aria-label="Reset totalisator bulanan" title="Reset semua nilai bulanan">↺</button>
                 </div>
             </div>
-            <div class="result-value-wrap">
-                <p id="grandTotalBulanan">0</p>
+            <div class="result-value-wrap rekap-persen">
+                <p id="rekapPL">PL 0%</p>
+                <p id="rekapPX">PX 0%</p>
             </div>
             <div class="result-footer">
-                <span>PL + PX</span>
-                <span class="highlight-text" id="detailBulanan">0 L</span>
+                <span>Batas aman: di bawah 1%</span>
+                <span class="highlight-text" id="detailBulanan">-</span>
             </div>
+            <span id="grandTotalBulanan" style="display:none">0</span>
         </div>
 
         </div><!-- /tab-bulanan -->
@@ -2149,9 +2162,7 @@ let lastOver = { pl: false, px: false };
             const hs = sub > 0 ? Math.abs(sub - hasilJual) : 0;
             const persen = (sub > 0 && per > 0) ? hs * per / sub : 0;
 
-            const signed = sub - hasilJual;
-            const tanda = signed < 0 ? ' (+)' : signed > 0 ? ' (\u2212)' : '';
-            document.getElementById('hasilSet' + KODE).textContent = fmtNum.format(hs) + tanda;
+            setText('hasilSet' + KODE, hs);
             const elPersen = document.getElementById('persen' + KODE);
             elPersen.textContent = fmtPersen(persen);
             const alertEl = document.getElementById('alert' + KODE);
@@ -2167,85 +2178,56 @@ let lastOver = { pl: false, px: false };
                     ? `naikkan Stok Akhir \u2265 ${fmtNum.format(kurang)} liter \u2192 Hasil turun, selisih mengecil`
                     : `turunkan Stok Akhir \u2265 ${fmtNum.format(kurang)} liter \u2192 Hasil naik, selisih mengecil`;
 
-                // ── Opsi 2: ubah totalisator (kolom Akhir) ──
+                // ── Opsi 2: ubah totalisator \u2014 3 pilihan baris ──
+                const baris = [];
+                for (let i = 1; i <= 3; i++) {
+                    const aw = Math.round(numVal(p + 'Awal' + i));
+                    const ak = Math.round(numVal(p + 'Akhir' + i));
+                    if (ak > 0 || aw > 0) baris.push({ i: i, aw: aw, ak: ak });
+                }
                 let htmlTotalisator = '';
-                if (hasilJual > sub) {
+                if (!baris.length) {
+                    htmlTotalisator = `isi salah satu baris totalisator terlebih dahulu untuk melihat 3 opsi perubahan.`;
+                } else if (hasilJual > sub) {
                     const targetT = Math.floor(hasilJual * per / (per + 1)) + 1;
                     const tambah = targetT - sub;
-                    let br = 0;
-                    for (let i = 1; i <= 3; i++) { if (numVal(p + 'Akhir' + i) > 0) { br = i; break; } }
-                    if (!br) br = 1;
-                    const akLama = Math.round(numVal(p + 'Akhir' + br));
-                    const akBaru = akLama + tambah;
                     htmlTotalisator =
-                        `perlu <b>TAMBAH ${fmtNum.format(tambah)} liter</b>: ubah <b>Akhir baris ${br}</b>: ${fmtNum.format(akLama)} \u2192 <b>${fmtNum.format(akBaru)}</b> ${btnSalin(akBaru)}<br>` +
-                        `<span style="color:#64748b">(tambah ${fmtNum.format(tambah)} pada kolom Akhir baris ${br} agar total \u2265 ${fmtNum.format(targetT)} L)</span>`;
+                        `perlu <b>TAMBAH ${fmtNum.format(tambah)} liter</b> \u2014 pilih salah satu dari 3 opsi:<br>` +
+                        baris.map(u =>
+                            `<b>Akhir baris ${u.i}</b>: ${fmtNum.format(u.ak)} \u2192 <b>${fmtNum.format(u.ak + tambah)}</b> ${btnSalin(u.ak + tambah)} <span style="color:#64748b">(tambah ${fmtNum.format(tambah)})</span>`
+                        ).join('<br>') +
+                        `<br><span style="color:#64748b">(agar total \u2265 ${fmtNum.format(targetT)} L)</span>`;
                 } else {
                     const targetT = per > 1 ? Math.ceil(hasilJual * per / (per - 1)) - 1 : sub;
                     const sisa = sub - targetT;
-                    let tersisa = sisa;
-                    const ubahan = [];
-                    for (let i = 1; i <= 3 && tersisa > 0; i++) {
-                        const aw = Math.round(numVal(p + 'Awal' + i));
-                        const ak = Math.round(numVal(p + 'Akhir' + i));
-                        const ruang = ak - aw;
-                        if (ruang <= 0) continue;
-                        const potong = Math.min(ruang, tersisa);
-                        ubahan.push({ i: i, lama: ak, baru: ak - potong, potong: potong });
-                        tersisa -= potong;
-                    }
-                    if (tersisa > 0) {
-                        htmlTotalisator = `perlu kurangi total, tetapi penurunan ${fmtNum.format(sisa)} liter melebihi total seluruh baris \u2014 periksa kembali data.`;
-                    } else {
-                        htmlTotalisator =
-                            `perlu <b>KURANGI ${fmtNum.format(sisa)} liter</b>:<br>` +
-                            ubahan.map(u =>
-                                `<b>Akhir baris ${u.i}</b>: ${fmtNum.format(u.lama)} \u2192 <b>${fmtNum.format(u.baru)}</b> ${btnSalin(u.baru)} ` +
-                                `<span style="color:#64748b">(kurangi ${fmtNum.format(u.potong)})</span>`
-                            ).join('<br>') +
-                            `<br><span style="color:#64748b">(agar total \u2264 ${fmtNum.format(targetT)} L)</span>`;
-                    }
-                }
-
-                // ── Opsi 3: ubah DO (menggerakkan Total ril \u2192 Total M \u2192 Hasil) ──
-                let htmlDO = '';
-                let brDO = 0;
-                for (let i = 1; i <= 3; i++) { if (numVal(p + 'DO' + i) > 0) { brDO = i; break; } }
-                const arahDO = hasilJual > sub ? -1 : 1;
-                if (brDO) {
-                    const doLama = Math.round(numVal(p + 'DO' + brDO));
-                    const doBaru = doLama + arahDO * kurang;
-                    if (doBaru < 0) {
-                        htmlDO = `penurunan DO melebihi nilai DO baris ${brDO} (${fmtNum.format(doLama)}) \u2014 gunakan opsi lain.`;
-                    } else {
-                        const ket = arahDO > 0 ? `tambah ${fmtNum.format(kurang)}` : `kurangi ${fmtNum.format(kurang)}`;
-                        htmlDO =
-                            `ubah <b>DO baris ${brDO}</b>: ${fmtNum.format(doLama)} \u2192 <b>${fmtNum.format(doBaru)}</b> ${btnSalin(doBaru)}<br>` +
-                            `<span style="color:#64748b">(${ket} \u2192 Hasil ${arahDO > 0 ? 'naik' : 'turun'} ${fmtNum.format(kurang)} L, selisih mengecil)</span>`;
-                    }
-                } else {
-                    htmlDO = `belum ada nilai DO \u2014 ${arahDO > 0 ? 'tambah' : 'kurangi'} DO \u2265 ${fmtNum.format(kurang)} liter pada salah satu baris.`;
+                    htmlTotalisator =
+                        `perlu <b>KURANGI ${fmtNum.format(sisa)} liter</b> \u2014 pilih salah satu dari 3 opsi:<br>` +
+                        baris.map(u => {
+                            if (u.ak - u.aw >= sisa) {
+                                return `<b>Akhir baris ${u.i}</b>: ${fmtNum.format(u.ak)} \u2192 <b>${fmtNum.format(u.ak - sisa)}</b> ${btnSalin(u.ak - sisa)} <span style="color:#64748b">(kurangi ${fmtNum.format(sisa)})</span>`;
+                            }
+                            return `<b>baris ${u.i}</b>: <span style="color:#94a3b8">tidak cukup ruang (total baris hanya ${fmtNum.format(u.ak - u.aw)} L)</span>`;
+                        }).join('<br>') +
+                        `<br><span style="color:#64748b">(agar total \u2264 ${fmtNum.format(targetT)} L)</span>`;
                 }
 
                 alertEl.className = 'alert-banner';
                 alertEl.innerHTML =
                     `<b>% ${NAMA} = ${fmtPersen(persen)}% \u2014 MELEBIHI BATAS 1%!</b><br>` +
-                    `Hasil set = |Total \u2212 Hasil| = |${fmtNum.format(sub)} \u2212 ${fmtNum.format(hasilJual)}| = <b>${fmtNum.format(hs)} liter${tanda}</b> \u00b7 ` +
+                    `Hasil set = |Total \u2212 Hasil| = |${fmtNum.format(sub)} \u2212 ${fmtNum.format(hasilJual)}| = <b>${fmtNum.format(hs)} liter</b> \u00b7 ` +
                     `Batas aman &lt; ${fmtNum.format(Math.round(batas))} liter \u00b7 Kelebihan <b>${fmtNum.format(Math.ceil(d))} liter</b><br><br>` +
                     `<b>1\ufe0f\u20e3 Ubah stok</b> (Stok Akhir): ${saranStok}<br><br>` +
-                    `<b>2\ufe0f\u20e3 Ubah totalisator</b> (kolom Akhir):<br>${htmlTotalisator}<br><br>` +
-                    `<b>3\ufe0f\u20e3 Ubah DO</b> (penerimaan):<br>${htmlDO}`;
+                    `<b>2\ufe0f\u20e3 Ubah totalisator</b> (kolom Akhir):<br>${htmlTotalisator}`;
                 alertEl.classList.remove('hidden');
                 elPersen.classList.add('over');
                 if (!lastOver[p]) {
-                    showToast(`\u26a0\ufe0f % ${NAMA} di atas 1% \u2014 3 opsi perbaikan tersedia`);
+                    showToast(`\u26a0\ufe0f % ${NAMA} di atas 1% \u2014 2 opsi perbaikan tersedia`);
                 }
                 clearTimeout(clearTimer[p]);
                 lastOver[p] = true;
             } else {
                 elPersen.classList.remove('over');
                 if (lastOver[p] && alertEl) {
-                    // Baru saja clear \u2192 tampilkan alert hijau
                     alertEl.className = 'alert-banner ok';
                     alertEl.innerHTML =
                         `\u2705 <b>CLEAR \u2014 % ${NAMA} = ${fmtPersen(persen)}%</b> sudah kembali di bawah 1%. Data aman.`;
@@ -2297,9 +2279,31 @@ let lastOver = { pl: false, px: false };
             checkProduk('px', pxSub, pxHasilJual);
 
             setText('grandTotalBulanan', plSub + pxSub);
+
+            // Rekap persentase pada kartu bawah
+            const pctPL = document.getElementById('persenPL').textContent;
+            const pctPX = document.getElementById('persenPX').textContent;
+            const elRPL = document.getElementById('rekapPL');
+            const elRPX = document.getElementById('rekapPX');
+            if (elRPL) {
+                elRPL.textContent = `PL ${pctPL}%`;
+                elRPL.style.color = lastOver.pl ? '#fca5a5' : '#ffffff';
+            }
+            if (elRPX) {
+                elRPX.textContent = `PX ${pctPX}%`;
+                elRPX.style.color = lastOver.px ? '#fca5a5' : '#ffffff';
+            }
             const d = document.getElementById('detailBulanan');
-            if (d) d.textContent = `PL ${document.getElementById('persenPL').textContent}% · PX ${document.getElementById('persenPX').textContent}%`;
-            d.title = 'Rincian persentase per produk (batas aman < 1%)';
+            if (d) {
+                if (lastOver.pl || lastOver.px) {
+                    const yangOver = [lastOver.pl ? 'PL' : '', lastOver.px ? 'PX' : ''].filter(Boolean).join(' & ');
+                    d.textContent = `⚠️ ${yangOver} di atas 1%`;
+                    d.style.color = '#fca5a5';
+                } else {
+                    d.textContent = '✅ Semua di bawah 1%';
+                    d.style.color = '#fbbf24';
+                }
+            }
             persistBulanan();
         }
 
@@ -2898,7 +2902,6 @@ function salinFallback(teks) {
                     <b>Total M</b> = Total ril + Tera<br>
                     <b>Hasil</b> = Total M \u2212 Stok Akhir<br>
                     <b>Hasil set</b> = |Total \u2212 Hasil| <span style="color:#64748b">(terisi otomatis)</span><br>
-                    <span style="color:#64748b;font-size:12px">Keterangan tanda: (+) artinya selisih mines (Hasil lebih besar dari Total) \u00b7 (\u2212) artinya selisih plus (Total lebih besar dari Hasil)</span><br>
                     <b>%</b> = Hasil set \u00d7 per 100 % \u00f7 Total
                 </div>
                 <div style="background:#fef2f2;border:1.5px solid #fca5a5;border-radius:12px;padding:10px 14px;color:#7f1d1d;margin-top:14px">
