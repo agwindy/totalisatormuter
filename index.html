@@ -2730,7 +2730,13 @@ let lastOver = { pl: false, px: false };
             const baseProduk = {
                 ...base,
                 styles: { ...base.styles, halign: 'center' },
-                columnStyles: { 1: { halign: 'right' }, 3: { halign: 'right' } }
+                // Lebar total 495 pt = sama dengan tabel rincian → tepi sejajar simetris
+                columnStyles: {
+                    0: { cellWidth: 140 },
+                    1: { cellWidth: 120, halign: 'right' },
+                    2: { cellWidth: 120 },
+                    3: { cellWidth: 115, halign: 'right' }
+                }
             };
             doc.autoTable({
                 ...baseProduk,
