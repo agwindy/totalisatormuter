@@ -1287,33 +1287,51 @@
                         </tr>
                     </thead>
                     <tbody>
-                    <tr>
-                        <td><input type="number" id="plAwal1" oninput="hitungBulanan()" placeholder="0" min="0" /></td>
-                        <td><input type="number" id="plAkhir1" oninput="hitungBulanan()" placeholder="0" min="0" /></td>
-                        <td class="compute" id="plTot1">0</td>
-                        <td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-                    </tr>
-                    <tr>
-                        <td><input type="number" id="plAwal2" oninput="hitungBulanan()" placeholder="0" min="0" /></td>
-                        <td><input type="number" id="plAkhir2" oninput="hitungBulanan()" placeholder="0" min="0" /></td>
-                        <td class="compute" id="plTot2">0</td>
-                        <td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-                    </tr>
-                    <tr>
-                        <td><input type="number" id="plAwal3" oninput="hitungBulanan()" placeholder="0" min="0" /></td>
-                        <td><input type="number" id="plAkhir3" oninput="hitungBulanan()" placeholder="0" min="0" /></td>
-                        <td class="compute" id="plTot3">0</td>
-                        <td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-                    </tr>
+                        <tr>
+                            <td><input type="number" id="plAwal1" oninput="hitungBulanan()" placeholder="0" min="0" /></td>
+                            <td><input type="number" id="plAkhir1" oninput="hitungBulanan()" placeholder="0" min="0" /></td>
+                            <td class="compute" id="plTot1">0</td>
+                            <td><input type="number" id="plST1" oninput="hitungBulanan()" placeholder="0" min="0" /></td>
+                            <td><input type="number" id="plDO1" oninput="hitungBulanan()" placeholder="0" min="0" /></td>
+                            <td class="compute" id="plRil1">0</td>
+                            <td><input type="number" id="plTera1" oninput="hitungBulanan()" placeholder="0" min="0" /></td>
+                            <td class="compute" id="plTM1">0</td>
+                            <td><input type="number" id="plSTAkr1" oninput="hitungBulanan()" placeholder="0" min="0" /></td>
+                            <td class="compute" id="plHasil1">0</td>
+                        </tr>
+                        <tr>
+                            <td><input type="number" id="plAwal2" oninput="hitungBulanan()" placeholder="0" min="0" /></td>
+                            <td><input type="number" id="plAkhir2" oninput="hitungBulanan()" placeholder="0" min="0" /></td>
+                            <td class="compute" id="plTot2">0</td>
+                            <td><input type="number" id="plST2" oninput="hitungBulanan()" placeholder="0" min="0" /></td>
+                            <td><input type="number" id="plDO2" oninput="hitungBulanan()" placeholder="0" min="0" /></td>
+                            <td class="compute" id="plRil2">0</td>
+                            <td><input type="number" id="plTera2" oninput="hitungBulanan()" placeholder="0" min="0" /></td>
+                            <td class="compute" id="plTM2">0</td>
+                            <td><input type="number" id="plSTAkr2" oninput="hitungBulanan()" placeholder="0" min="0" /></td>
+                            <td class="compute" id="plHasil2">0</td>
+                        </tr>
+                        <tr>
+                            <td><input type="number" id="plAwal3" oninput="hitungBulanan()" placeholder="0" min="0" /></td>
+                            <td><input type="number" id="plAkhir3" oninput="hitungBulanan()" placeholder="0" min="0" /></td>
+                            <td class="compute" id="plTot3">0</td>
+                            <td><input type="number" id="plST3" oninput="hitungBulanan()" placeholder="0" min="0" /></td>
+                            <td><input type="number" id="plDO3" oninput="hitungBulanan()" placeholder="0" min="0" /></td>
+                            <td class="compute" id="plRil3">0</td>
+                            <td><input type="number" id="plTera3" oninput="hitungBulanan()" placeholder="0" min="0" /></td>
+                            <td class="compute" id="plTM3">0</td>
+                            <td><input type="number" id="plSTAkr3" oninput="hitungBulanan()" placeholder="0" min="0" /></td>
+                            <td class="compute" id="plHasil3">0</td>
+                        </tr>
                         <tr class="subtotal">
                             <td colspan="2" class="sub-label">Subtotal PL</td>
                             <td class="compute" id="plSub">0</td>
-                            <td><input type="number" id="plST" oninput="hitungBulanan()" placeholder="0" min="0" /></td>
-                            <td><input type="number" id="plDO" oninput="hitungBulanan()" placeholder="0" min="0" /></td>
+                            <td class="compute" id="plST">0</td>
+                            <td class="compute" id="plDO">0</td>
                             <td class="compute" id="plRil">0</td>
-                            <td><input type="number" id="plTera" oninput="hitungBulanan()" placeholder="0" min="0" /></td>
+                            <td class="compute" id="plTera">0</td>
                             <td class="compute" id="plTM">0</td>
-                            <td><input type="number" id="plSTAkr" oninput="hitungBulanan()" placeholder="0" min="0" /></td>
+                            <td class="compute" id="plSTAkr">0</td>
                             <td class="compute" id="plHasil">0</td>
                         </tr>
                     </tbody>
@@ -1339,40 +1357,57 @@
                         </tr>
                     </thead>
                     <tbody>
-                    <tr>
-                        <td><input type="number" id="pxAwal1" oninput="hitungBulanan()" placeholder="0" min="0" /></td>
-                        <td><input type="number" id="pxAkhir1" oninput="hitungBulanan()" placeholder="0" min="0" /></td>
-                        <td class="compute" id="pxTot1">0</td>
-                        <td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-                    </tr>
-                    <tr>
-                        <td><input type="number" id="pxAwal2" oninput="hitungBulanan()" placeholder="0" min="0" /></td>
-                        <td><input type="number" id="pxAkhir2" oninput="hitungBulanan()" placeholder="0" min="0" /></td>
-                        <td class="compute" id="pxTot2">0</td>
-                        <td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-                    </tr>
-                    <tr>
-                        <td><input type="number" id="pxAwal3" oninput="hitungBulanan()" placeholder="0" min="0" /></td>
-                        <td><input type="number" id="pxAkhir3" oninput="hitungBulanan()" placeholder="0" min="0" /></td>
-                        <td class="compute" id="pxTot3">0</td>
-                        <td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-                    </tr>
+                        <tr>
+                            <td><input type="number" id="pxAwal1" oninput="hitungBulanan()" placeholder="0" min="0" /></td>
+                            <td><input type="number" id="pxAkhir1" oninput="hitungBulanan()" placeholder="0" min="0" /></td>
+                            <td class="compute" id="pxTot1">0</td>
+                            <td><input type="number" id="pxST1" oninput="hitungBulanan()" placeholder="0" min="0" /></td>
+                            <td><input type="number" id="pxDO1" oninput="hitungBulanan()" placeholder="0" min="0" /></td>
+                            <td class="compute" id="pxRil1">0</td>
+                            <td><input type="number" id="pxTera1" oninput="hitungBulanan()" placeholder="0" min="0" /></td>
+                            <td class="compute" id="pxTM1">0</td>
+                            <td><input type="number" id="pxSTAkr1" oninput="hitungBulanan()" placeholder="0" min="0" /></td>
+                            <td class="compute" id="pxHasil1">0</td>
+                        </tr>
+                        <tr>
+                            <td><input type="number" id="pxAwal2" oninput="hitungBulanan()" placeholder="0" min="0" /></td>
+                            <td><input type="number" id="pxAkhir2" oninput="hitungBulanan()" placeholder="0" min="0" /></td>
+                            <td class="compute" id="pxTot2">0</td>
+                            <td><input type="number" id="pxST2" oninput="hitungBulanan()" placeholder="0" min="0" /></td>
+                            <td><input type="number" id="pxDO2" oninput="hitungBulanan()" placeholder="0" min="0" /></td>
+                            <td class="compute" id="pxRil2">0</td>
+                            <td><input type="number" id="pxTera2" oninput="hitungBulanan()" placeholder="0" min="0" /></td>
+                            <td class="compute" id="pxTM2">0</td>
+                            <td><input type="number" id="pxSTAkr2" oninput="hitungBulanan()" placeholder="0" min="0" /></td>
+                            <td class="compute" id="pxHasil2">0</td>
+                        </tr>
+                        <tr>
+                            <td><input type="number" id="pxAwal3" oninput="hitungBulanan()" placeholder="0" min="0" /></td>
+                            <td><input type="number" id="pxAkhir3" oninput="hitungBulanan()" placeholder="0" min="0" /></td>
+                            <td class="compute" id="pxTot3">0</td>
+                            <td><input type="number" id="pxST3" oninput="hitungBulanan()" placeholder="0" min="0" /></td>
+                            <td><input type="number" id="pxDO3" oninput="hitungBulanan()" placeholder="0" min="0" /></td>
+                            <td class="compute" id="pxRil3">0</td>
+                            <td><input type="number" id="pxTera3" oninput="hitungBulanan()" placeholder="0" min="0" /></td>
+                            <td class="compute" id="pxTM3">0</td>
+                            <td><input type="number" id="pxSTAkr3" oninput="hitungBulanan()" placeholder="0" min="0" /></td>
+                            <td class="compute" id="pxHasil3">0</td>
+                        </tr>
                         <tr class="subtotal">
                             <td colspan="2" class="sub-label">Subtotal PX</td>
                             <td class="compute" id="pxSub">0</td>
-                            <td><input type="number" id="pxST" oninput="hitungBulanan()" placeholder="0" min="0" /></td>
-                            <td><input type="number" id="pxDO" oninput="hitungBulanan()" placeholder="0" min="0" /></td>
+                            <td class="compute" id="pxST">0</td>
+                            <td class="compute" id="pxDO">0</td>
                             <td class="compute" id="pxRil">0</td>
-                            <td><input type="number" id="pxTera" oninput="hitungBulanan()" placeholder="0" min="0" /></td>
+                            <td class="compute" id="pxTera">0</td>
                             <td class="compute" id="pxTM">0</td>
-                            <td><input type="number" id="pxSTAkr" oninput="hitungBulanan()" placeholder="0" min="0" /></td>
+                            <td class="compute" id="pxSTAkr">0</td>
                             <td class="compute" id="pxHasil">0</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
         </section>
-
         <!-- ═══ TABEL PRODUK / HASIL SET ═══ -->
         <section class="card" aria-label="Produk hasil set">
             <div class="card-header">
@@ -1874,33 +1909,35 @@
         }
 
         function hitungBulanan() {
-            // Total per baris + subtotal per blok
+            // Per baris: Total = Akhir − Awal · Total ril = ST awl + DO · Total M = Total ril + Tera · Hasil = Total M − ST akr
             let plSub = 0, pxSub = 0;
-            for (let i = 1; i <= 3; i++) {
-                const plT = Math.max(0, numVal('plAkhir' + i) - numVal('plAwal' + i));
-                const pxT = Math.max(0, numVal('pxAkhir' + i) - numVal('pxAwal' + i));
-                plSub += plT;
-                pxSub += pxT;
-                setText('plTot' + i, plT);
-                setText('pxTot' + i, pxT);
-            }
-            setText('plSub', plSub);
-            setText('pxSub', pxSub);
-
-            // Sisi kanan: Total ril = ST awl + DO; Total M = Total ril + Tera; Hasil = Total M − ST akr
-            const plRil = numVal('plST') + numVal('plDO');
-            const plTM = plRil + numVal('plTera');
-            const plHasil = plTM - numVal('plSTAkr');
-            setText('plRil', plRil);
-            setText('plTM', plTM);
-            setText('plHasil', plHasil);
-
-            const pxRil = numVal('pxST') + numVal('pxDO');
-            const pxTM = pxRil + numVal('pxTera');
-            const pxHasil = pxTM - numVal('pxSTAkr');
-            setText('pxRil', pxRil);
-            setText('pxTM', pxTM);
-            setText('pxHasil', pxHasil);
+            ['pl', 'px'].forEach(p => {
+                let sTot = 0, sST = 0, sDO = 0, sRil = 0, sTera = 0, sTM = 0, sSTak = 0, sHasil = 0;
+                for (let i = 1; i <= 3; i++) {
+                    const st = numVal(p + 'ST' + i);
+                    const doV = numVal(p + 'DO' + i);
+                    const tera = numVal(p + 'Tera' + i);
+                    const stakr = numVal(p + 'STAkr' + i);
+                    const tot = Math.max(0, numVal(p + 'Akhir' + i) - numVal(p + 'Awal' + i));
+                    const ril = st + doV;
+                    const tm = ril + tera;
+                    const hasil = tm - stakr;
+                    sTot += tot; sST += st; sDO += doV; sRil += ril; sTera += tera; sTM += tm; sSTak += stakr; sHasil += hasil;
+                    setText(p + 'Tot' + i, tot);
+                    setText(p + 'Ril' + i, ril);
+                    setText(p + 'TM' + i, tm);
+                    setText(p + 'Hasil' + i, hasil);
+                }
+                setText(p + 'Sub', sTot);
+                setText(p + 'ST', sST);
+                setText(p + 'DO', sDO);
+                setText(p + 'Ril', sRil);
+                setText(p + 'Tera', sTera);
+                setText(p + 'TM', sTM);
+                setText(p + 'STAkr', sSTak);
+                setText(p + 'Hasil', sHasil);
+                if (p === 'pl') { plSub = sTot; } else { pxSub = sTot; }
+            });
 
             // Produk: Hasil set = Total ÷ per 100 % × %
             const plPer = numVal('plPer100');
@@ -1910,23 +1947,20 @@
             setText('hasilSetPL', plPer > 0 ? Math.round(plSub / plPer * plPersen) : 0);
             setText('hasilSetPX', pxPer > 0 ? Math.round(pxSub / pxPer * pxPersen) : 0);
 
-            // Grand total
             setText('grandTotalBulanan', plSub + pxSub);
             const d = document.getElementById('detailBulanan');
-            if (d) d.textContent = `PL ${fmtNum.format(plSub)} L \u00b7 PX ${fmtNum.format(pxSub)} L`;
+            if (d) d.textContent = `PL ${fmtNum.format(plSub)} L · PX ${fmtNum.format(pxSub)} L`;
             persistBulanan();
         }
 
         function resetBulanan() {
+            const cols = ['Awal', 'Akhir', 'ST', 'DO', 'Tera', 'STAkr'];
             ['pl', 'px'].forEach(p => {
                 for (let i = 1; i <= 3; i++) {
-                    document.getElementById(p + 'Awal' + i).value = '';
-                    document.getElementById(p + 'Akhir' + i).value = '';
+                    cols.forEach(s => { document.getElementById(p + s + i).value = ''; });
                 }
-                document.getElementById(p + 'ST').value = '';
-                document.getElementById(p + 'DO').value = '';
-                document.getElementById(p + 'Tera').value = '';
-                document.getElementById(p + 'STAkr').value = '';
+                setVal(p + 'Per100', '100');
+                setVal(p + 'Persen', '');
             });
             hitungBulanan();
             showToast('\u21ba Semua totalisator bulanan direset');
@@ -1936,35 +1970,35 @@
             const bulanVal = document.getElementById('bulanBulanan').value;
             let labelBulan = bulanVal || '-';
             if (bulanVal) {
-                const [y, m] = bulanVal.split('-');
+                const parts = bulanVal.split('-');
                 const namaBulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
                     'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
-                labelBulan = `${namaBulan[parseInt(m, 10) - 1]} ${y}`;
+                labelBulan = `${namaBulan[parseInt(parts[1], 10) - 1]} ${parts[0]}`;
             }
             const g = id => document.getElementById(id).textContent;
             const text =
                 `TOTALISATOR BULANAN \u2014 ${labelBulan}\n\n` +
                 `PERTALITE (PL)\n` +
                 `Total Liter : ${g('plSub')}\n` +
-                `ST Awal     : ${fmtNum.format(numVal('plST'))}\n` +
-                `DO          : ${fmtNum.format(numVal('plDO'))}\n` +
+                `ST Awal     : ${g('plST')}\n` +
+                `DO          : ${g('plDO')}\n` +
                 `Total Ril   : ${g('plRil')}\n` +
-                `Tera        : ${fmtNum.format(numVal('plTera'))}\n` +
+                `Tera        : ${g('plTera')}\n` +
                 `Total M     : ${g('plTM')}\n` +
-                `ST Akhir    : ${fmtNum.format(numVal('plSTAkr'))}\n` +
+                `ST Akhir    : ${g('plSTAkr')}\n` +
                 `Hasil       : ${g('plHasil')}\n\n` +
                 `PERTAMAX (PX)\n` +
                 `Total Liter : ${g('pxSub')}\n` +
-                `ST Awal     : ${fmtNum.format(numVal('pxST'))}\n` +
-                `DO          : ${fmtNum.format(numVal('pxDO'))}\n` +
+                `ST Awal     : ${g('pxST')}\n` +
+                `DO          : ${g('pxDO')}\n` +
                 `Total Ril   : ${g('pxRil')}\n` +
-                `Tera        : ${fmtNum.format(numVal('pxTera'))}\n` +
+                `Tera        : ${g('pxTera')}\n` +
                 `Total M     : ${g('pxTM')}\n` +
-                `ST Akhir    : ${fmtNum.format(numVal('pxSTAkr'))}\n` +
+                `ST Akhir    : ${g('pxSTAkr')}\n` +
                 `Hasil       : ${g('pxHasil')}\n\n` +
                 `PRODUK\n` +
-                `PL \u2014 Hasil Set : ${g('hasilSetPL')} (per 100% = ${fmtNum.format(numVal('plPer100'))}, % = ${document.getElementById('plPersen').value})\n` +
-                `PX \u2014 Hasil Set : ${g('hasilSetPX')} (per 100% = ${fmtNum.format(numVal('pxPer100'))}, % = ${document.getElementById('pxPersen').value})\n\n` +
+                `PL \u2014 Hasil Set : ${g('hasilSetPL')} (per 100% = ${g('plPer100') || '100'}, % = ${document.getElementById('plPersen').value || '-'})\n` +
+                `PX \u2014 Hasil Set : ${g('hasilSetPX')} (per 100% = ${g('pxPer100') || '100'}, % = ${document.getElementById('pxPersen').value || '-'})\n\n` +
                 `TOTAL LITER BULANAN : ${g('grandTotalBulanan')} L`;
 
             const done = () => showToast('\u2705 Rekap bulanan disalin');
@@ -2006,23 +2040,19 @@
         }
 
         function blockData(p) {
+            const cols = ['Awal', 'Akhir', 'ST', 'DO', 'Tera', 'STAkr'];
             const rows = [];
             let hasAny = false;
             for (let i = 1; i <= 3; i++) {
-                const aw = document.getElementById(p + 'Awal' + i).value.trim();
-                const ak = document.getElementById(p + 'Akhir' + i).value.trim();
-                rows.push([aw, ak]);
-                if (aw || ak) hasAny = true;
+                const vals = cols.map(s => document.getElementById(p + s + i).value.trim());
+                rows.push(vals);
+                if (vals.some(v => v)) hasAny = true;
             }
-            const st = document.getElementById(p + 'ST').value.trim();
-            const doVal = document.getElementById(p + 'DO').value.trim();
-            const tera = document.getElementById(p + 'Tera').value.trim();
-            const stakr = document.getElementById(p + 'STAkr').value.trim();
             const per100 = document.getElementById(p + 'Per100').value.trim();
             const persen = document.getElementById(p + 'Persen').value.trim();
-            if (st || doVal || tera || stakr || persen) hasAny = true;
+            if (persen) hasAny = true;
             if (!hasAny) return null;
-            return { rows: rows, st: st, do: doVal, tera: tera, stakr: stakr, per100: per100, persen: persen };
+            return { rows: rows, per100: per100, persen: persen };
         }
 
         function persistBulanan() {
@@ -2039,15 +2069,33 @@
             saveStore(store);
         }
 
+        function normalizeBlockBulanan(b) {
+            const rows = [];
+            for (let i = 0; i < 3; i++) {
+                const r = (b.rows && b.rows[i]) || [];
+                rows.push([r[0] || '', r[1] || '', r[2] || '', r[3] || '', r[4] || '', r[5] || '']);
+            }
+            // Data versi lama: kolom kanan (ST/DO/Tera/ST akr) tersimpan di level blok → pindahkan ke baris 1 agar total tetap sama
+            if (b.st !== undefined || b.do !== undefined || b.tera !== undefined || b.stakr !== undefined) {
+                if (!rows[0][2] && !rows[0][3] && !rows[0][4] && !rows[0][5]) {
+                    rows[0][2] = b.st || '';
+                    rows[0][3] = b.do || '';
+                    rows[0][4] = b.tera || '';
+                    rows[0][5] = b.stakr || '';
+                }
+            }
+            return { rows: rows, per100: b.per100 || '100', persen: b.persen || '' };
+        }
+
         function loadBulanan() {
             const key = document.getElementById('bulanBulanan').value;
+            const cols = ['Awal', 'Akhir', 'ST', 'DO', 'Tera', 'STAkr'];
             // Kosongkan semua field dulu
             ['pl', 'px'].forEach(p => {
                 for (let i = 1; i <= 3; i++) {
-                    setVal(p + 'Awal' + i, '');
-                    setVal(p + 'Akhir' + i, '');
+                    cols.forEach(s => setVal(p + s + i, ''));
                 }
-                ['ST', 'DO', 'Tera', 'STAkr', 'Persen'].forEach(s => setVal(p + s, ''));
+                setVal(p + 'Persen', '');
                 setVal(p + 'Per100', '100');
             });
 
@@ -2057,17 +2105,12 @@
                 // Bulan ini sudah punya data tersimpan → muat kembali
                 const data = store[key];
                 ['pl', 'px'].forEach(p => {
-                    const b = data[p];
-                    if (!b) return;
+                    if (!data[p]) return;
+                    const b = normalizeBlockBulanan(data[p]);
                     for (let i = 0; i < 3; i++) {
-                        setVal(p + 'Awal' + (i + 1), b.rows[i][0]);
-                        setVal(p + 'Akhir' + (i + 1), b.rows[i][1]);
+                        cols.forEach((s, j) => setVal(p + s + (i + 1), b.rows[i][j]));
                     }
-                    setVal(p + 'ST', b.st);
-                    setVal(p + 'DO', b.do);
-                    setVal(p + 'Tera', b.tera);
-                    setVal(p + 'STAkr', b.stakr);
-                    setVal(p + 'Per100', b.per100 || '100');
+                    setVal(p + 'Per100', b.per100);
                     setVal(p + 'Persen', b.persen);
                 });
             } else if (key) {
@@ -2075,13 +2118,13 @@
                 const prev = store[prevMonthKey(key)];
                 if (prev) {
                     ['pl', 'px'].forEach(p => {
-                        const b = prev[p];
-                        if (!b) return;
+                        if (!prev[p]) return;
+                        const b = normalizeBlockBulanan(prev[p]);
                         for (let i = 0; i < 3; i++) {
                             setVal(p + 'Awal' + (i + 1), b.rows[i][1]); // Akhir bulan lalu → Awal bulan ini
+                            setVal(p + 'ST' + (i + 1), b.rows[i][5]);   // ST akr bulan lalu → ST awl bulan ini
                         }
-                        setVal(p + 'ST', b.stakr); // Stok akhir (ST akr) bulan lalu → ST awl bulan ini
-                        setVal(p + 'Per100', b.per100 || '100');
+                        setVal(p + 'Per100', b.per100);
                         setVal(p + 'Persen', b.persen);
                     });
                     showToast('↧ Totalisator akhir & stok akhir bulan sebelumnya otomatis terisi');
@@ -2104,9 +2147,14 @@
             const gv = id => document.getElementById(id).value;
             const gt = id => document.getElementById(id).textContent;
             const block = p => ({
-                rows: [1, 2, 3].map(i => ({ aw: gv(p + 'Awal' + i), ak: gv(p + 'Akhir' + i), tot: gt(p + 'Tot' + i) })),
-                sub: gt(p + 'Sub'), st: gv(p + 'ST'), do: gv(p + 'DO'), ril: gt(p + 'Ril'),
-                tera: gv(p + 'Tera'), tm: gt(p + 'TM'), stakr: gv(p + 'STAkr'), hasil: gt(p + 'Hasil')
+                rows: [1, 2, 3].map(i => ({
+                    aw: gv(p + 'Awal' + i), ak: gv(p + 'Akhir' + i), tot: gt(p + 'Tot' + i),
+                    st: gv(p + 'ST' + i), do: gv(p + 'DO' + i), ril: gt(p + 'Ril' + i),
+                    tera: gv(p + 'Tera' + i), tm: gt(p + 'TM' + i),
+                    stakr: gv(p + 'STAkr' + i), hasil: gt(p + 'Hasil' + i)
+                })),
+                sub: gt(p + 'Sub'), st: gt(p + 'ST'), do: gt(p + 'DO'), ril: gt(p + 'Ril'),
+                tera: gt(p + 'Tera'), tm: gt(p + 'TM'), stakr: gt(p + 'STAkr'), hasil: gt(p + 'Hasil')
             });
             return {
                 bulan: bulanLabel(),
@@ -2142,7 +2190,7 @@
             doc.setFont('helvetica', 'bold');
             doc.setFontSize(15);
             doc.setTextColor(11, 26, 46);
-            doc.text('SPBU 34-17603 — Totalisator Bulanan', 40, 42);
+            doc.text('SPBU 34-17603 \u2014 Totalisator Bulanan', 40, 42);
             doc.setFont('helvetica', 'normal');
             doc.setFontSize(11);
             doc.setTextColor(100, 116, 139);
@@ -2151,14 +2199,14 @@
 
             const head = [['Awal', 'Akhir', 'Total', 'ST awl', 'DO', 'Total ril', 'Tera', 'Total M', 'ST akr', 'Hasil']];
             const bodyFor = b => [
-                ...b.rows.map(r => [r.aw || '', r.ak || '', r.tot, '', '', '', '', '', '', '']),
+                ...b.rows.map(r => [r.aw || '', r.ak || '', r.tot, r.st || '', r.do || '', r.ril, r.tera || '', r.tm, r.stakr || '', r.hasil]),
                 [{ content: 'Subtotal', colSpan: 2, styles: { fontStyle: 'bold', halign: 'left' } },
-                 b.sub, b.st || '0', b.do || '0', b.ril, b.tera || '0', b.tm, b.stakr || '0', b.hasil]
+                 b.sub, b.st, b.do, b.ril, b.tera, b.tm, b.stakr, b.hasil]
             ];
             const tblOpts = {
                 theme: 'grid',
-                headStyles: { fillColor: [11, 26, 46], halign: 'right', fontSize: 9 },
-                styles: { fontSize: 9, halign: 'right', cellPadding: 4 },
+                headStyles: { fillColor: [11, 26, 46], halign: 'right', fontSize: 8.5 },
+                styles: { fontSize: 8.5, halign: 'right', cellPadding: 3.5 },
                 margin: { left: 40, right: 40 }
             };
 
@@ -2190,7 +2238,7 @@
         // ─── EXPORT EXCEL ───
         function exportExcel() {
             if (typeof XLSX === 'undefined') {
-                showToast('❌ Library Excel belum termuat — cek koneksi lalu muat ulang halaman');
+                showToast('\u274c Library Excel belum termuat \u2014 cek koneksi lalu muat ulang halaman');
                 return;
             }
             const d = collectBulanan();
@@ -2199,12 +2247,12 @@
             const blockAoa = (nama, b) => [
                 [nama],
                 head,
-                ...b.rows.map(r => [raw(r.aw), raw(r.ak), raw(r.tot), '', '', '', '', '', '', '']),
+                ...b.rows.map(r => [raw(r.aw), raw(r.ak), raw(r.tot), raw(r.st), raw(r.do), raw(r.ril), raw(r.tera), raw(r.tm), raw(r.stakr), raw(r.hasil)]),
                 ['Subtotal', '', raw(b.sub), raw(b.st), raw(b.do), raw(b.ril), raw(b.tera), raw(b.tm), raw(b.stakr), raw(b.hasil)],
                 []
             ];
             const aoa = [
-                ['SPBU 34-17603 — Totalisator Bulanan'],
+                ['SPBU 34-17603 \u2014 Totalisator Bulanan'],
                 ['Bulan:', d.bulan],
                 [],
                 ...blockAoa('PERTALITE (PL)', d.pl),
@@ -2221,7 +2269,7 @@
             const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, 'Totalisator Bulanan');
             XLSX.writeFile(wb, `Totalisator-Bulanan-${d.bulanVal || 'undated'}.xlsx`);
-            showToast('📗 Excel berhasil diunduh');
+            showToast('\U0001f4d7 Excel berhasil diunduh');
         }
 
         // ─── BAGIKAN KE WHATSAPP ───
