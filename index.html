@@ -1151,6 +1151,50 @@
             border-radius: 8px;
         }
 
+
+        /* ═══ TOMBOL PENGATURAN ═══ */
+        .btn-wide {
+            width: 100%;
+            border: none;
+            border-radius: 14px;
+            padding: 15px 16px;
+            font-family: 'Inter', sans-serif;
+            font-weight: 700;
+            font-size: 14.5px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: 0.2s ease;
+            letter-spacing: 0.2px;
+        }
+
+        .btn-wide:active {
+            transform: scale(0.98);
+        }
+
+        .btn-wide.primary {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: #0b1a2e;
+        }
+
+        .btn-wide.secondary {
+            background: #f1f5f9;
+            color: #0b1a2e;
+        }
+
+        .btn-wide.secondary:hover {
+            background: #e2e8f0;
+        }
+
+        .btn-wide.danger {
+            background: #fee2e2;
+            color: #b91c1c;
+            margin-top: 22px;
+        }
+
+        .btn-wide.danger:hover {
+            background: #fecaca;
+        }
+
         ::-webkit-scrollbar {
             width: 4px;
         }
@@ -1198,8 +1242,9 @@
         </header>
 
         <div class="tab-bar" role="tablist">
-            <button class="tab-btn active" data-tab="harian" onclick="switchTab('harian')" role="tab">⛽ Totalisator Harian</button>
-            <button class="tab-btn" data-tab="bulanan" onclick="switchTab('bulanan')" role="tab">📅 Totalisator Bulanan</button>
+            <button class="tab-btn active" data-tab="harian" onclick="switchTab('harian')" role="tab">⛽ Harian</button>
+            <button class="tab-btn" data-tab="bulanan" onclick="switchTab('bulanan')" role="tab">📅 Bulanan</button>
+            <button class="tab-btn" data-tab="pengaturan" onclick="switchTab('pengaturan')" role="tab">⚙️ Pengaturan</button>
         </div>
 
         <div id="tab-harian" class="tab-pane">
@@ -1562,6 +1607,35 @@
         </div>
 
         </div><!-- /tab-bulanan -->
+
+
+        <!-- ══════════════ TAB: PENGATURAN ══════════════ -->
+        <div id="tab-pengaturan" class="tab-pane hidden">
+
+        <section class="card" aria-label="Pengaturan">
+            <div class="card-header">
+                <div class="card-header-left">
+                    <span class="machine-badge highlight">⚙️</span>
+                    <h2>Pengaturan</h2>
+                </div>
+            </div>
+
+            <div class="scan-tip" role="note">
+                💾 <b>Backup</b>: unduh seluruh data totalisator bulanan sebagai file JSON — aman untuk ganti HP/browser. <b>Restore</b>: muat kembali file backup di perangkat mana pun.
+            </div>
+
+            <div class="scan-tip" role="note" style="background:#f0fdf4;border-color:#bbf7d0;color:#166534;">
+                📦 <span id="storageInfo">Memeriksa data tersimpan...</span>
+            </div>
+
+            <button class="btn-wide primary" onclick="backupData()">💾 Backup Data (JSON)</button>
+            <button class="btn-wide secondary" onclick="triggerRestore()">📥 Restore dari File Backup</button>
+            <button class="btn-wide danger" onclick="hapusSemuaData()">🗑️ Hapus Semua Data</button>
+        </section>
+
+        <input type="file" accept="application/json,.json" class="sr-only" id="restoreFileInput" onchange="handleRestoreFile(event)" />
+
+        </div><!-- /tab-pengaturan -->
 
         <footer class="app-footer">
             <p>Made with <span>❤</span> by Ag Windy </p>
@@ -1987,6 +2061,8 @@
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
             document.getElementById('tab-harian').classList.toggle('hidden', tab !== 'harian');
             document.getElementById('tab-bulanan').classList.toggle('hidden', tab !== 'bulanan');
+            document.getElementById('tab-pengaturan').classList.toggle('hidden', tab !== 'pengaturan');
+            if (tab === 'pengaturan') updateStorageInfo();
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
@@ -2335,55 +2411,69 @@ let lastOver = { pl: false, px: false };
             const doc = new jsPDF({ orientation: 'portrait', unit: 'pt', format: 'a4' });
             const d = collectBulanan();
 
+            // ─── Judul ───
             doc.setFont('helvetica', 'bold');
-            doc.setFontSize(14);
-            doc.setTextColor(11, 26, 46);
-            doc.text('SPBU 34-17603 \u2014 Totalisator Bulanan', 40, 44);
+            doc.setFontSize(20);
+            doc.setTextColor(0, 0, 0);
+            doc.text('SPBU 34.17603', 40, 50);
+            doc.text('Totalisator Bulanan', 40, 76);
             doc.setFont('helvetica', 'normal');
-            doc.setFontSize(10.5);
-            doc.setTextColor(100, 116, 139);
-            doc.text(`Bulan: ${d.bulan}`, 40, 60);
-            doc.setTextColor(30, 41, 59);
+            doc.setFontSize(12);
+            doc.text(`Bulan : ${d.bulan}`, 40, 100);
 
-            // Kolom ringkas: tanpa Total ril & Total M agar tidak terlalu lebar
-            const head = [['Awal', 'Akhir', 'Total', 'ST awl', 'DO', 'Tera', 'ST akr', 'Hasil']];
-            const pick = r => [r.aw || '', r.ak || '', r.tot, r.st || '', r.do || '', r.tera || '', r.stakr || '', r.hasil];
-            const bodyFor = b => [
-                ...b.rows.map(r => pick(r)),
-                [{ content: 'Subtotal', colSpan: 2, styles: { fontStyle: 'bold', halign: 'left' } },
-                 b.sub, b.st, b.do, b.tera, b.stakr, b.hasil]
-            ];
-
-            // Tema putih bersih \u2014 tanpa blok hitam
-            const tblOpts = {
+            // ─── Gaya tabel: putih bersih, garis hitam, teks hitam ───
+            const base = {
                 theme: 'grid',
-                headStyles: {
-                    fillColor: [255, 255, 255],
-                    textColor: [11, 26, 46],
-                    halign: 'right',
-                    fontSize: 8.5,
-                    lineColor: [100, 116, 139],
-                    lineWidth: 0.6
-                },
                 styles: {
-                    fontSize: 8.5,
+                    fontSize: 9.5,
                     halign: 'right',
-                    cellPadding: 3.5,
-                    textColor: [30, 41, 59],
-                    lineColor: [203, 213, 225],
-                    lineWidth: 0.4
+                    cellPadding: 4.5,
+                    textColor: [0, 0, 0],
+                    lineColor: [0, 0, 0],
+                    lineWidth: 0.8,
+                    fillColor: [255, 255, 255]
                 },
-                alternateRowStyles: { fillColor: [248, 250, 252] },
-                margin: { left: 36, right: 36 }
+                margin: { left: 40, right: 40 }
+            };
+            const judulBagian = label => [{ content: label, colSpan: 8, styles: { fontStyle: 'bold', fontSize: 11.5, halign: 'left', cellPadding: 5 } }];
+            const judulKolom = ['Awal', 'Akhir', 'Total', 'ST awl', 'DO', 'Tera', 'ST akr', 'Hasil']
+                .map(h => ({ content: h, styles: { fontStyle: 'bold', halign: 'center' } }));
+            const strip = v => (v && String(v).trim() !== '') ? v : '-';
+            const tebal = v => ({ content: String(v), styles: { fontStyle: 'bold' } });
+
+            const bodyTabel = (judul, b) => [
+                judulBagian(judul),
+                judulKolom,
+                ...b.rows.map(r => [r.aw || '', r.ak || '', r.tot, strip(r.st), strip(r.do), strip(r.tera), strip(r.stakr), r.hasil]),
+                [tebal('Subtotal'), '', tebal(b.sub), tebal(b.st), tebal(b.do), tebal(b.tera), tebal(b.stakr), tebal(b.hasil)]
+            ];
+            // "Subtotal" menyatu di 2 kolom pertama
+            const bodyTabelFix = (judul, b) => {
+                const body = bodyTabel(judul, b);
+                const last = body[body.length - 1];
+                last[0] = { content: 'Subtotal', colSpan: 2, styles: { fontStyle: 'bold', halign: 'left' } };
+                last.splice(1, 1);
+                return body;
             };
 
-            doc.autoTable({ ...tblOpts, head: head, body: bodyFor(d.pl), startY: 74 });
-            doc.autoTable({ ...tblOpts, head: head, body: bodyFor(d.px), startY: doc.lastAutoTable.finalY + 20 });
+            doc.autoTable({ ...base, body: bodyTabelFix('Rincian Totalisator', d.pl), startY: 112 });
+            doc.autoTable({ ...base, body: bodyTabelFix('Penyesuaian', d.px), startY: doc.lastAutoTable.finalY + 22 });
+
+            // ─── Tabel Produk ───
+            const baseProduk = {
+                ...base,
+                styles: { ...base.styles, halign: 'center' },
+                columnStyles: { 1: { halign: 'right' }, 3: { halign: 'right' } }
+            };
             doc.autoTable({
-                ...tblOpts,
-                head: [['produk', 'hasil set', 'per 100 %', '%']],
-                body: [['PL', d.hsPL, d.perPL || '100', d.psPL], ['PX', d.hsPX, d.perPX || '100', d.psPX]],
-                startY: doc.lastAutoTable.finalY + 20
+                ...baseProduk,
+                body: [
+                    [{ content: 'Produk', colSpan: 4, styles: { fontStyle: 'bold', fontSize: 11.5, halign: 'left', cellPadding: 5 } }],
+                    ['Produk', 'Hasil Set', 'Per 100 %', '%'].map(h => ({ content: h, styles: { fontStyle: 'bold' } })),
+                    ['PL', d.hsPL, d.perPL || '100', d.psPL],
+                    ['PX', d.hsPX, d.perPX || '100', d.psPX]
+                ],
+                startY: doc.lastAutoTable.finalY + 22
             });
             return doc;
         }
@@ -2432,7 +2522,7 @@ let lastOver = { pl: false, px: false };
             const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, 'Totalisator Bulanan');
             XLSX.writeFile(wb, `Totalisator-Bulanan-${d.bulanVal || 'undated'}.xlsx`);
-            showToast('\U0001f4d7 Excel berhasil diunduh');
+            showToast('📗 Excel berhasil diunduh');
         }
 
         // ─── BAGIKAN KE WHATSAPP ───
@@ -2456,6 +2546,116 @@ let lastOver = { pl: false, px: false };
             window.open('https://wa.me/?text=' + encodeURIComponent(text), '_blank');
             showToast('📤 PDF diunduh & WhatsApp dibuka — lampirkan file-nya di chat');
         }
+
+// ══════════════════════════════════════════════════════
+        // ─── PENGATURAN: BACKUP & RESTORE ───
+        // ══════════════════════════════════════════════════════
+
+        function bulanLabelFromKey(key) {
+            const nama = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+            const parts = key.split('-');
+            return `${nama[parseInt(parts[1], 10) - 1]} ${parts[0]}`;
+        }
+
+        function updateStorageInfo() {
+            const el = document.getElementById('storageInfo');
+            if (!el) return;
+            const store = loadStore();
+            const keys = Object.keys(store).sort();
+            if (!keys.length) {
+                el.textContent = 'Belum ada data bulanan tersimpan di perangkat ini.';
+                return;
+            }
+            el.textContent = `${keys.length} bulan tersimpan: ${keys.map(bulanLabelFromKey).join(', ')}`;
+        }
+
+        function backupData() {
+            const store = loadStore();
+            const keys = Object.keys(store);
+            if (!keys.length) {
+                showToast('\u26a0\ufe0f Belum ada data untuk di-backup');
+                return;
+            }
+            const payload = {
+                app: 'SPBU 34-17603 Totalisator',
+                versi: 2,
+                dibuat: new Date().toISOString(),
+                data: store
+            };
+            const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = `Backup-Totalisator-SPBU-34-17603-${new Date().toISOString().slice(0, 10)}.json`;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            setTimeout(() => URL.revokeObjectURL(a.href), 1500);
+            showToast(`💾 Backup diunduh (${keys.length} bulan)`);
+        }
+
+        // Validasi & terapkan data restore; mengembalikan {ok, count?, cancelled?}
+        function applyRestore(parsed) {
+            const data = (parsed && parsed.data) ? parsed.data : parsed;
+            if (!data || typeof data !== 'object' || Array.isArray(data)) return { ok: false };
+            const validKeys = Object.keys(data).filter(k => /^\d{4}-\d{2}$/.test(k) && data[k] && typeof data[k] === 'object');
+            if (!validKeys.length) return { ok: false };
+            const cleaned = {};
+            validKeys.forEach(k => {
+                cleaned[k] = { pl: data[k].pl || null, px: data[k].px || null };
+            });
+            if (!confirm(`Restore ${validKeys.length} bulan data?\nData bulan yang sama di perangkat ini akan ditimpa.`)) {
+                return { ok: false, cancelled: true };
+            }
+            saveStore(cleaned);
+            loadBulanan();
+            updateStorageInfo();
+            return { ok: true, count: validKeys.length };
+        }
+
+        function triggerRestore() {
+            const input = document.getElementById('restoreFileInput');
+            input.value = '';
+            input.click();
+        }
+
+        function handleRestoreFile(event) {
+            const file = event.target.files && event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = () => {
+                let parsed;
+                try {
+                    parsed = JSON.parse(reader.result);
+                } catch (e) {
+                    showToast('\u274c File backup tidak valid (bukan JSON)');
+                    return;
+                }
+                const res = applyRestore(parsed);
+                if (res.ok) {
+                    showToast(`\u2705 Restore berhasil \u2014 ${res.count} bulan dimuat`);
+                } else if (!res.cancelled) {
+                    showToast('\u274c Isi file backup tidak dikenali');
+                }
+            };
+            reader.onerror = () => showToast('\u274c Gagal membaca file');
+            reader.readAsText(file);
+        }
+
+        function hapusSemuaData() {
+            const store = loadStore();
+            const n = Object.keys(store).length;
+            if (!n) {
+                showToast('\u26a0\ufe0f Tidak ada data tersimpan');
+                return;
+            }
+            if (!confirm(`Hapus SEMUA data (${n} bulan)?\nTindakan ini tidak bisa dibatalkan. Pastikan sudah backup.`)) return;
+            saveStore({});
+            loadBulanan();
+            updateStorageInfo();
+            showToast('🗑\ufe0f Semua data dihapus');
+        }
+
+        // ─── Init ───
 
         // ─── Init ───
         hitung();
