@@ -2689,6 +2689,17 @@ let lastOver = { pl: false, px: false };
                     lineWidth: 0.8,
                     fillColor: [255, 255, 255]
                 },
+                // Lebar kolom tetap & sama untuk kedua tabel agar sejajar simetris
+                columnStyles: {
+                    0: { cellWidth: 70 },
+                    1: { cellWidth: 70 },
+                    2: { cellWidth: 60 },
+                    3: { cellWidth: 65 },
+                    4: { cellWidth: 65 },
+                    5: { cellWidth: 40 },
+                    6: { cellWidth: 65 },
+                    7: { cellWidth: 60 }
+                },
                 margin: { left: 40, right: 40 }
             };
             const judulBagian = label => [{ content: label, colSpan: 8, styles: { fontStyle: 'bold', fontSize: 11.5, halign: 'left', cellPadding: 5 } }];
