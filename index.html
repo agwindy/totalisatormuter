@@ -1090,33 +1090,57 @@
         }
 
         table.tot {
-            min-width: 1080px;
-            font-size: 14.5px;
+            width: 100%;
+            min-width: 0;
+            table-layout: fixed;
+            font-size: 14px;
         }
 
         table.tot th {
-            padding: 12px 10px;
-            font-size: 12px;
+            padding: 10px 5px;
+            font-size: 11.5px;
         }
 
         table.tot td {
-            padding: 8px;
+            padding: 5px 3px;
+            overflow: hidden;
         }
 
         table.tot input {
-            min-width: 120px;
-            padding: 12px 10px;
-            font-size: 15px;
-            border-radius: 11px;
+            width: 100%;
+            min-width: 0;
+            padding: 11px 7px;
+            font-size: 14px;
+            border-radius: 10px;
+        }
+
+        table.tot input::-webkit-outer-spin-button,
+        table.tot input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        table.tot input[type='number'] {
+            -moz-appearance: textfield;
+            appearance: textfield;
         }
 
         table.tot td.compute {
-            font-size: 15px;
-            padding-right: 12px;
+            font-size: 14px;
+            padding-right: 8px;
         }
 
         table.tot tr.subtotal td {
-            font-size: 15px;
+            font-size: 14px;
+        }
+
+        @media (max-width: 720px) {
+            table.tot { font-size: 11.5px; }
+            table.tot th { font-size: 9.5px; padding: 8px 2px; letter-spacing: 0; }
+            table.tot td { padding: 3px 2px; }
+            table.tot input { padding: 9px 3px; font-size: 12.5px; border-radius: 8px; }
+            table.tot td.compute { font-size: 12.5px; padding-right: 4px; }
+            table.tot tr.subtotal td { font-size: 12.5px; }
         }
 
         .result-value-wrap p {
@@ -1193,6 +1217,33 @@
 
         .btn-wide.danger:hover {
             background: #fecaca;
+        }
+
+
+        /* ═══ INFO MODAL (tema terang) ═══ */
+        .modal-card.light {
+            background: #ffffff;
+            border: 1px solid #e9edf2;
+            box-shadow: 0 24px 60px rgba(11, 26, 46, 0.25);
+        }
+
+        .modal-card.light .modal-head-title {
+            color: #0b1a2e;
+        }
+
+        .modal-card.light .modal-close-btn {
+            background: #f1f5f9;
+            color: #64748b;
+        }
+
+        #infoModalBody {
+            padding: 16px 18px 20px;
+            color: #1e293b;
+            font-size: 13.5px;
+            line-height: 1.7;
+            text-align: left;
+            max-height: 65vh;
+            overflow-y: auto;
         }
 
         ::-webkit-scrollbar {
@@ -1385,9 +1436,7 @@
         <!-- ══════════════ TAB: TOTALISATOR BULANAN ══════════════ -->
         <div id="tab-bulanan" class="tab-pane hidden">
 
-        <div class="scan-tip" role="note">
-            💡 <b>Perhitungan otomatis:</b> Total = Akhir − Awal · Total ril = ST awl + DO · Total M = Total ril + Tera · Hasil = Total M − ST akr · Hasil set otomatis = |Total − Hasil| · % = hasil set × per 100 % ÷ Total. <b>Aturan: % tiap produk wajib di bawah 1%</b> — jika melebihi, alert & simulasi perbaikan stok/totalisator muncul otomatis.
-        </div>
+        <button class="btn-wide secondary" onclick="openRumusModal()">ℹ️ Lihat Rumus &amp; Aturan Perhitungan</button>
 
         <!-- ═══ HEADER BULANAN ═══ -->
         <section class="card" aria-label="Pengaturan bulanan">
@@ -1559,7 +1608,7 @@
                 </div>
             </div>
             <div class="table-wrap">
-                <table class="tot" style="min-width: 420px;">
+                <table class="tot">
                     <thead>
                         <tr>
                             <th>produk</th><th>hasil set</th><th>per 100 %</th><th>%</th>
@@ -1581,8 +1630,6 @@
                     </tbody>
                 </table>
             </div>
-            <div class="alert-banner hidden" id="alertPL" role="alert"></div>
-            <div class="alert-banner hidden" id="alertPX" role="alert"></div>
         </section>
 
         <!-- ═══ HASIL BULANAN ═══ -->
@@ -1648,6 +1695,18 @@
 
     </div>
 
+
+    <!-- ═══ INFO MODAL (rumus / simulasi) ═══ -->
+    <div class="modal-overlay" id="infoModal">
+        <div class="modal-card light">
+            <div class="modal-head">
+                <div class="modal-head-title" id="infoModalTitle">Info</div>
+                <button class="modal-close-btn" onclick="closeInfoModal()" aria-label="Tutup">✕</button>
+            </div>
+            <div id="infoModalBody"></div>
+        </div>
+    </div>
+
     <!-- ═══ SCAN MODAL ═══ -->
     <div class="modal-overlay" id="scanModal">
         <div class="modal-card">
@@ -1701,7 +1760,7 @@
     <!-- Library Export: jsPDF + jsPDF-AutoTable + SheetJS -->
     <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
 
     <script>
         // ─── State ───
@@ -2095,6 +2154,7 @@ let lastOver = { pl: false, px: false };
         // Aturan: % produk wajib DI BAWAH 1%. Jika ≥ 1% → alert + simulasi perbaikan.
         function checkProduk(p, sub, hasilJual) {
             const KODE = p.toUpperCase();
+            const NAMA = p === 'pl' ? 'PERTALITE' : 'PERTAMAX';
             const per = numVal(p + 'Per100');
             const hs = sub > 0 ? Math.abs(sub - hasilJual) : 0;
             const persen = (sub > 0 && per > 0) ? hs * per / sub : 0;
@@ -2103,7 +2163,6 @@ let lastOver = { pl: false, px: false };
             const elPersen = document.getElementById('persen' + KODE);
             elPersen.textContent = fmtPersen(persen);
 
-            const alertEl = document.getElementById('alert' + KODE);
             if (persen >= 1 && sub > 0) {
                 const batas = sub / per;
                 const d = hs - batas;
@@ -2111,31 +2170,38 @@ let lastOver = { pl: false, px: false };
                 let saranStok = '';
                 let saranTot = '';
                 if (hasilJual > sub) {
-                    // Hasil perhitungan MELEBIHI total \u2192 naikkan stok akhir atau tambah totalisator
-                    saranStok = `naikkan <b>ST akr</b> (stok akhir) \u2265 ${fmtNum.format(kurang)} liter \u2192 Hasil turun, selisih mengecil`;
+                    saranStok = `naikkan Stok Akhir \u2265 ${fmtNum.format(kurang)} liter \u2192 Hasil turun, selisih mengecil`;
                     const targetT = Math.floor(hasilJual * per / (per + 1)) + 1;
-                    saranTot = `tambah <b>totalisator</b> (kolom Akhir) \u2265 ${fmtNum.format(targetT - sub)} liter agar total \u2265 ${fmtNum.format(targetT)} L`;
+                    saranTot = `tambah kolom Akhir \u2265 ${fmtNum.format(targetT - sub)} liter agar total \u2265 ${fmtNum.format(targetT)} L`;
                 } else {
-                    // Total MELEBIHI hasil perhitungan \u2192 turunkan stok akhir atau kurangi totalisator
-                    saranStok = `turunkan <b>ST akr</b> (stok akhir) \u2265 ${fmtNum.format(kurang)} liter \u2192 Hasil naik, selisih mengecil`;
+                    saranStok = `turunkan Stok Akhir \u2265 ${fmtNum.format(kurang)} liter \u2192 Hasil naik, selisih mengecil`;
                     const targetT = per > 1 ? Math.ceil(hasilJual * per / (per - 1)) - 1 : sub;
-                    saranTot = `kurangi <b>totalisator</b> (kolom Akhir) \u2265 ${fmtNum.format(Math.max(0, sub - targetT))} liter agar total \u2264 ${fmtNum.format(targetT)} L`;
+                    saranTot = `kurangi kolom Akhir \u2265 ${fmtNum.format(Math.max(0, sub - targetT))} liter agar total \u2264 ${fmtNum.format(targetT)} L`;
                 }
-                alertEl.innerHTML =
-                    `\u26a0\ufe0f <b>% ${KODE} = ${fmtPersen(persen)}% \u2014 MELEBIHI BATAS 1%!</b><br>` +
-                    `\u2022 Hasil set otomatis = |Total \u2212 Hasil| = |${fmtNum.format(sub)} \u2212 ${fmtNum.format(hasilJual)}| = <b>${fmtNum.format(hs)} liter</b><br>` +
-                    `\u2022 Batas aman: selisih &lt; ${fmtNum.format(Math.round(batas))} liter (1% dari total ${fmtNum.format(sub)} L) \u2014 kelebihan <b>${fmtNum.format(Math.ceil(d))} liter</b><br>` +
-                    `\u2022 Simulasi ubah <b>stok</b>: ${saranStok}<br>` +
-                    `\u2022 Simulasi ubah <b>totalisator</b>: ${saranTot}`;
-                alertEl.classList.remove('hidden');
+                const htmlSimulasi =
+                    `<div style="background:#fef2f2;border:1.5px solid #fca5a5;border-radius:12px;padding:12px 14px;color:#7f1d1d;line-height:1.7;margin-bottom:12px">` +
+                    `<b style="color:#b91c1c">% ${NAMA} = ${fmtPersen(persen)}% \u2014 melebihi batas 1%!</b><br>` +
+                    `Hasil set = |Total \u2212 Hasil| = |${fmtNum.format(sub)} \u2212 ${fmtNum.format(hasilJual)}| = <b>${fmtNum.format(hs)} liter</b><br>` +
+                    `Batas aman: selisih &lt; ${fmtNum.format(Math.round(batas))} liter (1% dari total ${fmtNum.format(sub)} L)` +
+                    `</div>` +
+                    `<div style="line-height:1.9">` +
+                    `<b>Kelebihan:</b> ${fmtNum.format(Math.ceil(d))} liter<br>` +
+                    `<b>Simulasi ubah stok</b> (Stok Akhir): ${saranStok}<br>` +
+                    `<b>Simulasi ubah totalisator</b> (kolom Akhir): ${saranTot}` +
+                    `</div>` +
+                    `<button class="modal-btn primary" style="width:100%;margin-top:14px" onclick="closeInfoModal()">Mengerti</button>`;
+
+                if (infoModalProduct === p) {
+                    document.getElementById('infoModalTitle').textContent = `\u26a0\ufe0f % ${NAMA} = ${fmtPersen(persen)}%`;
+                    document.getElementById('infoModalBody').innerHTML = htmlSimulasi;
+                } else if (!lastOver[p]) {
+                    showInfoModal(`\u26a0\ufe0f % ${NAMA} = ${fmtPersen(persen)}%`, htmlSimulasi, p);
+                    showToast(`\u26a0\ufe0f % ${NAMA} di atas 1% \u2014 lihat simulasi perbaikan`);
+                }
                 elPersen.classList.add('over');
-                if (!lastOver[p]) {
-                    showToast(`\u26a0\ufe0f % ${KODE} di atas 1% \u2014 lihat simulasi perbaikan`);
-                }
                 lastOver[p] = true;
             } else {
-                alertEl.classList.add('hidden');
-                alertEl.innerHTML = '';
+                if (infoModalProduct === p) closeInfoModal();
                 elPersen.classList.remove('over');
                 lastOver[p] = false;
             }
@@ -2496,33 +2562,102 @@ let lastOver = { pl: false, px: false };
             }
             const d = collectBulanan();
             const raw = v => (v && String(v).trim() !== '') ? parseNum(v) : '';
-            const head = ['Awal', 'Akhir', 'Total', 'ST awl', 'DO', 'Total ril', 'Tera', 'Total M', 'ST akr', 'Hasil'];
-            const blockAoa = (nama, b) => [
-                [nama],
+
+            // ─── Susunan persis seperti PDF ───
+            const head = ['Awal', 'Akhir', 'Total', 'Stok Awal', 'DO', 'Tera', 'Stok Akhir', 'Hasil'];
+            const blockAoa = (judul, b) => [
+                [judul],
                 head,
-                ...b.rows.map(r => [raw(r.aw), raw(r.ak), raw(r.tot), raw(r.st), raw(r.do), raw(r.ril), raw(r.tera), raw(r.tm), raw(r.stakr), raw(r.hasil)]),
-                ['Subtotal', '', raw(b.sub), raw(b.st), raw(b.do), raw(b.ril), raw(b.tera), raw(b.tm), raw(b.stakr), raw(b.hasil)],
-                []
+                ...b.rows.map(r => [raw(r.aw), raw(r.ak), raw(r.tot), raw(r.st), raw(r.do), raw(r.tera), raw(r.stakr), raw(r.hasil)]),
+                ['Subtotal', '', raw(b.sub), raw(b.st), raw(b.do), raw(b.tera), raw(b.stakr), raw(b.hasil)]
             ];
             const aoa = [
-                ['SPBU 34-17603 \u2014 Totalisator Bulanan'],
-                ['Bulan:', d.bulan],
+                ['SPBU 34.17603'],
+                ['Totalisator Bulanan'],
+                [`Bulan : ${d.bulan}`],
                 [],
-                ...blockAoa('PERTALITE (PL)', d.pl),
-                ...blockAoa('PERTAMAX (PX)', d.px),
-                ['PRODUK', 'hasil set', 'per 100 %', '%'],
-                ['PL', raw(d.hsPL), raw(d.perPL) || 100, d.psPL],
-                ['PX', raw(d.hsPX), raw(d.perPX) || 100, d.psPX],
+                ...blockAoa('Rincian Totalisator Pertalite', d.pl),
                 [],
-                ['TOTAL LITER BULANAN', raw(d.grand)]
+                ...blockAoa('Rincian Totalisator Pertamax', d.px),
+                [],
+                ['Produk'],
+                ['Produk', 'Hasil Set', 'Per 100 %', '%'],
+                ['PERTALITE', raw(d.hsPL), raw(d.perPL) || 100, d.psPL],
+                ['PERTAMAX', raw(d.hsPX), raw(d.perPX) || 100, d.psPX]
             ];
             const ws = XLSX.utils.aoa_to_sheet(aoa);
-            ws['!cols'] = [{ wch: 18 }, { wch: 18 }, { wch: 13 }, { wch: 13 }, { wch: 13 },
-                           { wch: 13 }, { wch: 9 }, { wch: 13 }, { wch: 13 }, { wch: 13 }];
+
+            // Pastikan sel penyusun baris judul/merge ada agar border rapi
+            const ensureCells = (r, n) => {
+                for (let c = 0; c < n; c++) {
+                    const addr = XLSX.utils.encode_cell({ r: r, c: c });
+                    if (!ws[addr]) ws[addr] = { t: 's', v: '' };
+                }
+            };
+            [0, 1, 2, 4, 11].forEach(r => ensureCells(r, 8));
+            ensureCells(18, 4);
+
+            // ─── Gaya sel: putih, border tipis hitam, tebal pada judul & subtotal ───
+            const thin = { style: 'thin', color: { rgb: '000000' } };
+            const allBorder = { top: thin, bottom: thin, left: thin, right: thin };
+            const put = (r, c, s) => {
+                const addr = XLSX.utils.encode_cell({ r: r, c: c });
+                if (ws[addr]) ws[addr].s = s;
+            };
+            const rowStyle = (r, s, c0, c1) => { for (let c = c0; c <= c1; c++) put(r, c, s); };
+            const cellNum = r => {
+                const out = [];
+                for (let c = 0; c < 8; c++) {
+                    const cell = ws[XLSX.utils.encode_cell({ r: r, c: c })];
+                    if (!cell) continue;
+                    const isNum = typeof cell.v === 'number';
+                    cell.s = {
+                        border: allBorder,
+                        alignment: { horizontal: isNum ? 'right' : 'left', vertical: 'center' }
+                    };
+                    if (isNum) cell.z = '#,##0';
+                    out.push(cell);
+                }
+                return out;
+            };
+
+            // Judul
+            rowStyle(0, { font: { bold: true, sz: 16, color: { rgb: '0B1A2E' } }, alignment: { horizontal: 'left', vertical: 'center' } }, 0, 7);
+            rowStyle(1, { font: { bold: true, sz: 13, color: { rgb: '0B1A2E' } }, alignment: { horizontal: 'left', vertical: 'center' } }, 0, 7);
+            rowStyle(2, { font: { sz: 11, color: { rgb: '64748B' } }, alignment: { horizontal: 'left', vertical: 'center' } }, 0, 7);
+
+            // Dua tabel utama: judul bagian, kepala kolom, data, subtotal
+            const styleTabel = (rJudul, rHead, rData0, rSub) => {
+                rowStyle(rJudul, { font: { bold: true, sz: 11 }, border: allBorder, alignment: { horizontal: 'left', vertical: 'center' } }, 0, 7);
+                rowStyle(rHead, { font: { bold: true }, border: allBorder, alignment: { horizontal: 'center', vertical: 'center' } }, 0, 7);
+                for (let r = rData0; r < rSub; r++) cellNum(r);
+                cellNum(rSub).forEach(cell => { cell.s.font = { bold: true }; });
+            };
+            styleTabel(4, 5, 6, 9);    // Pertalite
+            styleTabel(11, 12, 13, 16); // Pertamax
+
+            // Tabel Produk
+            rowStyle(18, { font: { bold: true, sz: 11 }, border: allBorder, alignment: { horizontal: 'left', vertical: 'center' } }, 0, 3);
+            rowStyle(19, { font: { bold: true }, border: allBorder, alignment: { horizontal: 'center', vertical: 'center' } }, 0, 3);
+            [20, 21].forEach(cellNum);
+
+            // ─── Penggabungan sel ───
+            ws['!merges'] = [
+                { s: { r: 0, c: 0 }, e: { r: 0, c: 7 } },
+                { s: { r: 1, c: 0 }, e: { r: 1, c: 7 } },
+                { s: { r: 2, c: 0 }, e: { r: 2, c: 7 } },
+                { s: { r: 4, c: 0 }, e: { r: 4, c: 7 } },
+                { s: { r: 9, c: 0 }, e: { r: 9, c: 1 } },
+                { s: { r: 11, c: 0 }, e: { r: 11, c: 7 } },
+                { s: { r: 16, c: 0 }, e: { r: 16, c: 1 } },
+                { s: { r: 18, c: 0 }, e: { r: 18, c: 3 } }
+            ];
+            ws['!cols'] = [{ wch: 14 }, { wch: 14 }, { wch: 11 }, { wch: 11 }, { wch: 11 }, { wch: 8 }, { wch: 11 }, { wch: 11 }];
+
             const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, 'Totalisator Bulanan');
-            XLSX.writeFile(wb, `Totalisator-Bulanan-${d.bulanVal || 'undated'}.xlsx`);
-            showToast('📗 Excel berhasil diunduh');
+            XLSX.writeFile(wb, `Totalisator-Bulanan-${d.bulanVal || 'undated'}.xlsx`, { cellStyles: true });
+            showToast('\U0001f4d7 Excel berhasil diunduh');
         }
 
         // ─── BAGIKAN KE WHATSAPP ───
@@ -2656,6 +2791,39 @@ let lastOver = { pl: false, px: false };
         }
 
         // ─── Init ───
+
+// ─── INFO MODAL: popup rumus & simulasi ───
+        let infoModalProduct = null;
+
+        function showInfoModal(title, html, product) {
+            document.getElementById('infoModalTitle').textContent = title;
+            document.getElementById('infoModalBody').innerHTML = html;
+            infoModalProduct = product || null;
+            document.getElementById('infoModal').classList.add('open');
+        }
+
+        function closeInfoModal() {
+            document.getElementById('infoModal').classList.remove('open');
+            infoModalProduct = null;
+        }
+
+        function openRumusModal() {
+            showInfoModal('Rumus & Aturan Perhitungan', `
+                <div style="line-height:2">
+                    <b>Total</b> = Akhir \u2212 Awal<br>
+                    <b>Total ril</b> = Stok Awal + DO<br>
+                    <b>Total M</b> = Total ril + Tera<br>
+                    <b>Hasil</b> = Total M \u2212 Stok Akhir<br>
+                    <b>Hasil set</b> = |Total \u2212 Hasil| <span style="color:#64748b">(terisi otomatis)</span><br>
+                    <b>%</b> = Hasil set \u00d7 per 100 % \u00f7 Total
+                </div>
+                <div style="background:#fef2f2;border:1.5px solid #fca5a5;border-radius:12px;padding:10px 14px;color:#7f1d1d;margin-top:14px">
+                    \u26a0\ufe0f <b>Aturan: % tiap produk wajib di bawah 1%.</b><br>
+                    Jika melebihi 1%, popup simulasi perbaikan stok/totalisator muncul otomatis.
+                </div>
+                <button class="modal-btn primary" style="width:100%;margin-top:14px" onclick="closeInfoModal()">Mengerti</button>
+            `);
+        }
 
         // ─── Init ───
         hitung();
