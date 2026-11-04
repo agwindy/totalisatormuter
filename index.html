@@ -2406,7 +2406,10 @@ let lastOver = { pl: false, px: false };
                     `Hasil set = |Total \u2212 Hasil| = |${fmtNum.format(sub)} \u2212 ${fmtNum.format(hasilJual)}| = <b>${fmtNum.format(hs)} liter</b> \u00b7 ` +
                     `Batas aman &lt; ${fmtNum.format(Math.round(batas))} liter \u00b7 Kelebihan <b>${fmtNum.format(Math.ceil(d))} liter</b><br><br>` +
                     `<b>1\ufe0f\u20e3 Ubah stok</b> (Stok Akhir): ${saranStok}<br><br>` +
-                    `<b>2\ufe0f\u20e3 Ubah totalisator</b> (kolom Akhir):<br>${htmlTotalisator}`;
+                    `<b>2\ufe0f\u20e3 Ubah totalisator</b> (kolom Akhir):<br>${htmlTotalisator}` +
+                    `<br><br><span style="color:#94a3b8;font-size:12px">` +
+                    `\u2139\ufe0f Pilih salah satu: ubah stok akhir <b>atau</b> ubah totalisator \u2014 ` +
+                    `keduanya mencapai hasil yang sama, tidak perlu mengubah keduanya.</span>`;
                 alertEl.classList.remove('hidden');
                 elPersen.classList.add('over');
                 elPersen.classList.remove('zero-pct');
@@ -3318,7 +3321,10 @@ function salinFallback(teks) {
                 html += alertBox + `<div class="sim-hasil-box">` +
                     `<b>${NAMA}</b>${labelMode} \u2014 ${fmtPersen(persenSkr)}% \u2192 target <b>${fmtPersen(target)}%</b>: ${arahLabel} ` +
                     `(total ${fmtNum.format(sub)} \u2192 ${fmtNum.format(totalBaru)} L, % menjadi ${fmtPersen(persenBaru)}%)<br>` +
-                    rowsHtml + `<br>` + htmlStok + `</div>`;
+                    rowsHtml + `<br>` + htmlStok +
+                    `<br><span style="color:#64748b;font-size:12px">` +
+                    `ℹ️ Pilih salah satu: ubah totalisator <b>atau</b> ubah stok akhir — ` +
+                    `keduanya mencapai target yang sama, tidak perlu mengubah keduanya.</span></div>`;
             });
             elHasil.innerHTML = html;
         }
