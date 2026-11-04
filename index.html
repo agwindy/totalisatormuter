@@ -1570,6 +1570,7 @@
                     </div>
                 </div>
             </div>
+            <button class="sim-chip" style="margin-top:12px" onclick="setFilterBulanPenuh()">📅 Satu Bulan Penuh</button>
             <div class="input-group" style="margin-top:12px">
                 <label for="filterShift"><span class="label-left"><span class="label-icon" aria-hidden="true">⏰</span> Shift</span></label>
                 <div class="input-wrap">
@@ -2845,14 +2846,6 @@ let lastOver = { pl: false, px: false };
                 ],
                 startY: doc.lastAutoTable.finalY + 22
             });
-            doc.setFont('helvetica', 'italic');
-            doc.setFontSize(9);
-            doc.setTextColor(100, 116, 139);
-            doc.text('Keterangan : Rincian perhitungan totalisator ini berpacu sesuai filter waktu dan shift yang diinput.', 40, doc.lastAutoTable.finalY + 22);
-            doc.setFont('helvetica', 'italic');
-            doc.setFontSize(9);
-            doc.setTextColor(100, 116, 139);
-            doc.text('Keterangan : Rincian perhitungan totalisator ini berpacu sesuai filter waktu dan shift yang diinput.', 40, doc.lastAutoTable.finalY + 22);
             return doc;
         }
 
@@ -2895,9 +2888,7 @@ let lastOver = { pl: false, px: false };
                 ['Produk'],
                 ['Produk', 'Hasil Set', 'Per 100 %', '%'],
                 ['PERTALITE', raw(d.hsPL), raw(d.perPL) || 100, d.psPL],
-                ['PERTAMAX', raw(d.hsPX), raw(d.perPX) || 100, d.psPX],
-                [],
-                ['Keterangan: Rincian perhitungan totalisator ini berpacu sesuai filter waktu dan shift yang diinput.']
+                ['PERTAMAX', raw(d.hsPX), raw(d.perPX) || 100, d.psPX]
             ];
             const ws = XLSX.utils.aoa_to_sheet(aoa);
 
@@ -2971,7 +2962,7 @@ let lastOver = { pl: false, px: false };
             const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, 'Totalisator Bulanan');
             XLSX.writeFile(wb, `Totalisator-Bulanan-${d.bulanVal || 'undated'}.xlsx`, { cellStyles: true });
-            showToast('\U0001f4d7 Excel berhasil diunduh');
+            showToast('📗 Excel berhasil diunduh');
         }
 
         // ─── BAGIKAN KE WHATSAPP ───
@@ -3332,7 +3323,7 @@ function salinFallback(teks) {
                     el.style.background = '';
                     el.style.borderColor = '';
                     el.style.color = '';
-                    el.innerHTML = `\U0001f4c5 Periode aktif: <b>${periodeLabel()}</b>. Rincian perhitungan totalisator ini berpacu sesuai filter waktu dan shift yang diinput.`;
+                    el.innerHTML = `📅 Periode aktif: <b>${periodeLabel()}</b>. Rincian perhitungan totalisator ini berpacu sesuai filter waktu dan shift yang diinput.`;
                 }
             }
             hitungBulanan();
@@ -3349,7 +3340,15 @@ function salinFallback(teks) {
 
         // ─── Init ───
 
-        // ─── Init ───
+        function setFilterBulanPenuh() {
+            const key = document.getElementById('bulanBulanan').value;
+            const shiftSekarang = document.getElementById('filterShift').value;
+            setFilterDefaults(key, { shift: shiftSekarang });
+            updateFilterInfo();
+            showToast('📅 Filter diset ke satu bulan penuh');
+        }
+
+        // ─── Init ───        // ─── Init ───
         hitung();
         document.querySelectorAll('input[type="number"]').forEach(input => {
             input.addEventListener('change', hitung);
