@@ -2322,6 +2322,7 @@ let lastOver = { pl: false, px: false };
             const per = numVal(p + 'Per100');
             const hs = sub > 0 ? Math.abs(sub - hasilJual) : 0;
             const persen = (sub > 0 && per > 0) ? hs * per / sub : 0;
+            const persenBulat = Math.round(persen * 10000) / 10000;
 
             setText('hasilSet' + KODE, hs);
             const elPersen = document.getElementById('persen' + KODE);
@@ -2414,13 +2415,13 @@ let lastOver = { pl: false, px: false };
                 }
                 clearTimeout(clearTimer[p]);
                 lastOver[p] = true;
-            } else if (persen <= 0 && sub > 0) {
-                // ATURAN: persentase tidak boleh di bawah 0,00%
+            } else if (persenBulat < 0.1 && sub > 0) {
+                // ATURAN: persentase minimal 0,1% \u2014 tidak boleh 0,01% dan seterusnya
                 alertEl.className = 'alert-banner zero';
                 alertEl.innerHTML =
-                    `\u26a0\ufe0f <b>% ${NAMA} = 0,00% \u2014 tidak boleh di bawah 0,00%!</b><br>` +
-                    `Hasil set 0 liter berarti Total sama persis dengan Hasil perhitungan. ` +
-                    `Pastikan selisih stok/totalisator tercatat \u2014 periksa kembali kolom Akhir &amp; Stok Akhir.`;
+                    `\u26a0\ufe0f <b>% ${NAMA} = ${fmtPersen(persen)}% \u2014 tidak boleh di bawah 0,1%!</b><br>` +
+                    `Aturan: minimal 0,1% dan maksimal 1%. Hasil set terlalu kecil ` +
+                    `(Total terlalu mendekati Hasil) \u2014 periksa kembali kolom Akhir &amp; Stok Akhir.`;
                 alertEl.classList.remove('hidden');
                 elPersen.classList.add('zero-pct');
                 clearTimeout(clearTimer[p]);
@@ -3146,7 +3147,7 @@ function salinFallback(teks) {
                     <b>%</b> = Hasil set \u00d7 per 100 % \u00f7 Total
                 </div>
                 <div style="background:#fef2f2;border:1.5px solid #fca5a5;border-radius:12px;padding:10px 14px;color:#7f1d1d;margin-top:14px">
-                    \u26a0\ufe0f <b>Aturan: % tiap produk wajib di bawah 1% dan tidak boleh di bawah 0,00%.</b><br>
+                    \u26a0\ufe0f <b>Aturan: % tiap produk minimal 0,1% dan maksimal 1% (di bawah 1%).</b><br>
                     Jika melebihi 1%, popup simulasi perbaikan stok/totalisator muncul otomatis.
                 </div>
                 <button class="modal-btn primary" style="width:100%;margin-top:14px" onclick="closeInfoModal()">Mengerti</button>
@@ -3195,8 +3196,8 @@ function salinFallback(teks) {
                 return bagian;
             };
 
-            if (!target || target <= 0 || target >= 100) {
-                elHasil.innerHTML = '<div class="scan-tip">\u26a0\ufe0f Target tidak boleh di bawah 0,00% \u2014 masukkan target persentase yang valid (contoh: 0,5).</div>';
+            if (!target || target < 0.1 || target >= 100) {
+                elHasil.innerHTML = '<div class="scan-tip">\u26a0\ufe0f Target minimal 0,1% dan maksimal 1% \u2014 masukkan target yang valid (contoh: 0,5).</div>';
                 return;
             }
 
