@@ -1308,6 +1308,41 @@
             color: #1d4ed8;
         }
 
+
+        .input-group select {
+            width: 100%;
+            border: 1.5px solid #e2e8f0;
+            background: #fafcff;
+            padding: 15px 16px;
+            border-radius: 15px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #0b1a2e;
+            outline: none;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .input-group select:focus {
+            border-color: #2563eb;
+            background: #ffffff;
+        }
+
+        .alert-banner.zero {
+            background: #fffbeb;
+            border-color: #fcd34d;
+            color: #92400e;
+        }
+
+        .alert-banner.zero b {
+            color: #b45309;
+        }
+
+        table.tot td.compute.zero-pct {
+            color: #b45309;
+            background: #fffbeb;
+            border-radius: 8px;
+        }
+
         ::-webkit-scrollbar {
             width: 4px;
         }
@@ -1515,10 +1550,38 @@
                 </div>
             </div>
             <div class="input-group month-row">
-                <label for="bulanBulanan"><span class="label-left"><span class="label-icon" aria-hidden="true">🗓️</span> Bulan</span></label>
+                <label for="bulanBulanan"><span class="label-left"><span class="label-icon" aria-hidden="true">📅</span> Bulan</span></label>
                 <div class="input-wrap">
                     <input type="month" id="bulanBulanan" value="2026-10" onchange="loadBulanan()" />
                 </div>
+            </div>
+
+            <div class="input-row" style="margin-top:12px">
+                <div class="input-group">
+                    <label for="filterAwal"><span class="label-left"><span class="label-icon" aria-hidden="true">📅</span> Dari Tanggal</span></label>
+                    <div class="input-wrap">
+                        <input type="date" id="filterAwal" onchange="updateFilterInfo()" />
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label for="filterAkhir"><span class="label-left"><span class="label-icon" aria-hidden="true">📅</span> Sampai Tanggal</span></label>
+                    <div class="input-wrap">
+                        <input type="date" id="filterAkhir" onchange="updateFilterInfo()" />
+                    </div>
+                </div>
+            </div>
+            <div class="input-group" style="margin-top:12px">
+                <label for="filterShift"><span class="label-left"><span class="label-icon" aria-hidden="true">⏰</span> Shift</span></label>
+                <div class="input-wrap">
+                    <select id="filterShift" onchange="updateFilterInfo()">
+                        <option value="all">Semua Shift</option>
+                        <option value="1">Shift 1</option>
+                        <option value="2">Shift 2</option>
+                    </select>
+                </div>
+            </div>
+            <div class="scan-tip" role="note" id="filterKeterangan" style="margin-top:12px;margin-bottom:0">
+                📅 Rincian perhitungan totalisator ini berpacu sesuai filter waktu dan shift yang diinput.
             </div>
         </section>
 
@@ -2344,13 +2407,29 @@ let lastOver = { pl: false, px: false };
                     `<b>2\ufe0f\u20e3 Ubah totalisator</b> (kolom Akhir):<br>${htmlTotalisator}`;
                 alertEl.classList.remove('hidden');
                 elPersen.classList.add('over');
+                elPersen.classList.remove('zero-pct');
                 if (!lastOver[p]) {
                     showToast(`\u26a0\ufe0f % ${NAMA} di atas 1% \u2014 2 opsi perbaikan tersedia`);
                 }
                 clearTimeout(clearTimer[p]);
                 lastOver[p] = true;
+            } else if (persen <= 0 && sub > 0) {
+                // ATURAN: persentase tidak boleh di bawah 0,00%
+                alertEl.className = 'alert-banner zero';
+                alertEl.innerHTML =
+                    `\u26a0\ufe0f <b>% ${NAMA} = 0,00% \u2014 tidak boleh di bawah 0,00%!</b><br>` +
+                    `Hasil set 0 liter berarti Total sama persis dengan Hasil perhitungan. ` +
+                    `Pastikan selisih stok/totalisator tercatat \u2014 periksa kembali kolom Akhir &amp; Stok Akhir.`;
+                alertEl.classList.remove('hidden');
+                elPersen.classList.add('zero-pct');
+                clearTimeout(clearTimer[p]);
+                lastOver[p] = false;
             } else {
                 elPersen.classList.remove('over');
+                elPersen.classList.remove('zero-pct');
+                if (alertEl && alertEl.classList.contains('zero')) {
+                    alertEl.classList.add('hidden');
+                }
                 if (lastOver[p] && alertEl) {
                     alertEl.className = 'alert-banner ok';
                     alertEl.innerHTML =
@@ -2455,7 +2534,7 @@ let lastOver = { pl: false, px: false };
             }
             const g = id => document.getElementById(id).textContent;
             const text =
-                `TOTALISATOR BULANAN \u2014 ${labelBulan}\n\n` +
+                `TOTALISATOR BULANAN \u2014 ${labelBulan}\nPeriode   : ${periodeLabel()}\n\n` +
                 `PERTALITE (PL)\n` +
                 `Total Liter : ${g('plSub')}\n` +
                 `ST Awal     : ${g('plST')}\n` +
@@ -2479,7 +2558,7 @@ let lastOver = { pl: false, px: false };
                 `PX \u2014 Hasil Set : ${g('hasilSetPX')} L \u2192 % = ${g('persenPX')}% (batas < 1%)\n\n` +
                 `RINCIAN PERSENTASE (batas < 1%)\n` +
                 `PERTALITE : ${g('persenPL')}% \u00b7 PERTAMAX : ${g('persenPX')}%\n\n` +
-                `TOTAL LITER BULANAN : ${g('grandTotalBulanan')} L`;
+                `TOTAL LITER BULANAN : ${g('grandTotalBulanan')} L\n\nKeterangan: Rincian perhitungan totalisator ini berpacu sesuai filter waktu dan shift yang diinput.`;
 
             const done = () => showToast('\u2705 Rekap bulanan disalin');
             navigator.clipboard.writeText(text).then(done).catch(() => {
@@ -2542,7 +2621,13 @@ let lastOver = { pl: false, px: false };
             if (!pl && !px) {
                 delete store[key];
             } else {
-                store[key] = { pl: pl, px: px };
+                const fa = document.getElementById('filterAwal');
+                const fk = document.getElementById('filterAkhir');
+                const fs = document.getElementById('filterShift');
+                store[key] = {
+                    pl: pl, px: px,
+                    filter: { awal: fa ? fa.value : '', akhir: fk ? fk.value : '', shift: fs ? fs.value : 'all' }
+                };
             }
             saveStore(store);
         }
@@ -2607,8 +2692,16 @@ let lastOver = { pl: false, px: false };
                 setVal(p + 'Per100', (b && b.per100) || '100');
             });
 
+            // Pulihkan filter tanggal & shift (atau default penuh bulan + shift bulan sebelumnya)
+            const f = (data && data.filter) ? data.filter : ((prev && prev.filter) || null);
+            setFilterDefaults(key, f);
+            const elKet = document.getElementById('filterKeterangan');
+            if (elKet) {
+                elKet.innerHTML = `📅 Periode aktif: <b>${periodeLabel()}</b>. Rincian perhitungan totalisator ini berpacu sesuai filter waktu dan shift yang diinput.`;
+            }
+
             if (terisiOtomatis) {
-                showToast('\u21bb Totalisator akhir & stok akhir bulan sebelumnya otomatis terisi');
+                showToast('↻ Totalisator akhir & stok akhir bulan sebelumnya otomatis terisi');
             }
             hitungBulanan();
         }
@@ -2639,6 +2732,8 @@ let lastOver = { pl: false, px: false };
             return {
                 bulan: bulanLabel(),
                 bulanVal: gv('bulanBulanan'),
+                periode: periodeLabel(),
+                periode: periodeLabel(),
                 pl: block('pl'),
                 px: block('px'),
                 hsPL: gt('hasilSetPL'), hsPX: gt('hasilSetPX'),
@@ -2676,6 +2771,8 @@ let lastOver = { pl: false, px: false };
             doc.setFont('helvetica', 'normal');
             doc.setFontSize(12);
             doc.text(`Bulan : ${d.bulan}`, 40, 100);
+            doc.text(`Periode : ${periodeLabel()}`, 40, 116);
+            doc.text(`Periode : ${periodeLabel()}`, 40, 116);
 
             // ─── Gaya tabel: putih bersih, garis hitam, teks hitam ───
             const base = {
@@ -2723,7 +2820,7 @@ let lastOver = { pl: false, px: false };
                 return body;
             };
 
-            doc.autoTable({ ...base, body: bodyTabelFix('Rincian Totalisator Pertalite', d.pl), startY: 112 });
+            doc.autoTable({ ...base, body: bodyTabelFix('Rincian Totalisator Pertalite', d.pl), startY: 132 });
             doc.autoTable({ ...base, body: bodyTabelFix('Rincian Totalisator Pertamax', d.px), startY: doc.lastAutoTable.finalY + 22 });
 
             // ─── Tabel Produk ───
@@ -2748,6 +2845,14 @@ let lastOver = { pl: false, px: false };
                 ],
                 startY: doc.lastAutoTable.finalY + 22
             });
+            doc.setFont('helvetica', 'italic');
+            doc.setFontSize(9);
+            doc.setTextColor(100, 116, 139);
+            doc.text('Keterangan : Rincian perhitungan totalisator ini berpacu sesuai filter waktu dan shift yang diinput.', 40, doc.lastAutoTable.finalY + 22);
+            doc.setFont('helvetica', 'italic');
+            doc.setFontSize(9);
+            doc.setTextColor(100, 116, 139);
+            doc.text('Keterangan : Rincian perhitungan totalisator ini berpacu sesuai filter waktu dan shift yang diinput.', 40, doc.lastAutoTable.finalY + 22);
             return doc;
         }
 
@@ -2781,7 +2886,7 @@ let lastOver = { pl: false, px: false };
             const aoa = [
                 ['SPBU 34.17603'],
                 ['Totalisator Bulanan'],
-                [`Bulan : ${d.bulan}`],
+                [`Bulan : ${d.bulan} \u00b7 ${d.periode}`],
                 [],
                 ...blockAoa('Rincian Totalisator Pertalite', d.pl),
                 [],
@@ -2790,7 +2895,9 @@ let lastOver = { pl: false, px: false };
                 ['Produk'],
                 ['Produk', 'Hasil Set', 'Per 100 %', '%'],
                 ['PERTALITE', raw(d.hsPL), raw(d.perPL) || 100, d.psPL],
-                ['PERTAMAX', raw(d.hsPX), raw(d.perPX) || 100, d.psPX]
+                ['PERTAMAX', raw(d.hsPX), raw(d.perPX) || 100, d.psPX],
+                [],
+                ['Keterangan: Rincian perhitungan totalisator ini berpacu sesuai filter waktu dan shift yang diinput.']
             ];
             const ws = XLSX.utils.aoa_to_sheet(aoa);
 
@@ -3047,7 +3154,7 @@ function salinFallback(teks) {
                     <b>%</b> = Hasil set \u00d7 per 100 % \u00f7 Total
                 </div>
                 <div style="background:#fef2f2;border:1.5px solid #fca5a5;border-radius:12px;padding:10px 14px;color:#7f1d1d;margin-top:14px">
-                    \u26a0\ufe0f <b>Aturan: % tiap produk wajib di bawah 1%.</b><br>
+                    \u26a0\ufe0f <b>Aturan: % tiap produk wajib di bawah 1% dan tidak boleh di bawah 0,00%.</b><br>
                     Jika melebihi 1%, popup simulasi perbaikan stok/totalisator muncul otomatis.
                 </div>
                 <button class="modal-btn primary" style="width:100%;margin-top:14px" onclick="closeInfoModal()">Mengerti</button>
@@ -3097,7 +3204,7 @@ function salinFallback(teks) {
             };
 
             if (!target || target <= 0 || target >= 100) {
-                elHasil.innerHTML = '<div class="scan-tip">\u26a0\ufe0f Masukkan target persentase yang valid (contoh: 0,5).</div>';
+                elHasil.innerHTML = '<div class="scan-tip">\u26a0\ufe0f Target tidak boleh di bawah 0,00% \u2014 masukkan target persentase yang valid (contoh: 0,5).</div>';
                 return;
             }
 
@@ -3188,6 +3295,59 @@ function salinFallback(teks) {
             });
             elHasil.innerHTML = html;
         }
+
+// ─── FILTER TANGGAL & SHIFT ───
+        function formatTanggalID(iso) {
+            if (!iso) return '-';
+            const parts = iso.split('-').map(Number);
+            const nama = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+                'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+            return `${parts[2]} ${nama[parts[1] - 1]} ${parts[0]}`;
+        }
+
+        function periodeLabel() {
+            const awal = document.getElementById('filterAwal').value;
+            const akhir = document.getElementById('filterAkhir').value;
+            const shift = document.getElementById('filterShift').value;
+            let tgl = '\u2014';
+            if (awal && akhir) {
+                tgl = awal === akhir ? formatTanggalID(awal) : `${formatTanggalID(awal)} \u2013 ${formatTanggalID(akhir)}`;
+            } else if (awal) { tgl = formatTanggalID(awal); }
+            else if (akhir) { tgl = formatTanggalID(akhir); }
+            const sh = shift === '1' ? 'Shift 1' : shift === '2' ? 'Shift 2' : 'Semua Shift';
+            return `${tgl} \u00b7 ${sh}`;
+        }
+
+        function updateFilterInfo() {
+            const awal = document.getElementById('filterAwal').value;
+            const akhir = document.getElementById('filterAkhir').value;
+            const el = document.getElementById('filterKeterangan');
+            if (el) {
+                if (awal && akhir && awal > akhir) {
+                    el.style.background = '#fef2f2';
+                    el.style.borderColor = '#fca5a5';
+                    el.style.color = '#7f1d1d';
+                    el.innerHTML = '\u26a0\ufe0f Tanggal awal tidak boleh melebihi tanggal akhir.';
+                } else {
+                    el.style.background = '';
+                    el.style.borderColor = '';
+                    el.style.color = '';
+                    el.innerHTML = `\U0001f4c5 Periode aktif: <b>${periodeLabel()}</b>. Rincian perhitungan totalisator ini berpacu sesuai filter waktu dan shift yang diinput.`;
+                }
+            }
+            hitungBulanan();
+        }
+
+        function setFilterDefaults(key, prevFilter) {
+            let y = 2026, m = 10;
+            if (key) { const parts = key.split('-').map(Number); y = parts[0]; m = parts[1]; }
+            const lastDay = new Date(y, m, 0).getDate();
+            setVal('filterAwal', `${y}-${String(m).padStart(2, '0')}-01`);
+            setVal('filterAkhir', `${y}-${String(m).padStart(2, '0')}-${String(lastDay).padStart(2, '0')}`);
+            setVal('filterShift', (prevFilter && prevFilter.shift) || 'all');
+        }
+
+        // ─── Init ───
 
         // ─── Init ───
         hitung();
