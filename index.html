@@ -2321,7 +2321,8 @@ let lastOver = { pl: false, px: false };
             const NAMA = p === 'pl' ? 'PERTALITE' : 'PERTAMAX';
             const per = numVal(p + 'Per100');
             const hs = sub > 0 ? Math.abs(sub - hasilJual) : 0;
-            const persen = (sub > 0 && per > 0) ? hs * per / sub : 0;
+            // Aturan: persentase tidak boleh minus — jepit ke 0
+            const persen = Math.max(0, (sub > 0 && per > 0) ? hs * per / sub : 0);
             const persenBulat = Math.round(persen * 10000) / 10000;
 
             setText('hasilSet' + KODE, hs);
@@ -2401,15 +2402,25 @@ let lastOver = { pl: false, px: false };
                 }
 
                 alertEl.className = 'alert-banner';
+                const hanyaStok = p === 'pl'; // Aturan: PERTALITE hanya stok akhir, PERTAMAX hanya totalisator
+                let stokSkrTot = 0;
+                for (let i = 1; i <= 3; i++) stokSkrTot += Math.round(numVal(p + 'STAkr' + i));
+                const stokAman = stokSkrTot - kurang >= 1; // stok tidak boleh minus/0
+                const saranStokFinal = !stokAman && !hanyaStok
+                    ? saranStok
+                    : (!stokAman
+                        ? saranStok + ` <span style="color:#b45309">\u26a0\ufe0f stok akhir tidak boleh minus/0 (stok saat ini hanya ${fmtNum.format(stokSkrTot)} L)</span>`
+                        : saranStok);
+                const opsiHtml = hanyaStok
+                    ? `<b>1\ufe0f\u20e3 Ubah stok</b> (Stok Akhir): ${saranStokFinal}<br>` +
+                      `<span style="color:#94a3b8;font-size:12px">Aturan: PERTALITE hanya dapat diperbaiki lewat <b>Stok Akhir</b>.</span>`
+                    : `<b>2\ufe0f\u20e3 Ubah totalisator</b> (kolom Akhir, baris 1 &amp; 2):<br>${htmlTotalisator}<br>` +
+                      `<span style="color:#94a3b8;font-size:12px">Aturan: PERTAMAX hanya dapat diperbaiki lewat <b>totalisator</b>.</span>`;
                 alertEl.innerHTML =
                     `<b>% ${NAMA} = ${fmtPersen(persen)}% \u2014 MELEBIHI BATAS 1%!</b><br>` +
                     `Hasil set = |Total \u2212 Hasil| = |${fmtNum.format(sub)} \u2212 ${fmtNum.format(hasilJual)}| = <b>${fmtNum.format(hs)} liter</b> \u00b7 ` +
                     `Batas aman &lt; ${fmtNum.format(Math.round(batas))} liter \u00b7 Kelebihan <b>${fmtNum.format(Math.ceil(d))} liter</b><br><br>` +
-                    `<b>1\ufe0f\u20e3 Ubah stok</b> (Stok Akhir): ${saranStok}<br><br>` +
-                    `<b>2\ufe0f\u20e3 Ubah totalisator</b> (kolom Akhir):<br>${htmlTotalisator}` +
-                    `<br><br><span style="color:#94a3b8;font-size:12px">` +
-                    `\u2139\ufe0f Pilih salah satu: ubah stok akhir <b>atau</b> ubah totalisator \u2014 ` +
-                    `keduanya mencapai hasil yang sama, tidak perlu mengubah keduanya.</span>`;
+                    opsiHtml;
                 alertEl.classList.remove('hidden');
                 elPersen.classList.add('over');
                 elPersen.classList.remove('zero-pct');
@@ -2422,9 +2433,9 @@ let lastOver = { pl: false, px: false };
                 // ATURAN: persentase minimal 0,1% \u2014 tidak boleh 0,01% dan seterusnya
                 alertEl.className = 'alert-banner zero';
                 alertEl.innerHTML =
-                    `\u26a0\ufe0f <b>% ${NAMA} = ${fmtPersen(persen)}% \u2014 tidak boleh di bawah 0,1%!</b><br>` +
-                    `Aturan: minimal 0,1% dan maksimal 1%. Hasil set terlalu kecil ` +
-                    `(Total terlalu mendekati Hasil) \u2014 periksa kembali kolom Akhir &amp; Stok Akhir.`;
+                    `\u26a0\ufe0f <b>% ${NAMA} = ${fmtPersen(persen)}% \u2014 tidak boleh minus atau di bawah 0,1%!</b><br>` +
+                    `Aturan: tidak boleh menjadi minus (misalnya -0,8%), minimal 0,1% dan maksimal 1%. ` +
+                    `Hasil set terlalu kecil (Total terlalu mendekati Hasil) \u2014 periksa kembali kolom Akhir &amp; Stok Akhir.`;
                 alertEl.classList.remove('hidden');
                 elPersen.classList.add('zero-pct');
                 clearTimeout(clearTimer[p]);
@@ -3150,7 +3161,7 @@ function salinFallback(teks) {
                     <b>%</b> = Hasil set \u00d7 per 100 % \u00f7 Total
                 </div>
                 <div style="background:#fef2f2;border:1.5px solid #fca5a5;border-radius:12px;padding:10px 14px;color:#7f1d1d;margin-top:14px">
-                    \u26a0\ufe0f <b>Aturan: % tiap produk minimal 0,1% dan maksimal 1% (di bawah 1%).</b><br>
+                    \u26a0\ufe0f <b>Aturan: % tiap produk tidak boleh minus (misalnya -0,8%), minimal 0,1% dan maksimal 1% (di bawah 1%).</b><br>
                     Jika melebihi 1%, popup simulasi perbaikan stok/totalisator muncul otomatis.
                 </div>
                 <button class="modal-btn primary" style="width:100%;margin-top:14px" onclick="closeInfoModal()">Mengerti</button>
@@ -3211,12 +3222,15 @@ function salinFallback(teks) {
                 const sub = parseNum(document.getElementById(p + 'Sub').textContent);
                 const hasilJual = parseNum(document.getElementById(p + 'Hasil').textContent);
                 const per = numVal(p + 'Per100') || 100;
+                const hanyaStok = p === 'pl';  // Aturan: PERTALITE hanya stok akhir
+                const hanyaTot = p === 'px';   // Aturan: PERTAMAX hanya totalisator
                 if (sub <= 0) {
                     html += `<div class="scan-tip" style="margin-top:10px"><b>${NAMA}</b>: totalisator belum terisi.</div>`;
                     return;
                 }
                 const hs = Math.abs(sub - hasilJual);
-                const persenSkr = hs * per / sub;
+                // Aturan: persentase tidak boleh minus \u2014 jepit ke 0
+                const persenSkr = Math.max(0, hs * per / sub);
                 const persenSkrBulat = Math.round(persenSkr * 10000) / 10000;
                 const targetHs = sub * target / per;
 
@@ -3229,6 +3243,32 @@ function salinFallback(teks) {
                     return;
                 }
 
+                if (hanyaStok) {
+                    // PERTALITE: hanya bantuan ubah Stok Akhir
+                    const signed0 = hasilJual - sub;
+                    const sT0 = target * sub / per;
+                    const dRaw0 = signed0 - sT0;
+                    const deltaStok0 = Math.max(1, Math.ceil(Math.abs(dRaw0)));
+                    const stokNaik0 = dRaw0 > 0;
+                    const stokSkr0 = parseNum(document.getElementById(p + 'STAkr').textContent);
+                    const stokBaru0 = stokNaik0 ? stokSkr0 + deltaStok0 : stokSkr0 - deltaStok0;
+                    const alertBox0 = diBawahMin
+                        ? `<div class="sim-hasil-box" style="background:#fef2f2;border-color:#fca5a5;color:#7f1d1d">` +
+                          `\u26a0\ufe0f <b>% ${NAMA} = ${fmtPersen(persenSkr)}% \u2014 di bawah batas minimal 0,1%!</b> Wajib dinaikkan.</div>`
+                        : '';
+                    if (stokBaru0 < 1) {
+                        html += alertBox0 + `<div class="sim-hasil-box" style="background:#fef2f2;border-color:#fca5a5;color:#7f1d1d">` +
+                            `<b>${NAMA}</b> \u2014 <b>Stok Akhir tidak boleh minus atau 0!</b> ` +
+                            `(perhitungan membutuhkan stok ${fmtNum.format(stokBaru0)} L). Periksa kembali data / target.</div>`;
+                        return;
+                    }
+                    html += alertBox0 + `<div class="sim-hasil-box">` +
+                        `<b>${NAMA}</b> \u2014 ${fmtPersen(persenSkr)}% \u2192 target <b>${fmtPersen(target)}%</b>: ` +
+                        `ubah <b>Stok Akhir</b>: ${fmtNum.format(stokSkr0)} \u2192 <b>${fmtNum.format(stokBaru0)}</b> ${btnSalin(stokBaru0)} ` +
+                        `<span style="color:#64748b">(${stokNaik0 ? 'naikkan' : 'turunkan'} ${fmtNum.format(deltaStok0)} \u2192 Hasil ${stokNaik0 ? 'turun' : 'naik'}, % menjadi ${fmtPersen(target)}%)</span><br>` +
+                        `<span style="color:#64748b;font-size:12px">Aturan: PERTALITE hanya dapat diubah lewat <b>Stok Akhir</b>.</span></div>`;
+                    return;
+                }
                 // Arah: naikkan % (menjauhkan Total dari Hasil) atau turunkan % (mendekatkan)
                 const perluNaik = diBawahMin || persenSkrBulat < target;
                 let shift, tambah;
@@ -3252,7 +3292,7 @@ function salinFallback(teks) {
                         `Perbaiki lewat Stok Akhir.</div>`;
                     return;
                 }
-                const persenBaru = Math.abs(totalBaru - hasilJual) * per / totalBaru;
+                const persenBaru = Math.max(0, Math.abs(totalBaru - hasilJual) * per / totalBaru);
 
                 // ATURAN KHUSUS: hanya baris 1 & 2 yang dapat diubah
                 const baris = [];
@@ -3293,20 +3333,10 @@ function salinFallback(teks) {
                     return `\u2022 <b>Akhir baris ${d.i}</b>: ${fmtNum.format(d.ak)} \u2192 <b>${fmtNum.format(baru)}</b> ${btnSalin(baru)} <span style="color:#64748b">(${ket})</span>`;
                 }).join('<br>');
 
-                // ── Bantuan 2: ubah Stok Akhir (Hasil bergeser, Total tetap) ──
-                const signed = hasilJual - sub;
-                const sT = target * sub / per;
-                const dRaw = signed - sT;
-                const deltaStok = Math.max(1, Math.ceil(Math.abs(dRaw)));
-                const stokNaik = dRaw > 0;
-                const stokSkr = parseNum(document.getElementById(p + 'STAkr').textContent);
-                const stokBaru = stokNaik ? stokSkr + deltaStok : stokSkr - deltaStok;
+                // ── Bantuan 2: stok akhir — TIDAK berlaku untuk PERTAMAX (hanya totalisator) ──
                 let htmlStok;
-                if (stokBaru < 0) {
-                    htmlStok = `\u2022 <b>Stok Akhir</b>: <span style="color:#94a3b8">tidak memungkinkan (nilai baru negatif)</span>`;
-                } else {
-                    htmlStok = `\u2022 <b>Stok Akhir</b>: ${fmtNum.format(stokSkr)} \u2192 <b>${fmtNum.format(stokBaru)}</b> ${btnSalin(stokBaru)} ` +
-                        `<span style="color:#64748b">(${stokNaik ? 'naikkan' : 'turunkan'} ${fmtNum.format(deltaStok)} \u2192 Hasil ${stokNaik ? 'turun' : 'naik'}, % menjadi ${fmtPersen(target)}%)</span>`;
+                if (hanyaTot) {
+                    htmlStok = `<span style="color:#64748b;font-size:12px">Aturan: PERTAMAX hanya dapat diubah lewat <b>totalisator</b> (kolom Akhir, baris 1 &amp; 2).</span>`;
                 }
 
                 const labelMode = simMode === 'bagi' ? '' :
@@ -3322,9 +3352,7 @@ function salinFallback(teks) {
                     `<b>${NAMA}</b>${labelMode} \u2014 ${fmtPersen(persenSkr)}% \u2192 target <b>${fmtPersen(target)}%</b>: ${arahLabel} ` +
                     `(total ${fmtNum.format(sub)} \u2192 ${fmtNum.format(totalBaru)} L, % menjadi ${fmtPersen(persenBaru)}%)<br>` +
                     rowsHtml + `<br>` + htmlStok +
-                    `<br><span style="color:#64748b;font-size:12px">` +
-                    `ℹ️ Pilih salah satu: ubah totalisator <b>atau</b> ubah stok akhir — ` +
-                    `keduanya mencapai target yang sama, tidak perlu mengubah keduanya.</span></div>`;
+                    `</div>`;
             });
             elHasil.innerHTML = html;
         }
