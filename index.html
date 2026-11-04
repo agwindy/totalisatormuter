@@ -2535,7 +2535,7 @@ let lastOver = { pl: false, px: false };
             }
             const g = id => document.getElementById(id).textContent;
             const text =
-                `TOTALISATOR BULANAN \u2014 ${labelBulan}\nPeriode   : ${periodeLabel()}\n\n` +
+                `TOTALISATOR BULANAN \u2014 ${labelBulan}\n${isBulanPenuh() ? '' : 'Periode   : ' + periodeLabel() + '\n'}\n` +
                 `PERTALITE (PL)\n` +
                 `Total Liter : ${g('plSub')}\n` +
                 `ST Awal     : ${g('plST')}\n` +
@@ -2733,8 +2733,7 @@ let lastOver = { pl: false, px: false };
             return {
                 bulan: bulanLabel(),
                 bulanVal: gv('bulanBulanan'),
-                periode: periodeLabel(),
-                periode: periodeLabel(),
+                periode: isBulanPenuh() ? '' : periodeLabel(),
                 pl: block('pl'),
                 px: block('px'),
                 hsPL: gt('hasilSetPL'), hsPX: gt('hasilSetPX'),
@@ -2771,8 +2770,11 @@ let lastOver = { pl: false, px: false };
             doc.text('Totalisator Bulanan', 40, 76);
             doc.setFont('helvetica', 'normal');
             doc.setFontSize(12);
+            const tglPenuh = isBulanPenuh();
             doc.text(`Bulan : ${d.bulan}`, 40, 100);
-            doc.text(`Periode : ${periodeLabel()}`, 40, 116);
+            if (!tglPenuh) {
+                doc.text(`Periode : ${periodeLabel()}`, 40, 116);
+            }
             doc.text(`Periode : ${periodeLabel()}`, 40, 116);
 
             // ─── Gaya tabel: putih bersih, garis hitam, teks hitam ───
@@ -2821,7 +2823,7 @@ let lastOver = { pl: false, px: false };
                 return body;
             };
 
-            doc.autoTable({ ...base, body: bodyTabelFix('Rincian Totalisator Pertalite', d.pl), startY: 132 });
+            doc.autoTable({ ...base, body: bodyTabelFix('Rincian Totalisator Pertalite', d.pl), startY: tglPenuh ? 116 : 132 });
             doc.autoTable({ ...base, body: bodyTabelFix('Rincian Totalisator Pertamax', d.px), startY: doc.lastAutoTable.finalY + 22 });
 
             // ─── Tabel Produk ───
@@ -2879,7 +2881,7 @@ let lastOver = { pl: false, px: false };
             const aoa = [
                 ['SPBU 34.17603'],
                 ['Totalisator Bulanan'],
-                [`Bulan : ${d.bulan} \u00b7 ${d.periode}`],
+                [`Bulan : ${d.bulan}${d.periode ? ' \u00b7 ' + d.periode : ''}`],
                 [],
                 ...blockAoa('Rincian Totalisator Pertalite', d.pl),
                 [],
@@ -3348,7 +3350,17 @@ function salinFallback(teks) {
             showToast('📅 Filter diset ke satu bulan penuh');
         }
 
-        // ─── Init ───        // ─── Init ───
+        function isBulanPenuh() {
+            const key = document.getElementById('bulanBulanan').value;
+            if (!key) return false;
+            const awal = document.getElementById('filterAwal').value;
+            const akhir = document.getElementById('filterAkhir').value;
+            const parts = key.split('-').map(Number);
+            const lastDay = new Date(parts[0], parts[1], 0).getDate();
+            return awal === `${key}-01` && akhir === `${key}-${String(lastDay).padStart(2, '0')}`;
+        }
+
+        // ─── Init ───
         hitung();
         document.querySelectorAll('input[type="number"]').forEach(input => {
             input.addEventListener('change', hitung);
