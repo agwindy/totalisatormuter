@@ -3195,8 +3195,9 @@ function salinFallback(teks) {
                 bagian.slice().sort((a, b) => b.frac - a.frac).forEach(x => { if (sisa > 0) { x.delta++; sisa--; } });
                 return bagian;
             };
+            const MIN_P = 0.1;
 
-            if (!target || target < 0.1 || target >= 100) {
+            if (!target || target < MIN_P || target >= 100) {
                 elHasil.innerHTML = '<div class="scan-tip">\u26a0\ufe0f Target minimal 0,1% dan maksimal 1% \u2014 masukkan target yang valid (contoh: 0,5).</div>';
                 return;
             }
@@ -3213,29 +3214,42 @@ function salinFallback(teks) {
                 }
                 const hs = Math.abs(sub - hasilJual);
                 const persenSkr = hs * per / sub;
+                const persenSkrBulat = Math.round(persenSkr * 10000) / 10000;
                 const targetHs = sub * target / per;
 
-                if (hs <= targetHs) {
+                // ATURAN: alert jika di bawah 0,1%
+                const diBawahMin = persenSkrBulat < MIN_P;
+                if (!diBawahMin && hs <= targetHs) {
                     html += `<div class="sim-hasil-box" style="background:#f0fdf4;border-color:#bbf7d0;color:#166534">` +
                         `<b>${NAMA}</b> \u2014 hasil set ${fmtNum.format(hs)} liter (${fmtPersen(persenSkr)}%) ` +
                         `sudah di bawah target ${fmtPersen(target)}%. <b>Tidak perlu perubahan.</b></div>`;
                     return;
                 }
 
-                // Shift minimal agar % tepat mencapai target (rumus eksak, bukan perkiraan)
-                const t = target;
-                const tambah = hasilJual > sub;
-                const shift = tambah
-                    ? Math.max(0, Math.ceil((per * hs - t * sub) / (per + t) - 1e-9))
-                    : Math.max(0, Math.ceil((per * hs - t * sub) / (per - t) - 1e-9));
-                const totalBaru = sub + (tambah ? shift : -shift);
+                // Arah: naikkan % (menjauhkan Total dari Hasil) atau turunkan % (mendekatkan)
+                const perluNaik = diBawahMin || persenSkrBulat < target;
+                let shift, tambah;
+                if (perluNaik) {
+                    tambah = hasilJual <= sub; // menjauh
+                    shift = tambah
+                        ? Math.max(0, Math.ceil(target * hasilJual / (per - target) - 1e-9))
+                        : Math.max(0, Math.ceil(target * hasilJual / (per + target) - 1e-9));
+                } else {
+                    tambah = hasilJual > sub; // mendekat
+                    shift = tambah
+                        ? Math.max(0, Math.ceil((per * hs - target * sub) / (per + target) - 1e-9))
+                        : Math.max(0, Math.ceil((per * hs - target * sub) / (per - target) - 1e-9));
+                }
+                const totalBaru = perluNaik
+                    ? (tambah ? hasilJual + shift : hasilJual - shift)
+                    : (tambah ? sub + shift : sub - shift);
                 if (totalBaru <= 0) {
                     html += `<div class="sim-hasil-box" style="background:#fef2f2;border-color:#fca5a5;color:#7f1d1d">` +
                         `<b>${NAMA}</b> \u2014 target ${fmtPersen(target)}% tidak dapat dicapai lewat totalisator (total baru \u2264 0). ` +
                         `Perbaiki lewat Stok Akhir.</div>`;
                     return;
                 }
-                const persenBaru = Math.abs(totalBaru - hasilJual) * 100 / totalBaru;
+                const persenBaru = Math.abs(totalBaru - hasilJual) * per / totalBaru;
 
                 // ATURAN KHUSUS: hanya baris 1 & 2 yang dapat diubah
                 const baris = [];
@@ -3244,7 +3258,6 @@ function salinFallback(teks) {
                     const ak = Math.round(numVal(p + 'Akhir' + i));
                     if (ak > 0 || aw > 0) baris.push({ i: i, aw: aw, ak: ak, ruang: ak - aw });
                 }
-
                 let bagian = null;
                 if (simMode === 'bagi') {
                     if (!baris.length) {
@@ -3268,7 +3281,6 @@ function salinFallback(teks) {
                     }
                     bagian = [{ d: d, delta: shift }];
                 }
-
                 const rowsHtml = bagian.map(({ d, delta }) => {
                     if (delta <= 0) {
                         return `\u2022 <b>Akhir baris ${d.i}</b>: <span style="color:#94a3b8">tanpa perubahan (tetap ${fmtNum.format(d.ak)})</span>`;
@@ -3278,13 +3290,35 @@ function salinFallback(teks) {
                     return `\u2022 <b>Akhir baris ${d.i}</b>: ${fmtNum.format(d.ak)} \u2192 <b>${fmtNum.format(baru)}</b> ${btnSalin(baru)} <span style="color:#64748b">(${ket})</span>`;
                 }).join('<br>');
 
+                // ── Bantuan 2: ubah Stok Akhir (Hasil bergeser, Total tetap) ──
+                const signed = hasilJual - sub;
+                const sT = target * sub / per;
+                const dRaw = signed - sT;
+                const deltaStok = Math.max(1, Math.ceil(Math.abs(dRaw)));
+                const stokNaik = dRaw > 0;
+                const stokSkr = parseNum(document.getElementById(p + 'STAkr').textContent);
+                const stokBaru = stokNaik ? stokSkr + deltaStok : stokSkr - deltaStok;
+                let htmlStok;
+                if (stokBaru < 0) {
+                    htmlStok = `\u2022 <b>Stok Akhir</b>: <span style="color:#94a3b8">tidak memungkinkan (nilai baru negatif)</span>`;
+                } else {
+                    htmlStok = `\u2022 <b>Stok Akhir</b>: ${fmtNum.format(stokSkr)} \u2192 <b>${fmtNum.format(stokBaru)}</b> ${btnSalin(stokBaru)} ` +
+                        `<span style="color:#64748b">(${stokNaik ? 'naikkan' : 'turunkan'} ${fmtNum.format(deltaStok)} \u2192 Hasil ${stokNaik ? 'turun' : 'naik'}, % menjadi ${fmtPersen(target)}%)</span>`;
+                }
+
                 const labelMode = simMode === 'bagi' ? '' :
                     ` <span style="color:#64748b">(mode: baris ${simMode === 'baris1' ? '1' : '2'} saja)</span>`;
-                html += `<div class="sim-hasil-box">` +
-                    `<b>${NAMA}</b>${labelMode} \u2014 ${fmtPersen(persenSkr)}% \u2192 target <b>${fmtPersen(target)}%</b>: ` +
-                    `perlu <b>${tambah ? 'TAMBAH' : 'KURANGI'} ${fmtNum.format(shift)} liter</b> ` +
+                const alertBox = diBawahMin
+                    ? `<div class="sim-hasil-box" style="background:#fef2f2;border-color:#fca5a5;color:#7f1d1d">` +
+                      `\u26a0\ufe0f <b>% ${NAMA} = ${fmtPersen(persenSkr)}% \u2014 di bawah batas minimal 0,1%!</b> Wajib dinaikkan.</div>`
+                    : '';
+                const arahLabel = perluNaik
+                    ? `perlu <b>${tambah ? 'TAMBAH' : 'KURANGI'} ${fmtNum.format(shift)} liter</b> total (menjauh dari Hasil)`
+                    : `perlu <b>${tambah ? 'TAMBAH' : 'KURANGI'} ${fmtNum.format(shift)} liter</b> total`;
+                html += alertBox + `<div class="sim-hasil-box">` +
+                    `<b>${NAMA}</b>${labelMode} \u2014 ${fmtPersen(persenSkr)}% \u2192 target <b>${fmtPersen(target)}%</b>: ${arahLabel} ` +
                     `(total ${fmtNum.format(sub)} \u2192 ${fmtNum.format(totalBaru)} L, % menjadi ${fmtPersen(persenBaru)}%)<br>` +
-                    rowsHtml + `</div>`;
+                    rowsHtml + `<br>` + htmlStok + `</div>`;
             });
             elHasil.innerHTML = html;
         }
