@@ -1707,12 +1707,7 @@
                 <div class="sim-target-row">
                     <input type="text" inputmode="decimal" id="target-pl" value="0,5" oninput="this.value=this.value.replace(/[-−]/g,'');hitungSimulasiPersen()" placeholder="Target %" aria-label="Target persentase PL" />
                 </div>
-                <div class="sim-target-row" style="margin-top:-4px">
-                    <span style="font-size:12px;color:#64748b;font-weight:700;min-width:44px">Mode:</span>
-                    <button class="sim-chip sim-mode active" data-mode="bagi" onclick="setModeSimulasi('pl','bagi')">Bagi baris 1 &amp; 2</button>
-                    <button class="sim-chip sim-mode" data-mode="baris1" onclick="setModeSimulasi('pl','baris1')">Baris 1 saja</button>
-                    <button class="sim-chip sim-mode" data-mode="baris2" onclick="setModeSimulasi('pl','baris2')">Baris 2 saja</button>
-                </div>
+                
                 <div id="hasilSim-pl"></div>
             </div>
         </section>
@@ -3468,11 +3463,33 @@ function salinFallback(teks) {
                             `(perhitungan membutuhkan stok ${fmtNum.format(stokBaru0)} L). Periksa kembali data / target.</div>`;
                         return;
                     }
+                    // Rincian teoritis Stok Akhir per baris
+                    const barisStok = [];
+                    for (let i = 1; i <= 3; i++) {
+                        const v = Math.round(numVal(p + 'STAkr' + i));
+                        if (v > 0) barisStok.push({ i: i, v: v });
+                    }
+                    let rincianHtml = '';
+                    if (barisStok.length) {
+                        const bagianStok = bagi(barisStok, deltaStok0, 'v');
+                        rincianHtml = bagianStok.map(({ d, delta }) => {
+                            if (delta <= 0) {
+                                return `\u2022 <b>Stok Akhir baris ${d.i}</b>: <span style="color:#94a3b8">tanpa perubahan (tetap ${fmtNum.format(d.v)})</span>`;
+                            }
+                            const baru = d.v + (stokNaik0 ? delta : -delta);
+                            if (baru < 0) {
+                                return `\u2022 <b>Stok Akhir baris ${d.i}</b>: <span style="color:#b45309">tidak cukup (stok ${fmtNum.format(d.v)} L)</span>`;
+                            }
+                            const ket = (stokNaik0 ? 'naikkan ' : 'turunkan ') + fmtNum.format(delta);
+                            return `\u2022 <b>Stok Akhir baris ${d.i}</b>: ${fmtNum.format(d.v)} \u2192 <b>${fmtNum.format(baru)}</b> ${btnSalin(baru)} <span style="color:#64748b">(${ket})</span>`;
+                        }).join('<br>') + '<br>';
+                    }
                     elHasil.innerHTML = alertBox0 + `<div class="sim-hasil-box">` +
                         `<b>${NAMA}</b> \u2014 ${fmtPersen(persenSkr)}% \u2192 target <b>${fmtPersen(target)}%</b>: ` +
-                        `ubah <b>Stok Akhir</b>: ${fmtNum.format(stokSkr0)} \u2192 <b>${fmtNum.format(stokBaru0)}</b> ${btnSalin(stokBaru0)} ` +
+                        `<b>Stok Akhir total: ${fmtNum.format(stokSkr0)} \u2192 ${fmtNum.format(stokBaru0)}</b> ` +
                         `<span style="color:#64748b">(${stokNaik0 ? 'naikkan' : 'turunkan'} ${fmtNum.format(deltaStok0)} \u2192 Hasil ${stokNaik0 ? 'turun' : 'naik'}, % menjadi ${fmtPersen(target)}%)</span><br>` +
-                        `<span style="color:#64748b;font-size:12px">Aturan: PERTALITE hanya dapat diubah lewat <b>Stok Akhir</b>.</span></div>`;
+                        rincianHtml +
+                        `<span style="color:#64748b;font-size:12px">Rincian teoritis per baris \u2014 salin satu baris ke kolom Stok Akhir yang sesuai. Aturan: PERTALITE hanya dapat diubah lewat <b>Stok Akhir</b>.</span></div>`;
                     return;
                 }
 
