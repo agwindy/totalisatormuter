@@ -2946,6 +2946,10 @@ let lastOver = { pl: false, px: false };
         function buildPDF() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF({ orientation: 'portrait', unit: 'pt', format: 'a4' });
+            if (typeof doc.autoTable !== 'function') {
+                showToast('❌ Plugin tabel PDF belum termuat — cek koneksi lalu muat ulang halaman');
+                return null;
+            }
             const d = collectBulanan();
 
             const tglPenuh = isBulanPenuh();
@@ -3002,7 +3006,24 @@ let lastOver = { pl: false, px: false };
 
             let y = tglPenuh ? 112 : 126;
                         doc.autoTable({ ...base, body: bodyTabelFix('Rincian Totalisator Pertalite', d.pl), startY: y });
-            doc.autoTable({ ...base, body: bodyTabelFix('Rincian Totalisator Stok Real', d.px), startY: doc.lastAutoTable.finalY + 20 });
+            doc.autoTable({ ...base, body: bodyTabelFix('Rincian Totalisator Pertamax', d.px), startY: doc.lastAutoTable.finalY + 20 });
+
+            // Hasil Set & Persentase (ringkas)
+            const baseHS = {
+                ...base,
+                styles: { ...base.styles, halign: 'center' },
+                columnStyles: { 0: { cellWidth: 200, halign: 'left' }, 1: { cellWidth: 150, halign: 'right' }, 2: { cellWidth: 145, halign: 'right' } }
+            };
+            doc.autoTable({
+                ...baseHS,
+                body: [
+                    [{ content: 'Hasil Set & Persentase', colSpan: 3, styles: { fontStyle: 'bold', fontSize: 11.5, halign: 'left', cellPadding: 5 } }],
+                    ['Produk', 'Hasil Set (Liter)', 'Persentase'].map(h => ({ content: h, styles: { fontStyle: 'bold', halign: 'center' } })),
+                    ['PERTALITE', d.infPL.hs, d.infPL.ps + '%'],
+                    ['PERTAMAX', d.infPX.hs, d.infPX.ps + '%']
+                ],
+                startY: doc.lastAutoTable.finalY + 20
+            });
 
             return doc;
         }
@@ -3012,9 +3033,16 @@ let lastOver = { pl: false, px: false };
                 showToast('❌ Library PDF belum termuat — cek koneksi lalu muat ulang halaman');
                 return;
             }
-            const d = collectBulanan();
-            buildPDF().save(`Totalisator-Bulanan-${d.bulanVal || 'undated'}.pdf`);
-            showToast('📄 PDF berhasil diunduh');
+            try {
+                const d = collectBulanan();
+                const doc = buildPDF();
+                if (!doc) return;
+                doc.save(`Totalisator-Bulanan-${d.bulanVal || 'undated'}.pdf`);
+                showToast('📄 PDF berhasil diunduh');
+            } catch (e) {
+                console.error('exportPDF:', e);
+                showToast('❌ PDF gagal: ' + (e && e.message ? e.message : e));
+            }
         }
 
         // ─── EXPORT EXCEL ───
@@ -3024,6 +3052,7 @@ let lastOver = { pl: false, px: false };
                 return;
             }
             const d = collectBulanan();
+            try {
             const raw = v => (v && String(v).trim() !== '') ? parseNum(v) : '';
 
             const head = ['Awal', 'Akhir', 'Total', 'Stok Awal', 'DO', 'Tera', 'Stok Akhir', 'Hasil'];
@@ -3136,6 +3165,10 @@ let lastOver = { pl: false, px: false };
             XLSX.utils.book_append_sheet(wb, ws, 'Totalisator Bulanan');
             XLSX.writeFile(wb, `Totalisator-Bulanan-${d.bulanVal || 'undated'}.xlsx`, { cellStyles: true });
             showToast('📗 Excel berhasil diunduh');
+            } catch (e) {
+                console.error('exportExcel:', e);
+                showToast('❌ Excel gagal: ' + (e && e.message ? e.message : e));
+            }
         }
 
         // ─── BAGIKAN KE WHATSAPP ───
