@@ -2735,15 +2735,20 @@ let lastOver = { pl: false, px: false };
                 `TOTAL LITER BULANAN : ${g('grandTotalBulanan')} L`;
 
             const done = () => showToast('\u2705 Rekap bulanan disalin');
-            navigator.clipboard.writeText(text).then(done).catch(() => {
+            const fallback = () => {
                 const textarea = document.createElement('textarea');
                 textarea.value = text;
                 document.body.appendChild(textarea);
                 textarea.select();
-                document.execCommand('copy');
+                try { document.execCommand('copy'); } catch (e) {}
                 document.body.removeChild(textarea);
                 done();
-            });
+            };
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(done).catch(fallback);
+            } else {
+                fallback();
+            }
         }
 
 
@@ -2996,54 +3001,9 @@ let lastOver = { pl: false, px: false };
             };
 
             let y = tglPenuh ? 112 : 126;
-            doc.autoTable({ ...base, body: bodyTabelFix('Rincian Totalisator Pertalite', d.pl), startY: y });
+                        doc.autoTable({ ...base, body: bodyTabelFix('Rincian Totalisator Pertalite', d.pl), startY: y });
             doc.autoTable({ ...base, body: bodyTabelFix('Rincian Totalisator Stok Real', d.px), startY: doc.lastAutoTable.finalY + 20 });
-            doc.autoTable({ ...base, body: bodyTabelFix('Rincian Totalisator Stok Gantungan Pertamax', d.pxg), startY: doc.lastAutoTable.finalY + 20 });
 
-            // Produk (3 baris)
-            const baseProduk = {
-                ...base,
-                styles: { ...base.styles, halign: 'center' },
-                columnStyles: {
-                    0: { cellWidth: 140 },
-                    1: { cellWidth: 120, halign: 'right' },
-                    2: { cellWidth: 120 },
-                    3: { cellWidth: 115, halign: 'right' }
-                }
-            };
-            doc.autoTable({
-                ...baseProduk,
-                body: [
-                    [{ content: 'Produk', colSpan: 4, styles: { fontStyle: 'bold', fontSize: 11.5, halign: 'left', cellPadding: 5 } }],
-                    ['Produk', 'Hasil Set', 'Per 100 %', '%'].map(h => ({ content: h, styles: { fontStyle: 'bold' } })),
-                    ['PERTALITE', d.infPL.hs, d.infPL.per || '100', d.infPL.ps],
-                    ['PERTAMAX STOK REAL', d.infPX.hs, d.infPX.per || '100', d.infPX.ps],
-                    ['PERTAMAX STOK GANTUNGAN', d.infPXG.hs, d.infPXG.per || '100', d.infPXG.ps]
-                ],
-                startY: doc.lastAutoTable.finalY + 20
-            });
-
-            // Perbandingan Real vs Gantungan
-            const baseBanding = {
-                ...base,
-                styles: { ...base.styles, halign: 'right' },
-                columnStyles: {
-                    0: { cellWidth: 135, halign: 'left' },
-                    1: { cellWidth: 120 }, 2: { cellWidth: 120 }, 3: { cellWidth: 120 }
-                }
-            };
-            doc.autoTable({
-                ...baseBanding,
-                body: [
-                    [{ content: 'Perbandingan: Stok Real vs Gantungan', colSpan: 4, styles: { fontStyle: 'bold', fontSize: 11.5, halign: 'left', cellPadding: 5 } }],
-                    ['Rincian', 'Stok Real', 'Stok Gantungan', 'Selisih'].map(h => ({ content: h, styles: { fontStyle: 'bold', halign: 'center' } })),
-                    [{ content: 'Total Liter', styles: { halign: 'left' } }, ...d.cmp.total],
-                    [{ content: 'Hasil', styles: { halign: 'left' } }, ...d.cmp.hasil],
-                    [{ content: 'Hasil Set', styles: { halign: 'left' } }, ...d.cmp.hs],
-                    [{ content: 'Persentase', styles: { fontStyle: 'bold', halign: 'left' } }, ...d.cmp.pct.map((v, i) => ({ content: v + (i < 2 ? '%' : ''), styles: i === 3 - 1 ? {} : {} }))]
-                ],
-                startY: doc.lastAutoTable.finalY + 20
-            });
             return doc;
         }
 
