@@ -1798,120 +1798,9 @@
                 <div id="hasilSim-px"></div>
             </div>
         </section>
-        <!-- ═══ RINCIAN TOTALISATOR STOK GANTUNGAN PERTAMAX ═══ -->
-        <section class="card" aria-label="Rincian Totalisator Stok Gantungan Pertamax">
-            <div class="card-header">
-                <div class="card-header-left">
-                    <span class="machine-badge ">PX GANTUNGAN</span>
-                    <h2>Rincian Totalisator Stok Gantungan Pertamax</h2>
-                </div>
-            </div>
-            <div class="table-wrap">
-                <table class="tot">
-                    <thead>
-                        <tr>
-                            <th>Awal</th><th>Akhir</th><th>Total</th>
-                            <th>Stok Awal</th><th>DO</th><th>Total ril</th>
-                            <th>Tera</th><th>Total M</th><th>Stok Akhir</th><th>Hasil</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><input type="number" id="pxgAwal1" oninput="hitungBulanan()" placeholder="0" min="0" /></td>
-                            <td><input type="number" id="pxgAkhir1" oninput="hitungBulanan()" placeholder="0" min="0" /></td>
-                            <td class="compute" id="pxgTot1">0</td>
-                            <td><input type="number" id="pxgST1" oninput="hitungBulanan()" placeholder="0" min="0" /></td>
-                            <td><input type="number" id="pxgDO1" oninput="hitungBulanan()" placeholder="0" min="0" /></td>
-                            <td class="compute" id="pxgRil1">0</td>
-                            <td><input type="number" id="pxgTera1" oninput="hitungBulanan()" placeholder="0" min="0" /></td>
-                            <td class="compute" id="pxgTM1">0</td>
-                            <td><input type="number" id="pxgSTAkr1" oninput="hitungBulanan()" placeholder="0" min="0" /></td>
-                            <td class="compute" id="pxgHasil1">0</td>
-                        </tr>
-                        <tr>
-                            <td><input type="number" id="pxgAwal2" oninput="hitungBulanan()" placeholder="0" min="0" /></td>
-                            <td><input type="number" id="pxgAkhir2" oninput="hitungBulanan()" placeholder="0" min="0" /></td>
-                            <td class="compute" id="pxgTot2">0</td>
-                            <td><input type="number" id="pxgST2" oninput="hitungBulanan()" placeholder="0" min="0" /></td>
-                            <td><input type="number" id="pxgDO2" oninput="hitungBulanan()" placeholder="0" min="0" /></td>
-                            <td class="compute" id="pxgRil2">0</td>
-                            <td><input type="number" id="pxgTera2" oninput="hitungBulanan()" placeholder="0" min="0" /></td>
-                            <td class="compute" id="pxgTM2">0</td>
-                            <td><input type="number" id="pxgSTAkr2" oninput="hitungBulanan()" placeholder="0" min="0" /></td>
-                            <td class="compute" id="pxgHasil2">0</td>
-                        </tr>
-                        <tr>
-                            <td><input type="number" id="pxgAwal3" oninput="hitungBulanan()" placeholder="0" min="0" /></td>
-                            <td><input type="number" id="pxgAkhir3" oninput="hitungBulanan()" placeholder="0" min="0" /></td>
-                            <td class="compute" id="pxgTot3">0</td>
-                            <td><input type="number" id="pxgST3" oninput="hitungBulanan()" placeholder="0" min="0" /></td>
-                            <td><input type="number" id="pxgDO3" oninput="hitungBulanan()" placeholder="0" min="0" /></td>
-                            <td class="compute" id="pxgRil3">0</td>
-                            <td><input type="number" id="pxgTera3" oninput="hitungBulanan()" placeholder="0" min="0" /></td>
-                            <td class="compute" id="pxgTM3">0</td>
-                            <td><input type="number" id="pxgSTAkr3" oninput="hitungBulanan()" placeholder="0" min="0" /></td>
-                            <td class="compute" id="pxgHasil3">0</td>
-                        </tr>
-                        <tr class="subtotal">
-                            <td colspan="2" class="sub-label">Subtotal PX GANTUNGAN</td>
-                            <td class="compute" id="pxgSub">0</td>
-                            <td class="compute" id="pxgST">0</td>
-                            <td class="compute" id="pxgDO">0</td>
-                            <td class="compute" id="pxgRil">0</td>
-                            <td class="compute" id="pxgTera">0</td>
-                            <td class="compute" id="pxgTM">0</td>
-                            <td class="compute" id="pxgSTAkr">0</td>
-                            <td class="compute" id="pxgHasil">0</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            <div class="blok-persen-row">
-                <span>Hasil set: <b id="hasilSetPXG">0</b> liter</span>
-                <span>Persen: <b id="persenPXG">0</b>%</span>
-                <span class="per100-wrap">per 100 % <input type="number" id="pxgPer100" value="100" min="0" oninput="hitungBulanan()" /></span>
-            </div>
-            <div class="alert-banner hidden" id="alertPXG" role="alert"></div>
-            <div class="sim-blok">
-                <div class="sim-target-row">
-                    <input type="text" inputmode="decimal" id="target-pxg" value="0,5" oninput="this.value=this.value.replace(/[-−]/g,'');hitungSimulasiPersen()" placeholder="Target %" aria-label="Target persentase PX GANTUNGAN" />
-                </div>
-                <div class="sim-target-row" style="margin-top:-4px">
-                    <span style="font-size:12px;color:#64748b;font-weight:700;min-width:44px">Mode:</span>
-                    <button class="sim-chip sim-mode active" data-mode="bagi" onclick="setModeSimulasi('pxg','bagi')">Bagi baris 1 &amp; 2</button>
-                    <button class="sim-chip sim-mode" data-mode="baris1" onclick="setModeSimulasi('pxg','baris1')">Baris 1 saja</button>
-                    <button class="sim-chip sim-mode" data-mode="baris2" onclick="setModeSimulasi('pxg','baris2')">Baris 2 saja</button>
-                </div>
-                <div id="hasilSim-pxg"></div>
-            </div>
-        </section>
+        
 
-        <!-- ═══ PERBANDINGAN REAL VS GANTUNGAN ═══ -->
-        <section class="card" aria-label="Perbandingan stok">
-            <div class="card-header">
-                <div class="card-header-left">
-                    <span class="machine-badge">⚖️</span>
-                    <h2>Perbandingan: Stok Real vs Gantungan</h2>
-                </div>
-            </div>
-            <div class="table-wrap">
-                <table class="tot" style="min-width: 620px;">
-                    <thead>
-                        <tr><th>Rincian</th><th>Stok Real</th><th>Stok Gantungan</th><th>Selisih (Real − Gantungan)</th></tr>
-                    </thead>
-                    <tbody>
-                        <tr><td style="text-align:left;font-weight:600;">Total Liter</td><td class="compute" id="cmpTotalR">0</td><td class="compute" id="cmpTotalG">0</td><td class="compute" id="cmpTotalS">0</td></tr>
-                        <tr><td style="text-align:left;font-weight:600;">Stok Awal</td><td class="compute" id="cmpSTR">0</td><td class="compute" id="cmpSTG">0</td><td class="compute" id="cmpSTS">0</td></tr>
-                        <tr><td style="text-align:left;font-weight:600;">DO</td><td class="compute" id="cmpDOR">0</td><td class="compute" id="cmpDOG">0</td><td class="compute" id="cmpDOS">0</td></tr>
-                        <tr><td style="text-align:left;font-weight:600;">Tera</td><td class="compute" id="cmpTeraR">0</td><td class="compute" id="cmpTeraG">0</td><td class="compute" id="cmpTeraS">0</td></tr>
-                        <tr><td style="text-align:left;font-weight:600;">Stok Akhir</td><td class="compute" id="cmpSTakR">0</td><td class="compute" id="cmpSTakG">0</td><td class="compute" id="cmpSTakS">0</td></tr>
-                        <tr><td style="text-align:left;font-weight:600;">Hasil</td><td class="compute" id="cmpHasilR">0</td><td class="compute" id="cmpHasilG">0</td><td class="compute" id="cmpHasilS">0</td></tr>
-                        <tr><td style="text-align:left;font-weight:600;">Hasil Set</td><td class="compute" id="cmpHSR">0</td><td class="compute" id="cmpHSG">0</td><td class="compute" id="cmpHSS">0</td></tr>
-                        <tr class="subtotal"><td style="text-align:left;">Persentase</td><td class="compute" id="cmpPctR">0</td><td class="compute" id="cmpPctG">0</td><td class="compute" id="cmpPctS">0</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </section>
+        
 
         <!-- ═══ HASIL BULANAN ═══ -->
         <div class="result-card">
@@ -1928,7 +1817,6 @@
             <div class="result-value-wrap rekap-persen">
                 <p id="rekapPL">PL 0%</p>
                 <p id="rekapPX">PX Real 0%</p>
-                <p id="rekapPXG">PX Gantungan 0%</p>
             </div>
             <div class="result-footer">
                 <span>Batas aman: di bawah 1%</span>
@@ -2426,8 +2314,8 @@
             if (el) el.textContent = fmtNum.format(v);
         }
 
-const BLOKS_BULANAN = ['pl', 'px', 'pxg'];
-        let simMode = { pl: 'bagi', px: 'bagi', pxg: 'bagi' };
+const BLOKS_BULANAN = ['pl', 'px'];
+        let simMode = { pl: 'bagi', px: 'bagi' };
 let lastOver = { pl: false, px: false };
         let clearTimer = { pl: null, px: null };
 
@@ -2615,9 +2503,6 @@ let lastOver = { pl: false, px: false };
                 checkProduk(p, sTot, sHasil);
             });
 
-            isiPerbandingan(dataBlok);
-            catatanSilang();
-
             // Rekap persentase pada kartu bawah
             const labelKartu = { pl: 'PL', px: 'PX Real', pxg: 'PX Gantungan' };
             BLOKS_BULANAN.forEach(p => {
@@ -2714,24 +2599,16 @@ let lastOver = { pl: false, px: false };
                 `Total Liter : ${g(p + 'Sub')}\n` +
                 `Stok Awal   : ${g(p + 'ST')}\n` +
                 `DO          : ${g(p + 'DO')}\n` +
-                `Total Ril   : ${g(p + 'Ril')}\n` +
                 `Tera        : ${g(p + 'Tera')}\n` +
-                `Total M     : ${g(p + 'TM')}\n` +
                 `Stok Akhir  : ${g(p + 'STAkr')}\n` +
                 `Hasil       : ${g(p + 'Hasil')}\n` +
                 `Hasil Set   : ${g('hasilSet' + p.toUpperCase())} L (% ${g('persen' + p.toUpperCase())}%)`;
             const text =
                 `TOTALISATOR BULANAN \u2014 ${labelBulan}\n${isBulanPenuh() ? '' : 'Periode   : ' + periodeLabel() + '\n'}\n` +
                 sect('PERTALITE (PL)', 'pl') + `\n\n` +
-                sect('PERTAMAX STOK REAL', 'px') + `\n\n` +
-                sect('PERTAMAX STOK GANTUNGAN', 'pxg') + `\n\n` +
-                `PERBANDINGAN REAL vs GANTUNGAN\n` +
-                `Total Liter : Real ${g('cmpTotalR')} \u00b7 Gantungan ${g('cmpTotalG')} \u00b7 Selisih ${g('cmpTotalS')}\n` +
-                `Hasil       : Real ${g('cmpHasilR')} \u00b7 Gantungan ${g('cmpHasilG')} \u00b7 Selisih ${g('cmpHasilS')}\n` +
-                `Hasil Set   : Real ${g('cmpHSR')} \u00b7 Gantungan ${g('cmpHSG')} \u00b7 Selisih ${g('cmpHSS')}\n` +
-                `Persentase  : Real ${g('cmpPctR')}% \u00b7 Gantungan ${g('cmpPctG')}% \u00b7 Selisih ${g('cmpPctS')}\n\n` +
+                sect('PERTAMAX', 'px') + `\n\n` +
                 `RINCIAN PERSENTASE (minimal 0,1% \u2013 maksimal 1%)\n` +
-                `PERTALITE : ${g('persenPL')}% \u00b7 PERTAMAX REAL : ${g('persenPX')}% \u00b7 PERTAMAX GANTUNGAN : ${g('persenPXG')}%\n\n` +
+                `PERTALITE : ${g('persenPL')}% \u00b7 PERTAMAX : ${g('persenPX')}%\n\n` +
                 `TOTAL LITER BULANAN : ${g('grandTotalBulanan')} L`;
 
             const done = () => showToast('\u2705 Rekap bulanan disalin');
@@ -2903,12 +2780,12 @@ let lastOver = { pl: false, px: false };
             const block = p => ({
                 rows: [1, 2, 3].map(i => ({
                     aw: gv(p + 'Awal' + i), ak: gv(p + 'Akhir' + i), tot: gt(p + 'Tot' + i),
-                    st: gv(p + 'ST' + i), do: gv(p + 'DO' + i), ril: gt(p + 'Ril' + i),
-                    tera: gv(p + 'Tera' + i), tm: gt(p + 'TM' + i),
+                    st: gv(p + 'ST' + i), do: gv(p + 'DO' + i),
+                    tera: gv(p + 'Tera' + i),
                     stakr: gv(p + 'STAkr' + i), hasil: gt(p + 'Hasil' + i)
                 })),
-                sub: gt(p + 'Sub'), st: gt(p + 'ST'), do: gt(p + 'DO'), ril: gt(p + 'Ril'),
-                tera: gt(p + 'Tera'), tm: gt(p + 'TM'), stakr: gt(p + 'STAkr'), hasil: gt(p + 'Hasil')
+                sub: gt(p + 'Sub'), st: gt(p + 'ST'), do: gt(p + 'DO'),
+                tera: gt(p + 'Tera'), stakr: gt(p + 'STAkr'), hasil: gt(p + 'Hasil')
             });
             const info = p => ({
                 hs: gt('hasilSet' + p.toUpperCase()), per: gv(p + 'Per100'), ps: gt('persen' + p.toUpperCase())
@@ -2917,15 +2794,9 @@ let lastOver = { pl: false, px: false };
                 bulan: bulanLabel(),
                 bulanVal: gv('bulanBulanan'),
                 periode: isBulanPenuh() ? '' : periodeLabel(),
-                pl: block('pl'), px: block('px'), pxg: block('pxg'),
-                infPL: info('pl'), infPX: info('px'), infPXG: info('pxg'),
-                grand: gt('grandTotalBulanan'),
-                cmp: {
-                    total: [gt('cmpTotalR'), gt('cmpTotalG'), gt('cmpTotalS')],
-                    pct: [gt('cmpPctR'), gt('cmpPctG'), gt('cmpPctS')],
-                    hasil: [gt('cmpHasilR'), gt('cmpHasilG'), gt('cmpHasilS')],
-                    hs: [gt('cmpHSR'), gt('cmpHSG'), gt('cmpHSS')]
-                }
+                pl: block('pl'), px: block('px'),
+                infPL: info('pl'), infPX: info('px'),
+                grand: gt('grandTotalBulanan')
             };
         }
 
@@ -3051,8 +2922,8 @@ let lastOver = { pl: false, px: false };
                 showToast('\u274c Library Excel belum termuat \u2014 cek koneksi lalu muat ulang halaman');
                 return;
             }
-            const d = collectBulanan();
             try {
+            const d = collectBulanan();
             const raw = v => (v && String(v).trim() !== '') ? parseNum(v) : '';
 
             const head = ['Awal', 'Akhir', 'Total', 'Stok Awal', 'DO', 'Tera', 'Stok Akhir', 'Hasil'];
@@ -3069,22 +2940,12 @@ let lastOver = { pl: false, px: false };
                 [],
                 ...blockAoa('Rincian Totalisator Pertalite', d.pl),
                 [],
-                ...blockAoa('Rincian Totalisator Stok Real', d.px),
-                [],
-                ...blockAoa('Rincian Totalisator Stok Gantungan Pertamax', d.pxg),
+                ...blockAoa('Rincian Totalisator Pertamax', d.px),
                 [],
                 ['Produk'],
                 ['Produk', 'Hasil Set', 'Per 100 %', '%'],
                 ['PERTALITE', raw(d.infPL.hs), raw(d.infPL.per) || 100, d.infPL.ps],
-                ['PERTAMAX STOK REAL', raw(d.infPX.hs), raw(d.infPX.per) || 100, d.infPX.ps],
-                ['PERTAMAX STOK GANTUNGAN', raw(d.infPXG.hs), raw(d.infPXG.per) || 100, d.infPXG.ps],
-                [],
-                ['Perbandingan: Stok Real vs Gantungan'],
-                ['Rincian', 'Stok Real', 'Stok Gantungan', 'Selisih'],
-                ['Total Liter', ...d.cmp.total],
-                ['Hasil', ...d.cmp.hasil],
-                ['Hasil Set', ...d.cmp.hs],
-                ['Persentase', d.cmp.pct[0] + '%', d.cmp.pct[1] + '%', d.cmp.pct[2]]
+                ['PERTAMAX', raw(d.infPX.hs), raw(d.infPX.per) || 100, d.infPX.ps]
             ];
             const ws = XLSX.utils.aoa_to_sheet(aoa);
 
@@ -3094,8 +2955,7 @@ let lastOver = { pl: false, px: false };
                     if (!ws[addr]) ws[addr] = { t: 's', v: '' };
                 }
             };
-            [0, 1, 2, 4, 12, 20, 28].forEach(r => ensureCells(r, 8));
-            ensureCells(34, 4);
+            [0, 1, 2, 4, 12, 20].forEach(r => ensureCells(r, 8));
 
             const thin = { style: 'thin', color: { rgb: '000000' } };
             const allBorder = { top: thin, bottom: thin, left: thin, right: thin };
@@ -3127,24 +2987,12 @@ let lastOver = { pl: false, px: false };
                 for (let r = rData0; r < rSub; r++) cellNum(r);
                 cellNum(rSub).forEach(cell => { cell.s.font = { bold: true }; });
             };
-            styleTabel(4, 5, 6, 10);    // Pertalite
-            styleTabel(12, 13, 14, 18); // Stok Real
-            styleTabel(20, 21, 22, 26); // Stok Gantungan
+            styleTabel(4, 5, 6, 10);
+            styleTabel(12, 13, 14, 18);
 
-            // Produk
-            rowStyle(28, { font: { bold: true, sz: 11 }, border: allBorder, alignment: { horizontal: 'left', vertical: 'center' } }, 0, 3);
-            rowStyle(29, { font: { bold: true }, border: allBorder, alignment: { horizontal: 'center', vertical: 'center' } }, 0, 3);
-            [30, 31, 32].forEach(cellNum);
-
-            // Perbandingan
-            rowStyle(34, { font: { bold: true, sz: 11 }, border: allBorder, alignment: { horizontal: 'left', vertical: 'center' } }, 0, 3);
-            rowStyle(35, { font: { bold: true }, border: allBorder, alignment: { horizontal: 'center', vertical: 'center' } }, 0, 3);
-            [36, 37, 38, 39].forEach(r => {
-                for (let c = 0; c < 4; c++) {
-                    const cell = ws[XLSX.utils.encode_cell({ r: r, c: c })];
-                    if (cell) cell.s = { border: allBorder, alignment: { horizontal: c === 0 ? 'left' : 'right', vertical: 'center' } };
-                }
-            });
+            rowStyle(20, { font: { bold: true, sz: 11 }, border: allBorder, alignment: { horizontal: 'left', vertical: 'center' } }, 0, 3);
+            rowStyle(21, { font: { bold: true }, border: allBorder, alignment: { horizontal: 'center', vertical: 'center' } }, 0, 3);
+            [22, 23].forEach(cellNum);
 
             ws['!merges'] = [
                 { s: { r: 0, c: 0 }, e: { r: 0, c: 7 } },
@@ -3154,10 +3002,7 @@ let lastOver = { pl: false, px: false };
                 { s: { r: 10, c: 0 }, e: { r: 10, c: 1 } },
                 { s: { r: 12, c: 0 }, e: { r: 12, c: 7 } },
                 { s: { r: 18, c: 0 }, e: { r: 18, c: 1 } },
-                { s: { r: 20, c: 0 }, e: { r: 20, c: 7 } },
-                { s: { r: 26, c: 0 }, e: { r: 26, c: 1 } },
-                { s: { r: 28, c: 0 }, e: { r: 28, c: 3 } },
-                { s: { r: 34, c: 0 }, e: { r: 34, c: 3 } }
+                { s: { r: 20, c: 0 }, e: { r: 20, c: 3 } }
             ];
             ws['!cols'] = [{ wch: 14 }, { wch: 14 }, { wch: 11 }, { wch: 11 }, { wch: 11 }, { wch: 8 }, { wch: 11 }, { wch: 11 }];
 
@@ -3167,7 +3012,7 @@ let lastOver = { pl: false, px: false };
             showToast('📗 Excel berhasil diunduh');
             } catch (e) {
                 console.error('exportExcel:', e);
-                showToast('❌ Excel gagal: ' + (e && e.message ? e.message : e));
+                showToast('\u274c Excel gagal: ' + (e && e.message ? e.message : e));
             }
         }
 
