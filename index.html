@@ -6,11 +6,7 @@
     <title>SPBU 34-17603 · Totalisator</title>
 
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -22,32 +18,15 @@
             padding: 20px;
         }
 
-        .container {
-            width: 100%;
-            max-width: 100%;
-        }
+        .container { width: 100%; max-width: 100%; }
 
         @media (min-width: 768px) {
-            body {
-                padding: 28px;
-                align-items: flex-start;
-            }
-            .app-header {
-                padding: 30px 34px 26px;
-            }
-            .card {
-                padding: 26px 28px 28px;
-            }
-            .result-card {
-                padding: 30px 28px 28px;
-            }
-            .tab-bar {
-                padding: 8px;
-            }
-            .tab-btn {
-                font-size: 15px;
-                padding: 14px 10px;
-            }
+            body { padding: 28px; align-items: flex-start; }
+            .app-header { padding: 30px 34px 26px; }
+            .card { padding: 26px 28px 28px; }
+            .result-card { padding: 30px 28px 28px; }
+            .tab-bar { padding: 8px; }
+            .tab-btn { font-size: 15px; padding: 14px 10px; }
         }
 
         .app-header {
@@ -63,1350 +42,609 @@
         .app-header::after {
             content: '';
             position: absolute;
-            top: -60%;
-            right: -20%;
-            width: 200px;
-            height: 200px;
+            top: -60%; right: -20%;
+            width: 200px; height: 200px;
             background: radial-gradient(circle, rgba(245, 158, 11, 0.10) 0%, transparent 70%);
             border-radius: 50%;
             pointer-events: none;
         }
 
-        .header-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            position: relative;
-            z-index: 1;
-        }
-
-        .header-brand {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
+        .header-top { display: flex; justify-content: space-between; align-items: flex-start; position: relative; z-index: 1; }
+        .header-brand { display: flex; align-items: center; gap: 12px; }
 
         .brand-icon {
-            width: 44px;
-            height: 44px;
+            width: 44px; height: 44px;
             background: linear-gradient(135deg, #f59e0b, #d97706);
             border-radius: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 22px;
-            font-weight: 700;
-            color: #0b1a2e;
-            flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 22px; font-weight: 700; color: #0b1a2e; flex-shrink: 0;
             box-shadow: 0 4px 12px rgba(245, 158, 11, 0.30);
         }
 
-        .brand-text h1 {
-            font-size: 22px;
-            font-weight: 700;
-            color: #ffffff;
-            letter-spacing: -0.3px;
-            line-height: 1.2;
-        }
+        .brand-text h1 { font-size: 22px; font-weight: 700; color: #ffffff; letter-spacing: -0.3px; line-height: 1.2; }
 
         .brand-text .badge {
             display: inline-block;
             background: rgba(245, 158, 11, 0.20);
-            color: #fbbf24;
-            font-size: 10px;
-            font-weight: 600;
-            padding: 2px 10px;
-            border-radius: 20px;
-            letter-spacing: 0.4px;
-            text-transform: uppercase;
-            margin-top: 2px;
+            color: #fbbf24; font-size: 10px; font-weight: 600;
+            padding: 2px 10px; border-radius: 20px;
+            letter-spacing: 0.4px; text-transform: uppercase; margin-top: 2px;
             border: 1px solid rgba(245, 158, 11, 0.15);
         }
 
         .header-status {
             background: rgba(255, 255, 255, 0.06);
             border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 30px;
-            padding: 4px 14px 4px 10px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 11px;
-            color: #94a3b8;
-            font-weight: 500;
-            letter-spacing: 0.2px;
-            backdrop-filter: blur(4px);
-            position: relative;
-            z-index: 1;
+            border-radius: 30px; padding: 4px 14px 4px 10px;
+            display: flex; align-items: center; gap: 6px;
+            font-size: 11px; color: #94a3b8; font-weight: 500;
+            letter-spacing: 0.2px; backdrop-filter: blur(4px);
+            position: relative; z-index: 1;
         }
 
-        .status-dot {
-            width: 7px;
-            height: 7px;
-            background: #22c55e;
-            border-radius: 50%;
-            display: inline-block;
-            animation: pulse-dot 2s infinite;
-        }
+        .status-dot { width: 7px; height: 7px; background: #22c55e; border-radius: 50%; display: inline-block; animation: pulse-dot 2s infinite; }
+        @keyframes pulse-dot { 0%,100% { opacity: 1; transform: scale(1);} 50% { opacity: 0.5; transform: scale(0.85);} }
 
-        @keyframes pulse-dot {
-            0%,
-            100% {
-                opacity: 1;
-                transform: scale(1);
-            }
-            50% {
-                opacity: 0.5;
-                transform: scale(0.85);
-            }
-        }
-
-        .header-sub {
-            color: #94a3b8;
-            font-size: 13px;
-            font-weight: 400;
-            margin-top: 6px;
-            position: relative;
-            z-index: 1;
-            letter-spacing: 0.2px;
-        }
-
-        .header-sub span {
-            color: #fbbf24;
-            font-weight: 500;
-        }
+        .header-sub { color: #94a3b8; font-size: 13px; font-weight: 400; margin-top: 6px; position: relative; z-index: 1; letter-spacing: 0.2px; }
+        .header-sub span { color: #fbbf24; font-weight: 500; }
 
         .scan-tip {
-            background: #eef2ff;
-            border: 1px solid #e0e7ff;
-            color: #3730a3;
-            font-size: 12px;
-            line-height: 1.5;
-            padding: 10px 14px;
-            border-radius: 14px;
-            margin-bottom: 16px;
+            background: #eef2ff; border: 1px solid #e0e7ff; color: #3730a3;
+            font-size: 12px; line-height: 1.5; padding: 10px 14px;
+            border-radius: 14px; margin-bottom: 16px;
         }
-
-        .scan-tip b {
-            font-weight: 700;
-        }
+        .scan-tip b { font-weight: 700; }
 
         .card {
-            background: #ffffff;
-            border-radius: 24px;
-            padding: 20px 22px 22px;
-            margin-bottom: 16px;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.02);
+            background: #ffffff; border-radius: 24px;
+            padding: 20px 22px 22px; margin-bottom: 16px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.04), 0 1px 3px rgba(0,0,0,0.02);
             border: 1px solid #e9edf2;
             transition: box-shadow 0.25s ease, border-color 0.25s ease;
         }
+        .card:hover { border-color: #dce1e9; box-shadow: 0 8px 28px rgba(0,0,0,0.05); }
 
-        .card:hover {
-            border-color: #dce1e9;
-            box-shadow: 0 8px 28px rgba(0, 0, 0, 0.05);
-        }
-
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 18px;
-        }
-
-        .card-header-left {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
+        .card-header-left { display: flex; align-items: center; gap: 10px; }
 
         .machine-badge {
-            font-size: 13px;
-            font-weight: 700;
-            color: #0b1a2e;
-            background: #f1f5f9;
-            padding: 2px 12px;
-            border-radius: 30px;
-            letter-spacing: -0.2px;
+            font-size: 13px; font-weight: 700; color: #0b1a2e;
+            background: #f1f5f9; padding: 2px 12px; border-radius: 30px; letter-spacing: -0.2px;
         }
+        .machine-badge.highlight { background: #fef3c7; color: #b45309; }
 
-        .machine-badge.highlight {
-            background: #fef3c7;
-            color: #b45309;
-        }
-
-        .card-header h2 {
-            font-size: 16px;
-            font-weight: 600;
-            color: #0b1a2e;
-            letter-spacing: -0.2px;
-        }
-
-        .card-actions {
-            display: flex;
-            gap: 6px;
-        }
+        .card-header h2 { font-size: 16px; font-weight: 600; color: #0b1a2e; letter-spacing: -0.2px; }
+        .card-actions { display: flex; gap: 6px; }
 
         .icon-btn {
-            border: none;
-            background: transparent;
-            color: #64748b;
-            width: 38px;
-            height: 38px;
-            border-radius: 12px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: 0.2s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #f8fafc;
-            border: 1px solid transparent;
+            border: none; background: transparent; color: #64748b;
+            width: 38px; height: 38px; border-radius: 12px;
+            cursor: pointer; font-size: 16px; transition: 0.2s ease;
+            display: flex; align-items: center; justify-content: center;
+            background: #f8fafc; border: 1px solid transparent;
         }
+        .icon-btn:hover { background: #f1f5f9; color: #0b1a2e; transform: translateY(-1px); }
+        .icon-btn:active { transform: scale(0.95); }
+        .icon-btn.lock-active { background: #fef3c7; color: #b45309; border-color: #fcd34d; }
+        .icon-btn.copy-btn:hover { background: #dbeafe; color: #2563eb; }
 
-        .icon-btn:hover {
-            background: #f1f5f9;
-            color: #0b1a2e;
-            transform: translateY(-1px);
-        }
+        .input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 
-        .icon-btn:active {
-            transform: scale(0.95);
-        }
-
-        .icon-btn.lock-active {
-            background: #fef3c7;
-            color: #b45309;
-            border-color: #fcd34d;
-        }
-
-        .icon-btn.copy-btn:hover {
-            background: #dbeafe;
-            color: #2563eb;
-        }
-
-        .input-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-        }
-
-        .input-group {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-            position: relative;
-        }
+        .input-group { display: flex; flex-direction: column; gap: 5px; position: relative; }
 
         .input-group label {
-            font-size: 12px;
-            font-weight: 600;
-            color: #475569;
-            letter-spacing: 0.2px;
-            text-transform: uppercase;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 4px;
+            font-size: 12px; font-weight: 600; color: #475569;
+            letter-spacing: 0.2px; text-transform: uppercase;
+            display: flex; align-items: center; justify-content: space-between; gap: 4px;
         }
+        .input-group label .label-left { display: flex; align-items: center; gap: 4px; }
+        .input-group label .label-icon { font-size: 13px; opacity: 0.6; }
+        .label-tools { display: flex; align-items: center; gap: 4px; }
 
-        .input-group label .label-left {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .input-group label .label-icon {
-            font-size: 13px;
-            opacity: 0.6;
-        }
-
-        .label-tools {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .scan-wrap {
-            position: relative;
-        }
+        .scan-wrap { position: relative; }
 
         .scan-btn {
-            border: none;
-            background: #eef2ff;
-            color: #4338ca;
-            width: 22px;
-            height: 22px;
-            border-radius: 7px;
-            cursor: pointer;
-            font-size: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: 0.2s ease;
-            flex-shrink: 0;
+            border: none; background: #eef2ff; color: #4338ca;
+            width: 22px; height: 22px; border-radius: 7px;
+            cursor: pointer; font-size: 12px;
+            display: flex; align-items: center; justify-content: center;
+            transition: 0.2s ease; flex-shrink: 0;
         }
-
-        .scan-btn:hover {
-            background: #e0e7ff;
-            transform: translateY(-1px);
-        }
-
-        .scan-btn:active {
-            transform: scale(0.92);
-        }
+        .scan-btn:hover { background: #e0e7ff; transform: translateY(-1px); }
+        .scan-btn:active { transform: scale(0.92); }
 
         .field-reset-btn {
-            border: none;
-            background: #f1f5f9;
-            color: #94a3b8;
-            width: 22px;
-            height: 22px;
-            border-radius: 7px;
-            cursor: pointer;
-            font-size: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: 0.2s ease;
-            flex-shrink: 0;
+            border: none; background: #f1f5f9; color: #94a3b8;
+            width: 22px; height: 22px; border-radius: 7px;
+            cursor: pointer; font-size: 12px;
+            display: flex; align-items: center; justify-content: center;
+            transition: 0.2s ease; flex-shrink: 0;
         }
-
-        .field-reset-btn:hover {
-            background: #fee2e2;
-            color: #b91c1c;
-            transform: rotate(20deg);
-        }
-
-        .field-reset-btn:active {
-            transform: scale(0.9);
-        }
+        .field-reset-btn:hover { background: #fee2e2; color: #b91c1c; transform: rotate(20deg); }
+        .field-reset-btn:active { transform: scale(0.9); }
 
         .scan-menu {
-            position: absolute;
-            top: calc(100% + 6px);
-            right: 0;
-            background: #ffffff;
-            border-radius: 14px;
+            position: absolute; top: calc(100% + 6px); right: 0;
+            background: #ffffff; border-radius: 14px;
             box-shadow: 0 12px 32px rgba(11, 26, 46, 0.18);
-            border: 1px solid #e9edf2;
-            padding: 6px;
-            display: none;
-            flex-direction: column;
-            gap: 2px;
-            z-index: 20;
-            min-width: 168px;
+            border: 1px solid #e9edf2; padding: 6px;
+            display: none; flex-direction: column; gap: 2px;
+            z-index: 20; min-width: 168px;
         }
-
-        .scan-menu.open {
-            display: flex;
-        }
+        .scan-menu.open { display: flex; }
 
         .scan-menu-item {
-            border: none;
-            background: transparent;
-            color: #0b1a2e;
-            font-size: 13px;
-            font-weight: 500;
-            padding: 9px 10px;
-            border-radius: 9px;
-            cursor: pointer;
-            text-align: left;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: 0.15s ease;
-            font-family: 'Inter', sans-serif;
+            border: none; background: transparent; color: #0b1a2e;
+            font-size: 13px; font-weight: 500; padding: 9px 10px;
+            border-radius: 9px; cursor: pointer; text-align: left;
+            display: flex; align-items: center; gap: 8px;
+            transition: 0.15s ease; font-family: 'Inter', sans-serif;
         }
+        .scan-menu-item:hover { background: #f1f5f9; }
 
-        .scan-menu-item:hover {
-            background: #f1f5f9;
-        }
-
-        .input-wrap {
-            position: relative;
-        }
+        .input-wrap { position: relative; }
 
         .input-group input {
-            width: 100%;
-            border: 1.5px solid #e2e8f0;
-            background: #fafcff;
-            padding: 12px 14px;
-            border-radius: 14px;
-            font-size: 16px;
-            font-weight: 500;
-            color: #0b1a2e;
-            outline: none;
-            transition: 0.2s ease;
-            font-family: 'Inter', sans-serif;
-            letter-spacing: 0.2px;
+            width: 100%; border: 1.5px solid #e2e8f0;
+            background: #fafcff; padding: 12px 14px;
+            border-radius: 14px; font-size: 16px; font-weight: 500;
+            color: #0b1a2e; outline: none; transition: 0.2s ease;
+            font-family: 'Inter', sans-serif; letter-spacing: 0.2px;
         }
-
-        .input-group input::placeholder {
-            color: #b3c0d0;
-            font-weight: 400;
-            font-size: 14px;
-        }
-
-        .input-group input:focus {
-            border-color: #2563eb;
-            background: #ffffff;
-            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.07);
-        }
-
-        .input-group input:disabled {
-            background: #f1f5f9;
-            color: #94a3b8;
-            border-color: #e2e8f0;
-            cursor: not-allowed;
-            opacity: 0.7;
-        }
-
-        .input-group input.just-filled {
-            border-color: #22c55e;
-            background: #f0fdf4;
-            box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.10);
-        }
+        .input-group input::placeholder { color: #b3c0d0; font-weight: 400; font-size: 14px; }
+        .input-group input:focus { border-color: #2563eb; background: #ffffff; box-shadow: 0 0 0 4px rgba(37,99,235,0.07); }
+        .input-group input:disabled { background: #f1f5f9; color: #94a3b8; border-color: #e2e8f0; cursor: not-allowed; opacity: 0.7; }
+        .input-group input.just-filled { border-color: #22c55e; background: #f0fdf4; box-shadow: 0 0 0 4px rgba(34,197,94,0.10); }
 
         .result-card {
             background: linear-gradient(145deg, #0b1a2e, #14283e);
-            border-radius: 24px;
-            padding: 24px 22px 22px;
+            border-radius: 24px; padding: 24px 22px 22px;
             margin-top: 6px;
             box-shadow: 0 12px 32px rgba(11, 26, 46, 0.20);
             border: 1px solid rgba(255, 255, 255, 0.04);
-            position: relative;
-            overflow: hidden;
+            position: relative; overflow: hidden;
         }
-
         .result-card::before {
             content: '';
-            position: absolute;
-            top: -40%;
-            right: -20%;
-            width: 260px;
-            height: 260px;
+            position: absolute; top: -40%; right: -20%;
+            width: 260px; height: 260px;
             background: radial-gradient(circle, rgba(245, 158, 11, 0.08) 0%, transparent 70%);
-            border-radius: 50%;
-            pointer-events: none;
+            border-radius: 50%; pointer-events: none;
         }
 
-        .result-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: relative;
-            z-index: 1;
-        }
-
-        .result-left {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+        .result-top { display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 1; }
+        .result-left { display: flex; align-items: center; gap: 10px; }
 
         .result-left .icon-wrap {
-            width: 36px;
-            height: 36px;
+            width: 36px; height: 36px;
             background: rgba(245, 158, 11, 0.15);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
+            border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 18px;
         }
+        .result-left h3 { font-size: 13px; font-weight: 500; color: #94a3b8; letter-spacing: 0.3px; text-transform: uppercase; }
 
-        .result-left h3 {
-            font-size: 13px;
-            font-weight: 500;
-            color: #94a3b8;
-            letter-spacing: 0.3px;
-            text-transform: uppercase;
-        }
-
-        .result-actions {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            position: relative;
-            z-index: 1;
-        }
-
+        .result-actions { display: flex; align-items: center; gap: 8px; position: relative; z-index: 1; }
         .result-unit {
-            font-size: 12px;
-            font-weight: 500;
-            color: #64748b;
+            font-size: 12px; font-weight: 500; color: #64748b;
             background: rgba(255, 255, 255, 0.06);
-            padding: 4px 12px;
-            border-radius: 30px;
+            padding: 4px 12px; border-radius: 30px;
             border: 1px solid rgba(255, 255, 255, 0.06);
             letter-spacing: 0.3px;
         }
 
         .reset-icon-btn {
-            border: none;
-            background: rgba(255, 255, 255, 0.05);
-            color: #94a3b8;
-            width: 36px;
-            height: 36px;
-            border-radius: 12px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: 0.2s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            border: none; background: rgba(255, 255, 255, 0.05);
+            color: #94a3b8; width: 36px; height: 36px;
+            border-radius: 12px; cursor: pointer; font-size: 16px;
+            transition: 0.2s ease; display: flex; align-items: center; justify-content: center;
             border: 1px solid rgba(255, 255, 255, 0.06);
         }
+        .reset-icon-btn:hover { background: rgba(239, 68, 68, 0.15); color: #fca5a5; border-color: rgba(239, 68, 68, 0.2); transform: rotate(30deg) scale(1.05); }
+        .reset-icon-btn:active { transform: rotate(60deg) scale(0.95); }
 
-        .reset-icon-btn:hover {
-            background: rgba(239, 68, 68, 0.15);
-            color: #fca5a5;
-            border-color: rgba(239, 68, 68, 0.2);
-            transform: rotate(30deg) scale(1.05);
-        }
-
-        .reset-icon-btn:active {
-            transform: rotate(60deg) scale(0.95);
-        }
-
-        .result-value-wrap {
-            margin-top: 6px;
-            position: relative;
-            z-index: 1;
-        }
-
-        .result-value-wrap p {
-            font-size: 44px;
-            font-weight: 800;
-            color: #ffffff;
-            letter-spacing: -1px;
-            line-height: 1.1;
-            font-family: 'Inter', sans-serif;
-        }
+        .result-value-wrap { margin-top: 6px; position: relative; z-index: 1; }
+        .result-value-wrap p { font-size: 44px; font-weight: 800; color: #ffffff; letter-spacing: -1px; line-height: 1.1; font-family: 'Inter', sans-serif; }
 
         .result-footer {
-            margin-top: 14px;
-            padding-top: 14px;
+            margin-top: 14px; padding-top: 14px;
             border-top: 1px solid rgba(255, 255, 255, 0.05);
-            display: flex;
-            justify-content: space-between;
-            position: relative;
-            z-index: 1;
+            display: flex; justify-content: space-between; position: relative; z-index: 1;
         }
-
-        .result-footer span {
-            font-size: 12px;
-            color: #64748b;
-            font-weight: 400;
-        }
-
-        .result-footer .highlight-text {
-            color: #fbbf24;
-            font-weight: 500;
-        }
+        .result-footer span { font-size: 12px; color: #64748b; font-weight: 400; }
+        .result-footer .highlight-text { color: #fbbf24; font-weight: 500; }
 
         .toast {
-            position: fixed;
-            bottom: 30px;
-            left: 50%;
+            position: fixed; bottom: 30px; left: 50%;
             transform: translateX(-50%) translateY(80px);
-            background: #0b1a2e;
-            color: #ffffff;
-            padding: 12px 28px;
-            border-radius: 16px;
-            font-size: 14px;
-            font-weight: 500;
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
-            opacity: 0;
-            transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
-            pointer-events: none;
-            z-index: 999;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            background: #0b1a2e; color: #ffffff;
+            padding: 12px 28px; border-radius: 16px;
+            font-size: 14px; font-weight: 500;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.25);
+            opacity: 0; transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+            pointer-events: none; z-index: 999;
+            display: flex; align-items: center; gap: 10px;
             border: 1px solid rgba(255, 255, 255, 0.06);
-            max-width: calc(100% - 40px);
-            text-align: center;
+            max-width: calc(100% - 40px); text-align: center;
         }
+        .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-        .toast.show {
-            opacity: 1;
-            transform: translateX(-50%) translateY(0);
-        }
+        .app-footer { text-align: center; margin-top: 18px; padding: 6px 0 2px; }
+        .app-footer p { color: #94a3b8; font-size: 12px; font-weight: 400; letter-spacing: 0.2px; }
+        .app-footer p span { color: #64748b; font-weight: 500; }
 
-        .app-footer {
-            text-align: center;
-            margin-top: 18px;
-            padding: 6px 0 2px;
-        }
-
-        .app-footer p {
-            color: #94a3b8;
-            font-size: 12px;
-            font-weight: 400;
-            letter-spacing: 0.2px;
-        }
-
-        .app-footer p span {
-            color: #64748b;
-            font-weight: 500;
-        }
-
-        /* ═══ SCAN MODAL (live camera / preview / hasil baca) ═══ */
+        /* ═══ SCAN MODAL ═══ */
         .modal-overlay {
-            position: fixed;
-            inset: 0;
+            position: fixed; inset: 0;
             background: rgba(11, 26, 46, 0.72);
             backdrop-filter: blur(3px);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            padding: 16px;
+            display: none; align-items: center; justify-content: center;
+            z-index: 1000; padding: 16px;
         }
-
-        .modal-overlay.open {
-            display: flex;
-        }
+        .modal-overlay.open { display: flex; }
 
         .modal-card {
-            background: #0b1a2e;
-            border-radius: 24px;
-            width: 100%;
-            max-width: 420px;
+            background: #0b1a2e; border-radius: 24px;
+            width: 100%; max-width: 420px;
             overflow: hidden;
-            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 24px 60px rgba(0,0,0,0.4);
             border: 1px solid rgba(255, 255, 255, 0.06);
         }
 
-        .modal-head {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 16px 18px 12px;
-        }
-
-        .modal-head-title {
-            color: #ffffff;
-            font-size: 14px;
-            font-weight: 700;
-            letter-spacing: 0.2px;
-        }
-
-        .modal-head-title span {
-            display: block;
-            color: #94a3b8;
-            font-size: 11px;
-            font-weight: 500;
-            margin-top: 1px;
-            text-transform: uppercase;
-        }
+        .modal-head { display: flex; align-items: center; justify-content: space-between; padding: 16px 18px 12px; }
+        .modal-head-title { color: #ffffff; font-size: 14px; font-weight: 700; letter-spacing: 0.2px; }
+        .modal-head-title span { display: block; color: #94a3b8; font-size: 11px; font-weight: 500; margin-top: 1px; text-transform: uppercase; }
 
         .modal-close-btn {
-            border: none;
-            background: rgba(255, 255, 255, 0.06);
-            color: #cbd5e1;
-            width: 30px;
-            height: 30px;
-            border-radius: 10px;
-            font-size: 15px;
-            cursor: pointer;
+            border: none; background: rgba(255, 255, 255, 0.06);
+            color: #cbd5e1; width: 30px; height: 30px;
+            border-radius: 10px; font-size: 15px; cursor: pointer;
         }
 
         .modal-viewport {
-            position: relative;
-            width: 100%;
-            aspect-ratio: 4 / 3;
-            background: #000000;
-            overflow: hidden;
+            position: relative; width: 100%;
+            aspect-ratio: 4 / 3; background: #000000; overflow: hidden;
         }
+        .modal-viewport video, .modal-viewport img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
-        .modal-viewport video,
-        .modal-viewport img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-        }
-
-        /* ─── Kotak panduan dibuat lebih tinggi untuk 2 baris angka ─── */
         .modal-guide-frame {
-            position: absolute;
-            top: 18%;
-            left: 8%;
-            right: 8%;
-            height: 60%;
+            position: absolute; top: 18%; left: 8%; right: 8%; height: 60%;
             border: 2.5px dashed rgba(251, 191, 36, 0.85);
-            border-radius: 10px;
-            pointer-events: none;
+            border-radius: 10px; pointer-events: none;
         }
 
         .modal-guide-label {
-            position: absolute;
-            top: calc(18% - 22px);
-            left: 8%;
-            color: #fbbf24;
-            font-size: 11px;
-            font-weight: 600;
+            position: absolute; top: calc(18% - 22px); left: 8%;
+            color: #fbbf24; font-size: 11px; font-weight: 600;
             background: rgba(11, 26, 46, 0.7);
-            padding: 2px 8px;
-            border-radius: 8px;
-            pointer-events: none;
+            padding: 2px 8px; border-radius: 8px; pointer-events: none;
         }
 
         .modal-status-badge {
-            position: absolute;
-            bottom: 10px;
-            left: 10px;
-            right: 10px;
-            background: rgba(11, 26, 46, 0.82);
-            color: #e2e8f0;
-            font-size: 12px;
-            font-weight: 500;
-            padding: 8px 12px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            text-align: left;
+            position: absolute; bottom: 10px; left: 10px; right: 10px;
+            background: rgba(11, 26, 46, 0.82); color: #e2e8f0;
+            font-size: 12px; font-weight: 500;
+            padding: 8px 12px; border-radius: 12px;
+            display: flex; align-items: center; gap: 8px; text-align: left;
         }
 
         .modal-spinner {
-            width: 14px;
-            height: 14px;
-            border-radius: 50%;
+            width: 14px; height: 14px; border-radius: 50%;
             border: 2px solid rgba(255, 255, 255, 0.25);
             border-top-color: #fbbf24;
-            animation: spin 0.8s linear infinite;
-            flex-shrink: 0;
+            animation: spin 0.8s linear infinite; flex-shrink: 0;
         }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
-        }
+        .modal-result { padding: 16px 18px 6px; text-align: center; }
+        .modal-result-number { font-size: 38px; font-weight: 800; color: #ffffff; letter-spacing: -1px; line-height: 1.1; }
+        .modal-result-number.error { font-size: 16px; color: #fca5a5; font-weight: 600; line-height: 1.4; }
+        .modal-result-sub { color: #94a3b8; font-size: 12px; margin-top: 4px; }
 
-        .modal-result {
-            padding: 16px 18px 6px;
-            text-align: center;
-        }
-
-        .modal-result-number {
-            font-size: 38px;
-            font-weight: 800;
-            color: #ffffff;
-            letter-spacing: -1px;
-            line-height: 1.1;
-        }
-
-        .modal-result-number.error {
-            font-size: 16px;
-            color: #fca5a5;
-            font-weight: 600;
-            line-height: 1.4;
-        }
-
-        .modal-result-sub {
-            color: #94a3b8;
-            font-size: 12px;
-            margin-top: 4px;
-        }
-
-        .modal-actions {
-            display: flex;
-            gap: 10px;
-            padding: 16px 18px 20px;
-        }
+        .modal-actions { display: flex; gap: 10px; padding: 16px 18px 20px; }
 
         .modal-btn {
-            flex: 1;
-            border: none;
-            border-radius: 14px;
-            padding: 13px 10px;
-            font-size: 13.5px;
-            font-weight: 700;
-            cursor: pointer;
-            font-family: 'Inter', sans-serif;
-            transition: 0.15s ease;
+            flex: 1; border: none; border-radius: 14px;
+            padding: 13px 10px; font-size: 13.5px; font-weight: 700;
+            cursor: pointer; font-family: 'Inter', sans-serif; transition: 0.15s ease;
         }
+        .modal-btn.primary { background: linear-gradient(135deg, #f59e0b, #d97706); color: #0b1a2e; }
+        .modal-btn.primary:hover { filter: brightness(1.08); }
+        .modal-btn.secondary { background: rgba(255, 255, 255, 0.08); color: #e2e8f0; }
+        .modal-btn.secondary:hover { background: rgba(255, 255, 255, 0.14); }
 
-        .modal-btn.primary {
-            background: linear-gradient(135deg, #f59e0b, #d97706);
-            color: #0b1a2e;
-        }
-
-        .modal-btn.primary:hover {
-            filter: brightness(1.08);
-        }
-
-        .modal-btn.secondary {
-            background: rgba(255, 255, 255, 0.08);
-            color: #e2e8f0;
-        }
-
-        .modal-btn.secondary:hover {
-            background: rgba(255, 255, 255, 0.14);
-        }
-
-        .modal-capture-bar {
-            display: flex;
-            justify-content: center;
-            padding: 16px 18px 20px;
-        }
-
+        .modal-capture-bar { display: flex; justify-content: center; padding: 16px 18px 20px; }
         .capture-shutter-btn {
-            width: 64px;
-            height: 64px;
-            border-radius: 50%;
-            background: #ffffff;
-            border: 4px solid rgba(255, 255, 255, 0.35);
-            cursor: pointer;
-            transition: 0.15s ease;
+            width: 64px; height: 64px; border-radius: 50%;
+            background: #ffffff; border: 4px solid rgba(255, 255, 255, 0.35);
+            cursor: pointer; transition: 0.15s ease;
         }
+        .capture-shutter-btn:active { transform: scale(0.9); }
 
-        .capture-shutter-btn:active {
-            transform: scale(0.9);
-        }
-
-        .hidden {
-            display: none !important;
-        }
+        .hidden { display: none !important; }
 
         @media (max-width: 480px) {
-            .container {
-                max-width: 100%;
-            }
-            .app-header {
-                padding: 20px 18px 16px;
-                border-radius: 22px;
-            }
-            .brand-text h1 {
-                font-size: 19px;
-            }
-            .brand-icon {
-                width: 38px;
-                height: 38px;
-                font-size: 18px;
-            }
-            .header-status {
-                font-size: 10px;
-                padding: 3px 10px 3px 8px;
-            }
-            .card {
-                padding: 16px 16px 18px;
-                border-radius: 20px;
-            }
-            .input-row {
-                grid-template-columns: 1fr 1fr;
-                gap: 10px;
-            }
-            .input-group input {
-                padding: 11px 12px;
-                font-size: 15px;
-                border-radius: 12px;
-            }
-            .result-value-wrap p {
-                font-size: 34px;
-            }
-            .result-card {
-                padding: 18px 16px 16px;
-                border-radius: 20px;
-            }
-            .reset-icon-btn {
-                width: 32px;
-                height: 32px;
-                font-size: 14px;
-            }
-            .toast {
-                font-size: 13px;
-                padding: 10px 20px;
-                bottom: 20px;
-                width: calc(100% - 40px);
-                justify-content: center;
-            }
-            .scan-menu {
-                right: -6px;
-            }
+            .container { max-width: 100%; }
+            .app-header { padding: 20px 18px 16px; border-radius: 22px; }
+            .brand-text h1 { font-size: 19px; }
+            .brand-icon { width: 38px; height: 38px; font-size: 18px; }
+            .header-status { font-size: 10px; padding: 3px 10px 3px 8px; }
+            .card { padding: 16px 16px 18px; border-radius: 20px; }
+            .input-row { grid-template-columns: 1fr 1fr; gap: 10px; }
+            .input-group input { padding: 11px 12px; font-size: 15px; border-radius: 12px; }
+            .result-value-wrap p { font-size: 34px; }
+            .result-card { padding: 18px 16px 16px; border-radius: 20px; }
+            .reset-icon-btn { width: 32px; height: 32px; font-size: 14px; }
+            .toast { font-size: 13px; padding: 10px 20px; bottom: 20px; width: calc(100% - 40px); justify-content: center; }
+            .scan-menu { right: -6px; }
         }
 
         @media (max-width: 380px) {
-            .input-row {
-                grid-template-columns: 1fr;
-                gap: 10px;
-            }
-            .header-top {
-                flex-direction: column;
-                gap: 12px;
-            }
-            .header-status {
-                align-self: flex-start;
-            }
-            .brand-text h1 {
-                font-size: 18px;
-            }
-            .result-value-wrap p {
-                font-size: 30px;
-            }
+            .input-row { grid-template-columns: 1fr; gap: 10px; }
+            .header-top { flex-direction: column; gap: 12px; }
+            .header-status { align-self: flex-start; }
+            .brand-text h1 { font-size: 18px; }
+            .result-value-wrap p { font-size: 30px; }
         }
-
 
         /* ═══ TAB BAR ═══ */
         .tab-bar {
-            display: flex;
-            gap: 6px;
-            background: #e8edf4;
-            padding: 6px;
-            border-radius: 18px;
-            margin-bottom: 18px;
+            display: flex; gap: 6px;
+            background: #e8edf4; padding: 6px;
+            border-radius: 18px; margin-bottom: 18px;
         }
-
         .tab-btn {
-            flex: 1;
-            border: none;
-            background: transparent;
-            padding: 11px 8px;
-            border-radius: 13px;
-            font-family: 'Inter', sans-serif;
-            font-weight: 600;
-            font-size: 13.5px;
-            color: #64748b;
-            cursor: pointer;
-            transition: 0.2s ease;
-            letter-spacing: 0.2px;
+            flex: 1; border: none; background: transparent;
+            padding: 11px 8px; border-radius: 13px;
+            font-family: 'Inter', sans-serif; font-weight: 600;
+            font-size: 13.5px; color: #64748b; cursor: pointer;
+            transition: 0.2s ease; letter-spacing: 0.2px;
         }
-
-        .tab-btn:hover {
-            color: #0b1a2e;
-        }
-
-        .tab-btn.active {
-            background: #0b1a2e;
-            color: #ffffff;
-            box-shadow: 0 6px 16px rgba(11, 26, 46, 0.28);
-        }
+        .tab-btn:hover { color: #0b1a2e; }
+        .tab-btn.active { background: #0b1a2e; color: #ffffff; box-shadow: 0 6px 16px rgba(11, 26, 46, 0.28); }
 
         /* ═══ TABEL TOTALISATOR BULANAN ═══ */
-        .table-wrap {
-            overflow-x: auto;
-            border: 1px solid #e9edf2;
-            border-radius: 16px;
-            -webkit-overflow-scrolling: touch;
-        }
+        .table-wrap { overflow-x: auto; border: 1px solid #e9edf2; border-radius: 16px; -webkit-overflow-scrolling: touch; }
 
-        table.tot {
-            border-collapse: collapse;
-            width: 100%;
-            min-width: 660px;
-            font-size: 13px;
-        }
+        table.tot { border-collapse: collapse; width: 100%; min-width: 660px; font-size: 13px; }
 
         table.tot th {
-            background: #0b1a2e;
-            color: #cbd5e1;
-            font-weight: 600;
-            padding: 9px 8px;
-            text-align: right;
-            white-space: nowrap;
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 0.3px;
+            background: #0b1a2e; color: #cbd5e1;
+            font-weight: 600; padding: 9px 8px; text-align: right;
+            white-space: nowrap; font-size: 11px;
+            text-transform: uppercase; letter-spacing: 0.3px;
         }
+        table.tot th:first-child { text-align: left; }
 
-        table.tot th:first-child {
-            text-align: left;
-        }
-
-        table.tot td {
-            padding: 5px 6px;
-            border-top: 1px solid #eef2f6;
-            text-align: right;
-            white-space: nowrap;
-            color: #334155;
-        }
-
-        table.tot td:first-child {
-            text-align: left;
-        }
+        table.tot td { padding: 5px 6px; border-top: 1px solid #eef2f6; text-align: right; white-space: nowrap; color: #334155; }
+        table.tot td:first-child { text-align: left; }
 
         table.tot input {
-            width: 100%;
-            min-width: 88px;
-            border: 1.5px solid #e2e8f0;
-            background: #fafcff;
-            padding: 7px 8px;
-            border-radius: 9px;
-            font-size: 13px;
-            font-weight: 500;
-            color: #0b1a2e;
-            outline: none;
-            text-align: right;
-            font-family: 'Inter', sans-serif;
-            transition: 0.2s ease;
+            width: 100%; min-width: 88px;
+            border: 1.5px solid #e2e8f0; background: #fafcff;
+            padding: 7px 8px; border-radius: 9px;
+            font-size: 13px; font-weight: 500; color: #0b1a2e;
+            outline: none; text-align: right;
+            font-family: 'Inter', sans-serif; transition: 0.2s ease;
         }
+        table.tot input:focus { border-color: #2563eb; background: #ffffff; box-shadow: 0 0 0 3px rgba(37,99,235,0.07); }
 
-        table.tot input:focus {
-            border-color: #2563eb;
-            background: #ffffff;
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.07);
-        }
+        table.tot td.compute { font-weight: 700; color: #0b1a2e; padding-right: 10px; }
+        table.tot tr.subtotal td { background: #f8fafc; font-weight: 700; }
+        table.tot tr.subtotal td.compute { color: #b45309; }
+        table.tot tr.subtotal td.sub-label { color: #64748b; font-size: 11px; text-transform: uppercase; letter-spacing: 0.4px; }
 
-        table.tot td.compute {
-            font-weight: 700;
-            color: #0b1a2e;
-            padding-right: 10px;
-        }
+        .month-row { margin-bottom: 14px; }
 
-        table.tot tr.subtotal td {
-            background: #f8fafc;
-            font-weight: 700;
-        }
+        .input-group input { padding: 15px 16px; font-size: 17px; border-radius: 15px; }
+        .input-group label { font-size: 13px; }
 
-        table.tot tr.subtotal td.compute {
-            color: #b45309;
-        }
+        table.tot { min-width: 1080px; font-size: 14.5px; }
+        table.tot th { padding: 12px 10px; font-size: 12px; }
+        table.tot td { padding: 8px; }
+        table.tot input { min-width: 120px; padding: 12px 10px; font-size: 15px; border-radius: 11px; }
+        table.tot td.compute { font-size: 15px; padding-right: 12px; }
+        table.tot tr.subtotal td { font-size: 15px; }
 
-        table.tot tr.subtotal td.sub-label {
-            color: #64748b;
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 0.4px;
-        }
-
-        .month-row {
-            margin-bottom: 14px;
-        }
-
-
-        /* ═══ INPUT BESAR ═══ */
-        .input-group input {
-            padding: 15px 16px;
-            font-size: 17px;
-            border-radius: 15px;
-        }
-
-        .input-group label {
-            font-size: 13px;
-        }
-
-        table.tot {
-            min-width: 1080px;
-            font-size: 14.5px;
-        }
-
-        table.tot th {
-            padding: 12px 10px;
-            font-size: 12px;
-        }
-
-        table.tot td {
-            padding: 8px;
-        }
-
-        table.tot input {
-            min-width: 120px;
-            padding: 12px 10px;
-            font-size: 15px;
-            border-radius: 11px;
-        }
-
-        table.tot td.compute {
-            font-size: 15px;
-            padding-right: 12px;
-        }
-
-        table.tot tr.subtotal td {
-            font-size: 15px;
-        }
-
-        .result-value-wrap p {
-            font-size: 52px;
-        }
-
-        .scan-tip {
-            font-size: 13.5px;
-            padding: 13px 16px;
-        }
-
+        .result-value-wrap p { font-size: 52px; }
+        .scan-tip { font-size: 13.5px; padding: 13px 16px; }
 
         /* ═══ ALERT PERLENGKAPAN % ═══ */
         .alert-banner {
-            background: #fef2f2;
-            border: 1.5px solid #fca5a5;
-            color: #991b1b;
-            border-radius: 14px;
-            padding: 13px 16px;
-            font-size: 13.5px;
-            line-height: 1.65;
-            margin-top: 14px;
+            background: #fef2f2; border: 1.5px solid #fca5a5;
+            color: #991b1b; border-radius: 14px;
+            padding: 13px 16px; font-size: 13.5px;
+            line-height: 1.65; margin-top: 14px;
         }
-
-        .alert-banner b {
-            color: #b91c1c;
-        }
-
-        table.tot td.compute.over {
-            color: #dc2626;
-            background: #fef2f2;
-            border-radius: 8px;
-        }
-
+        .alert-banner b { color: #b91c1c; }
+        table.tot td.compute.over { color: #dc2626; background: #fef2f2; border-radius: 8px; }
 
         /* ═══ TOMBOL PENGATURAN ═══ */
         .btn-wide {
-            width: 100%;
-            border: none;
-            border-radius: 14px;
-            padding: 15px 16px;
-            font-family: 'Inter', sans-serif;
-            font-weight: 700;
-            font-size: 14.5px;
-            cursor: pointer;
-            margin-top: 10px;
-            transition: 0.2s ease;
-            letter-spacing: 0.2px;
+            width: 100%; border: none; border-radius: 14px;
+            padding: 15px 16px; font-family: 'Inter', sans-serif;
+            font-weight: 700; font-size: 14.5px;
+            cursor: pointer; margin-top: 10px;
+            transition: 0.2s ease; letter-spacing: 0.2px;
         }
+        .btn-wide:active { transform: scale(0.98); }
+        .btn-wide.primary { background: linear-gradient(135deg, #f59e0b, #d97706); color: #0b1a2e; }
+        .btn-wide.secondary { background: #f1f5f9; color: #0b1a2e; }
+        .btn-wide.secondary:hover { background: #e2e8f0; }
+        .btn-wide.danger { background: #fee2e2; color: #b91c1c; margin-top: 22px; }
+        .btn-wide.danger:hover { background: #fecaca; }
 
-        .btn-wide:active {
-            transform: scale(0.98);
-        }
-
-        .btn-wide.primary {
-            background: linear-gradient(135deg, #f59e0b, #d97706);
-            color: #0b1a2e;
-        }
-
-        .btn-wide.secondary {
-            background: #f1f5f9;
-            color: #0b1a2e;
-        }
-
-        .btn-wide.secondary:hover {
-            background: #e2e8f0;
-        }
-
-        .btn-wide.danger {
-            background: #fee2e2;
-            color: #b91c1c;
-            margin-top: 22px;
-        }
-
-        .btn-wide.danger:hover {
-            background: #fecaca;
-        }
-
-
-        /* ═══ INFO MODAL (tema terang) ═══ */
+        /* ═══ INFO MODAL ═══ */
         .modal-card.light {
-            background: #ffffff;
-            border: 1px solid #e9edf2;
+            background: #ffffff; border: 1px solid #e9edf2;
             box-shadow: 0 24px 60px rgba(11, 26, 46, 0.25);
         }
-
-        .modal-card.light .modal-head-title {
-            color: #0b1a2e;
-        }
-
-        .modal-card.light .modal-close-btn {
-            background: #f1f5f9;
-            color: #64748b;
-        }
+        .modal-card.light .modal-head-title { color: #0b1a2e; }
+        .modal-card.light .modal-close-btn { background: #f1f5f9; color: #64748b; }
 
         #infoModalBody {
-            padding: 16px 18px 20px;
-            color: #1e293b;
-            font-size: 13.5px;
-            line-height: 1.7;
-            text-align: left;
-            max-height: 65vh;
-            overflow-y: auto;
+            padding: 16px 18px 20px; color: #1e293b;
+            font-size: 13.5px; line-height: 1.7; text-align: left;
+            max-height: 65vh; overflow-y: auto;
         }
 
+        .alert-banner.ok { background: #f0fdf4; border-color: #86efac; color: #166534; }
+        .alert-banner.ok b { color: #15803d; }
 
-        .alert-banner.ok {
-            background: #f0fdf4;
-            border-color: #86efac;
-            color: #166534;
-        }
-
-        .alert-banner.ok b {
-            color: #15803d;
-        }
-
-
-        .result-value-wrap.rekap-persen {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px 30px;
-        }
-
-        .result-value-wrap.rekap-persen p {
-            font-size: 30px;
-        }
-
+        .result-value-wrap.rekap-persen { display: flex; flex-wrap: wrap; gap: 6px 30px; }
+        .result-value-wrap.rekap-persen p { font-size: 30px; }
 
         /* ═══ SIMULASI PERSENTASE ═══ */
-        .sim-target-row {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-            align-items: center;
-            margin-bottom: 12px;
-        }
+        .sim-target-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 12px; }
 
         .sim-chip {
-            border: 1.5px solid #e2e8f0;
-            background: #f8fafc;
-            color: #0b1a2e;
-            border-radius: 30px;
-            padding: 10px 18px;
-            font-family: 'Inter', sans-serif;
-            font-weight: 700;
-            font-size: 14px;
-            cursor: pointer;
-            transition: 0.2s ease;
+            border: 1.5px solid #e2e8f0; background: #f8fafc; color: #0b1a2e;
+            border-radius: 30px; padding: 10px 18px;
+            font-family: 'Inter', sans-serif; font-weight: 700;
+            font-size: 14px; cursor: pointer; transition: 0.2s ease;
         }
-
-        .sim-chip:hover {
-            border-color: #2563eb;
-            color: #2563eb;
-        }
+        .sim-chip:hover { border-color: #2563eb; color: #2563eb; }
 
         .sim-target-row input {
-            flex: 1;
-            min-width: 100px;
-            border: 1.5px solid #e2e8f0;
-            background: #fafcff;
-            border-radius: 30px;
-            padding: 10px 16px;
-            font-family: 'Inter', sans-serif;
-            font-weight: 700;
-            font-size: 14px;
-            color: #0b1a2e;
-            outline: none;
-            text-align: center;
+            flex: 1; min-width: 100px;
+            border: 1.5px solid #e2e8f0; background: #fafcff;
+            border-radius: 30px; padding: 10px 16px;
+            font-family: 'Inter', sans-serif; font-weight: 700;
+            font-size: 14px; color: #0b1a2e; outline: none; text-align: center;
         }
+        .sim-target-row input:focus { border-color: #2563eb; background: #ffffff; }
 
-        .sim-target-row input:focus {
-            border-color: #2563eb;
-            background: #ffffff;
-        }
+        .sim-hasil-box { border: 1.5px solid #e9edf2; border-radius: 14px; padding: 12px 14px; margin-top: 10px; font-size: 13.5px; line-height: 1.9; }
 
-        .sim-hasil-box {
-            border: 1.5px solid #e9edf2;
-            border-radius: 14px;
-            padding: 12px 14px;
-            margin-top: 10px;
-            font-size: 13.5px;
-            line-height: 1.9;
-        }
-
-
-        .sim-chip.active {
-            border-color: #2563eb;
-            background: #dbeafe;
-            color: #1d4ed8;
-        }
-
+        .sim-chip.active { border-color: #2563eb; background: #dbeafe; color: #1d4ed8; }
 
         .input-group select {
-            width: 100%;
-            border: 1.5px solid #e2e8f0;
-            background: #fafcff;
-            padding: 15px 16px;
-            border-radius: 15px;
-            font-size: 16px;
-            font-weight: 600;
-            color: #0b1a2e;
-            outline: none;
-            font-family: 'Inter', sans-serif;
+            width: 100%; border: 1.5px solid #e2e8f0;
+            background: #fafcff; padding: 15px 16px; border-radius: 15px;
+            font-size: 16px; font-weight: 600; color: #0b1a2e;
+            outline: none; font-family: 'Inter', sans-serif;
         }
+        .input-group select:focus { border-color: #2563eb; background: #ffffff; }
 
-        .input-group select:focus {
-            border-color: #2563eb;
-            background: #ffffff;
-        }
+        .alert-banner.zero { background: #fffbeb; border-color: #fcd34d; color: #92400e; }
+        .alert-banner.zero b { color: #b45309; }
+        table.tot td.compute.zero-pct { color: #b45309; background: #fffbeb; border-radius: 8px; }
 
-        .alert-banner.zero {
-            background: #fffbeb;
-            border-color: #fcd34d;
-            color: #92400e;
-        }
-
-        .alert-banner.zero b {
-            color: #b45309;
-        }
-
-        table.tot td.compute.zero-pct {
-            color: #b45309;
-            background: #fffbeb;
-            border-radius: 8px;
-        }
-
-
-        /* ═══ BLOK PERSEN & SIMULASI PER TABEL ═══ */
         .blok-persen-row {
-            display: flex;
-            gap: 18px;
-            align-items: center;
-            flex-wrap: wrap;
-            padding: 12px 2px 0;
-            font-size: 14.5px;
-            color: #334155;
+            display: flex; gap: 18px; align-items: center; flex-wrap: wrap;
+            padding: 12px 2px 0; font-size: 14.5px; color: #334155;
         }
-
-        .blok-persen-row b {
-            color: #0b1a2e;
-        }
+        .blok-persen-row b { color: #0b1a2e; }
 
         .per100-wrap {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 13px;
-            color: #64748b;
-            font-weight: 600;
+            display: inline-flex; align-items: center; gap: 8px;
+            font-size: 13px; color: #64748b; font-weight: 600;
         }
-
         .per100-wrap input {
-            width: 84px;
-            border: 1.5px solid #e2e8f0;
-            background: #fafcff;
-            border-radius: 10px;
-            padding: 8px 10px;
-            font-size: 14px;
-            font-weight: 700;
-            color: #0b1a2e;
-            outline: none;
-            text-align: right;
-            font-family: 'Inter', sans-serif;
+            width: 84px; border: 1.5px solid #e2e8f0; background: #fafcff;
+            border-radius: 10px; padding: 8px 10px;
+            font-size: 14px; font-weight: 700; color: #0b1a2e;
+            outline: none; text-align: right; font-family: 'Inter', sans-serif;
         }
 
-        .sim-blok {
-            margin-top: 12px;
-        }
+        .sim-blok { margin-top: 12px; }
 
-        ::-webkit-scrollbar {
-            width: 4px;
-        }
-        ::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 10px;
-        }
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
 
         .sr-only {
-            position: absolute;
-            width: 1px;
-            height: 1px;
-            padding: 0;
-            margin: -1px;
-            overflow: hidden;
-            clip: rect(0, 0, 0, 0);
-            border: 0;
+            position: absolute; width: 1px; height: 1px;
+            padding: 0; margin: -1px; overflow: hidden;
+            clip: rect(0,0,0,0); border: 0;
         }
+
+        /* ═══ TAB PENJUALAN ═══ */
+        .shift-item {
+            display: flex; align-items: center; gap: 8px;
+            padding: 10px 12px; background: #f8fafc;
+            border: 1.5px solid #e2e8f0; border-radius: 12px;
+            margin-bottom: 8px; font-size: 13px;
+        }
+        .shift-item input {
+            border: 1.5px solid #e2e8f0; background: #fff;
+            border-radius: 8px; padding: 6px 8px;
+            font-family: 'Inter', sans-serif; font-size: 13px;
+            color: #0b1a2e; outline: none;
+        }
+        .shift-item input:focus { border-color: #2563eb; }
+        .shift-item .shift-nama { flex: 1; min-width: 80px; font-weight: 600; }
+        .shift-item .shift-jam { width: 100px; text-align: center; }
+        .shift-item .shift-del {
+            border: none; background: #fee2e2; color: #b91c1c;
+            width: 30px; height: 30px; border-radius: 8px;
+            cursor: pointer; font-size: 14px; flex-shrink: 0;
+        }
+        .shift-item .shift-del:hover { background: #fecaca; }
+        .shift-item .shift-aktif-badge {
+            font-size: 10px; font-weight: 700; color: #166534;
+            background: #f0fdf4; border: 1px solid #86efac;
+            padding: 2px 8px; border-radius: 20px; white-space: nowrap;
+        }
+
+        .penjualan-mesin-row {
+            display: grid;
+            grid-template-columns: 50px 1fr 1fr 80px 110px;
+            gap: 6px;
+            align-items: center;
+            padding: 8px 0;
+            border-top: 1px solid #eef2f6;
+            font-size: 13px;
+        }
+        .penjualan-mesin-row:first-child { border-top: none; }
+        .penjualan-mesin-row .mesin-name { font-weight: 700; color: #0b1a2e; text-align: center; }
+        .penjualan-mesin-row input {
+            width: 100%; border: 1.5px solid #e2e8f0; background: #fafcff;
+            padding: 8px 10px; border-radius: 9px;
+            font-size: 14px; font-weight: 500; color: #0b1a2e;
+            outline: none; text-align: right;
+            font-family: 'Inter', sans-serif; transition: 0.2s ease;
+        }
+        .penjualan-mesin-row input:focus { border-color: #2563eb; background: #ffffff; box-shadow: 0 0 0 3px rgba(37,99,235,0.07); }
+        .penjualan-mesin-row .compute {
+            font-weight: 700; color: #0b1a2e; text-align: right;
+            padding: 4px 6px; font-size: 14px;
+        }
+        .penjualan-mesin-row .compute.rp { color: #b45309; font-size: 13px; }
+
+        .penjualan-header {
+            display: grid;
+            grid-template-columns: 50px 1fr 1fr 80px 110px;
+            gap: 6px;
+            padding: 8px 0;
+            font-size: 11px;
+            font-weight: 700;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            border-bottom: 2px solid #e2e8f0;
+            margin-bottom: 4px;
+        }
+        .penjualan-header .h { text-align: right; }
+        .penjualan-header .h.center { text-align: center; }
+
+        .subtotal-penjualan {
+            display: grid;
+            grid-template-columns: 1fr 80px 110px;
+            gap: 6px;
+            padding: 10px 0;
+            margin-top: 6px;
+            border-top: 2px solid #0b1a2e;
+            font-weight: 700;
+            font-size: 14px;
+            color: #0b1a2e;
+            background: #f8fafc;
+            margin-left: -22px;
+            margin-right: -22px;
+            padding-left: 22px;
+            padding-right: 22px;
+        }
+        .subtotal-penjualan .label { color: #64748b; font-size: 12px; text-transform: uppercase; letter-spacing: 0.4px; align-self: center; }
+        .subtotal-penjualan .val { text-align: right; }
+        .subtotal-penjualan .val.rp { color: #b45309; }
     </style>
 </head>
 <body>
@@ -1435,16 +673,17 @@
         <div class="tab-bar" role="tablist">
             <button class="tab-btn active" data-tab="harian" onclick="switchTab('harian')" role="tab">⛽ Harian</button>
             <button class="tab-btn" data-tab="bulanan" onclick="switchTab('bulanan')" role="tab">📅 Bulanan</button>
+            <button class="tab-btn" data-tab="penjualan" onclick="switchTab('penjualan')" role="tab">💧 Penjualan</button>
             <button class="tab-btn" data-tab="pengaturan" onclick="switchTab('pengaturan')" role="tab">⚙️ Pengaturan</button>
         </div>
 
+        <!-- ══════════════ TAB: HARIAN ══════════════ -->
         <div id="tab-harian" class="tab-pane">
 
         <div class="scan-tip" role="note">
             💡 Gunakan <b>Ambil Foto Live</b> untuk memotret angka totalisator — Untuk membaca angka langsung di browser . Pastikan angka <b>terlihat jelas</b>, <b>tegak lurus</b>, dan berada dalam <b>area panduan kuning (2 baris)</b>.
         </div>
 
-        <!-- ═══ MESIN A1 ═══ -->
         <section class="card" aria-label="Mesin A1">
             <div class="card-header">
                 <div class="card-header-left">
@@ -1497,7 +736,6 @@
             </div>
         </section>
 
-        <!-- ═══ MESIN A2 ═══ -->
         <section class="card" aria-label="Mesin A2">
             <div class="card-header">
                 <div class="card-header-left">
@@ -1550,7 +788,6 @@
             </div>
         </section>
 
-        <!-- ═══ RESULT ═══ -->
         <div class="result-card">
             <div class="result-top">
                 <div class="result-left">
@@ -1573,12 +810,11 @@
 
         </div><!-- /tab-harian -->
 
-        <!-- ══════════════ TAB: TOTALISATOR BULANAN ══════════════ -->
+        <!-- ══════════════ TAB: BULANAN ══════════════ -->
         <div id="tab-bulanan" class="tab-pane hidden">
 
         <button class="btn-wide secondary" onclick="openRumusModal()">ℹ️ Lihat Rumus &amp; Aturan Perhitungan</button>
 
-        <!-- ═══ HEADER BULANAN ═══ -->
         <section class="card" aria-label="Pengaturan bulanan">
             <div class="card-header">
                 <div class="card-header-left">
@@ -1629,7 +865,6 @@
             </div>
         </section>
 
-        <!-- ═══ RINCIAN TOTALISATOR PERTALITE ═══ -->
         <section class="card" aria-label="Rincian Totalisator Pertalite">
             <div class="card-header">
                 <div class="card-header-left">
@@ -1707,11 +942,10 @@
                 <div class="sim-target-row">
                     <input type="text" inputmode="decimal" id="target-pl" value="0,5" oninput="this.value=this.value.replace(/[-−]/g,'');hitungSimulasiPersen()" placeholder="Target %" aria-label="Target persentase PL" />
                 </div>
-                
                 <div id="hasilSim-pl"></div>
             </div>
         </section>
-        <!-- ═══ RINCIAN TOTALISATOR STOK REAL ═══ -->
+
         <section class="card" aria-label="Rincian Totalisator Stok Real">
             <div class="card-header">
                 <div class="card-header-left">
@@ -1798,11 +1032,7 @@
                 <div id="hasilSim-px"></div>
             </div>
         </section>
-        
 
-        
-
-        <!-- ═══ HASIL BULANAN ═══ -->
         <div class="result-card">
             <div class="result-top">
                 <div class="result-left">
@@ -1827,6 +1057,136 @@
 
         </div><!-- /tab-bulanan -->
 
+        <!-- ══════════════ TAB: PENJUALAN ══════════════ -->
+        <div id="tab-penjualan" class="tab-pane hidden">
+
+        <section class="card" aria-label="Pengaturan penjualan">
+            <div class="card-header">
+                <div class="card-header-left">
+                    <span class="machine-badge highlight">💧</span>
+                    <h2>Penjualan Harian</h2>
+                </div>
+                <div class="card-actions">
+                    <button class="icon-btn" onclick="sharePenjualanWA()" title="Bagikan ke WhatsApp">📤</button>
+                    <button class="icon-btn copy-btn" onclick="exportPenjualanPDF()" title="Export PDF">📄</button>
+                </div>
+            </div>
+
+            <div class="input-row">
+                <div class="input-group">
+                    <label for="tglPenjualan"><span class="label-left"><span class="label-icon">📅</span> Tanggal</span></label>
+                    <div class="input-wrap">
+                        <input type="date" id="tglPenjualan" onchange="hitungPenjualan()" />
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label for="shiftAktif"><span class="label-left"><span class="label-icon">⏰</span> Shift Aktif</span></label>
+                    <div class="input-wrap">
+                        <select id="shiftAktif" onchange="hitungPenjualan()"></select>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top:14px">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+                    <b style="font-size:13px;color:#475569;text-transform:uppercase;letter-spacing:.3px">⏰ Daftar Shift</b>
+                    <button class="sim-chip" style="padding:6px 14px;font-size:12px" onclick="tambahShift()">+ Tambah Shift</button>
+                </div>
+                <div id="daftarShift"></div>
+            </div>
+        </section>
+
+        <section class="card" aria-label="Harga per liter">
+            <div class="card-header">
+                <div class="card-header-left">
+                    <span class="machine-badge highlight">💰</span>
+                    <h2>Harga per Liter</h2>
+                </div>
+                <div class="card-actions">
+                    <button class="icon-btn lock-btn" id="lockHarga" onclick="toggleLockHarga()" title="Kunci harga">🔒</button>
+                </div>
+            </div>
+            <div class="input-row">
+                <div class="input-group">
+                    <label for="hargaPertalite"><span class="label-left"><span class="label-icon">⛽</span> Pertalite (Rp/L)</span></label>
+                    <div class="input-wrap">
+                        <input type="number" id="hargaPertalite" value="10000" min="0" step="500" oninput="hitungPenjualan()" />
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label for="hargaPertamax"><span class="label-left"><span class="label-icon">⛽</span> Pertamax (Rp/L)</span></label>
+                    <div class="input-wrap">
+                        <input type="number" id="hargaPertamax" value="12500" min="0" step="500" oninput="hitungPenjualan()" />
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="card" aria-label="Totalisator Pertalite">
+            <div class="card-header">
+                <div class="card-header-left">
+                    <span class="machine-badge highlight">PL</span>
+                    <h2>Pertalite — A1, A2, C</h2>
+                </div>
+            </div>
+            <div class="penjualan-header">
+                <div class="h center">Mesin</div>
+                <div class="h">Awal</div>
+                <div class="h">Akhir</div>
+                <div class="h">Total (L)</div>
+                <div class="h">Subtotal (Rp)</div>
+            </div>
+            <div id="tbodyPertalite"></div>
+            <div class="subtotal-penjualan">
+                <div class="label">Subtotal Pertalite</div>
+                <div class="val" id="plPenjTotal">0</div>
+                <div class="val rp" id="plPenjRp">Rp 0</div>
+            </div>
+        </section>
+
+        <section class="card" aria-label="Totalisator Pertamax">
+            <div class="card-header">
+                <div class="card-header-left">
+                    <span class="machine-badge">PX</span>
+                    <h2>Pertamax — B1, B2, D</h2>
+                </div>
+            </div>
+            <div class="penjualan-header">
+                <div class="h center">Mesin</div>
+                <div class="h">Awal</div>
+                <div class="h">Akhir</div>
+                <div class="h">Total (L)</div>
+                <div class="h">Subtotal (Rp)</div>
+            </div>
+            <div id="tbodyPertamax"></div>
+            <div class="subtotal-penjualan">
+                <div class="label">Subtotal Pertamax</div>
+                <div class="val" id="pxPenjTotal">0</div>
+                <div class="val rp" id="pxPenjRp">Rp 0</div>
+            </div>
+        </section>
+
+        <div class="result-card">
+            <div class="result-top">
+                <div class="result-left">
+                    <span class="icon-wrap" aria-hidden="true">💰</span>
+                    <h3>Total Penjualan</h3>
+                </div>
+                <div class="result-actions">
+                    <span class="result-unit">Rupiah</span>
+                    <button class="reset-icon-btn" onclick="resetPenjualan()" title="Reset semua">↺</button>
+                </div>
+            </div>
+            <div class="result-value-wrap">
+                <p id="grandTotalPenjualan" style="font-size:38px">Rp 0</p>
+            </div>
+            <div class="result-footer">
+                <span id="detailLiterPenjualan">0 L</span>
+                <span class="highlight-text" id="detailShiftPenjualan">-</span>
+            </div>
+        </div>
+
+        </div><!-- /tab-penjualan -->
 
         <!-- ══════════════ TAB: PENGATURAN ══════════════ -->
         <div id="tab-pengaturan" class="tab-pane hidden">
@@ -1867,8 +1227,7 @@
 
     </div>
 
-
-    <!-- ═══ INFO MODAL (rumus / simulasi) ═══ -->
+    <!-- ═══ INFO MODAL ═══ -->
     <div class="modal-overlay" id="infoModal">
         <div class="modal-card light">
             <div class="modal-head">
@@ -1925,22 +1284,19 @@
     <input type="file" accept="image/*" capture="environment" class="sr-only" id="fallbackCameraInput" onchange="handleFileChosen(event)" />
     <input type="file" accept="image/*,.pdf" class="sr-only" id="uploadFileInput" onchange="handleFileChosen(event)" />
 
-    <!-- Tesseract.js -->
-    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js">
-    </script>
-
-    <!-- Library Export: jsPDF + jsPDF-AutoTable + SheetJS -->
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
 
     <script>
-        // ─── State ───
+        // ══════════════════════════════════════════════════════
+        // ─── STATE & DOM REFS ───
+        // ══════════════════════════════════════════════════════
         let lockA1 = false;
         let lockA2 = false;
         let toastTimer = null;
 
-        // ─── DOM refs ───
         const elAwalA1 = document.getElementById('awalA1');
         const elAkhirA1 = document.getElementById('akhirA1');
         const elAwalA2 = document.getElementById('awalA2');
@@ -1950,23 +1306,22 @@
         const toast = document.getElementById('toast');
         const toastMsg = document.getElementById('toastMessage');
 
-        // ─── Hitung ───
+        // ══════════════════════════════════════════════════════
+        // ─── TAB: HARIAN ───
+        // ══════════════════════════════════════════════════════
         function hitung() {
             const awalA1 = parseFloat(elAwalA1.value) || 0;
             const akhirA1 = parseFloat(elAkhirA1.value) || 0;
             const awalA2 = parseFloat(elAwalA2.value) || 0;
             const akhirA2 = parseFloat(elAkhirA2.value) || 0;
-
             const hasilA1 = Math.max(0, akhirA1 - awalA1);
             const hasilA2 = Math.max(0, akhirA2 - awalA2);
             const total = hasilA1 + hasilA2;
-
             const formatter = new Intl.NumberFormat('id-ID');
             elHasil.textContent = formatter.format(total);
             elDetail.textContent = `A1 ${formatter.format(hasilA1)} L · A2 ${formatter.format(hasilA2)} L`;
         }
 
-        // ─── Lock ───
         function toggleLock(mesin) {
             if (mesin === 'a1') {
                 lockA1 = !lockA1;
@@ -1987,17 +1342,12 @@
             hitung();
         }
 
-        // ─── Copy ───
         function copyMesin(mesin) {
             let label, awal, akhir;
             if (mesin === 'a1') {
-                label = 'Mesin A1';
-                awal = elAwalA1.value || '0';
-                akhir = elAkhirA1.value || '0';
+                label = 'Mesin A1'; awal = elAwalA1.value || '0'; akhir = elAkhirA1.value || '0';
             } else {
-                label = 'Mesin A2';
-                awal = elAwalA2.value || '0';
-                akhir = elAkhirA2.value || '0';
+                label = 'Mesin A2'; awal = elAwalA2.value || '0'; akhir = elAkhirA2.value || '0';
             }
             const text = `${label}\nTotal Awal  : ${awal}\nTotal Akhir : ${akhir}`;
             navigator.clipboard.writeText(text)
@@ -2013,12 +1363,9 @@
                 });
         }
 
-        // ─── Reset ───
         function resetData() {
-            elAwalA1.value = '';
-            elAkhirA1.value = '';
-            elAwalA2.value = '';
-            elAkhirA2.value = '';
+            elAwalA1.value = ''; elAkhirA1.value = '';
+            elAwalA2.value = ''; elAkhirA2.value = '';
             hitung();
             showToast('↺ Semua totalisator direset');
         }
@@ -2031,7 +1378,6 @@
             showToast('↺ Field direset');
         }
 
-        // ─── Toast ───
         function showToast(message) {
             toastMsg.textContent = message;
             toast.classList.add('show');
@@ -2040,14 +1386,11 @@
         }
 
         // ══════════════════════════════════════════════════════
-        // ─── SCAN MODAL: live camera + preview + Tesseract.js ───
+        // ─── SCAN MODAL ───
         // ══════════════════════════════════════════════════════
-
         const FIELD_LABELS = {
-            awalA1: 'Mesin A1 · Awal',
-            akhirA1: 'Mesin A1 · Akhir',
-            awalA2: 'Mesin A2 · Awal',
-            akhirA2: 'Mesin A2 · Akhir'
+            awalA1: 'Mesin A1 · Awal', akhirA1: 'Mesin A1 · Akhir',
+            awalA2: 'Mesin A2 · Awal', akhirA2: 'Mesin A2 · Akhir'
         };
 
         let currentField = null;
@@ -2108,7 +1451,6 @@
             modalFieldLabel.textContent = FIELD_LABELS[fieldId] || '';
             resetModalUI();
             modalOverlay.classList.add('open');
-
             if (mode === 'camera') {
                 startLiveCamera();
             } else {
@@ -2126,15 +1468,13 @@
             statusBadge.classList.remove('hidden');
             statusText.textContent = 'Posisikan angka totalisator (2 baris) di dalam kotak kuning, lalu tekan tombol ambil foto';
             captureBar.classList.remove('hidden');
-
             try {
                 mediaStream = await navigator.mediaDevices.getUserMedia({
-                    video: { facingMode: { ideal: 'environment' } },
-                    audio: false
+                    video: { facingMode: { ideal: 'environment' } }, audio: false
                 });
                 liveVideo.srcObject = mediaStream;
             } catch (err) {
-                console.warn('Kamera live tidak tersedia, fallback ke kamera bawaan:', err);
+                console.warn('Kamera live tidak tersedia:', err);
                 statusText.textContent = 'Membuka kamera perangkat...';
                 closeScanModal();
                 const input = document.getElementById('fallbackCameraInput');
@@ -2158,7 +1498,6 @@
             const ctx = canvas.getContext('2d');
             ctx.drawImage(liveVideo, 0, 0, canvas.width, canvas.height);
             stopStream();
-
             const dataUrl = canvas.toDataURL('image/jpeg', 0.92);
             showPreviewAndScan(dataUrl, 'image/jpeg');
         }
@@ -2168,9 +1507,7 @@
             if (!file) return;
             const reader = new FileReader();
             reader.onload = () => {
-                if (!modalOverlay.classList.contains('open')) {
-                    modalOverlay.classList.add('open');
-                }
+                if (!modalOverlay.classList.contains('open')) modalOverlay.classList.add('open');
                 showPreviewAndScan(reader.result, file.type || 'image/jpeg');
             };
             reader.onerror = () => showToast('❌ Gagal membaca file');
@@ -2184,10 +1521,8 @@
             statusBadge.classList.remove('hidden');
             statusSpinner.classList.remove('hidden');
             statusText.textContent = '🔍 Tesseract.js membaca angka totalisator...';
-
             lastCapturedBase64 = dataUrl.split(',')[1];
             lastCapturedMediaType = mediaType;
-
             runTesseract(lastCapturedBase64, lastCapturedMediaType);
         }
 
@@ -2224,23 +1559,16 @@
             currentField = null;
         }
 
-        // ─── Tesseract.js OCR ──────────────────────────────
         async function runTesseract(base64Data, mediaType) {
             const myToken = ++scanToken;
             try {
-                statusText.textContent = '⏳ Memuat Tesseract.js... (pertama kali butuh waktu)';
-
+                statusText.textContent = '⏳ Memuat Tesseract.js...';
                 const worker = await Tesseract.createWorker('eng');
                 statusText.textContent = '🔍 Membaca angka...';
-
                 const { data: { text } } = await worker.recognize(`data:${mediaType};base64,${base64Data}`);
                 await worker.terminate();
-
                 if (myToken !== scanToken) return;
-
-                // Ambil angka bulat (minimal 4 digit karena totalisator besar)
                 const number = extractNumberFromText(text);
-
                 if (number !== null) {
                     lastDetectedNumber = number;
                     showModalSuccess(number);
@@ -2255,11 +1583,9 @@
         }
 
         function extractNumberFromText(text) {
-            // Cari semua kumpulan digit minimal 4 angka (totalisator biasanya > 1000)
             const matches = text.match(/\d{4,}/g);
             if (!matches) return null;
-            const numStr = matches[0];
-            return parseInt(numStr, 10);
+            return parseInt(matches[0], 10);
         }
 
         function showModalSuccess(number) {
@@ -2283,21 +1609,25 @@
         }
 
         // ══════════════════════════════════════════════════════
-        // ─── TOTALISATOR BULANAN ───
+        // ─── TAB: BULANAN ───
         // ══════════════════════════════════════════════════════
-
         const fmtNum = new Intl.NumberFormat('id-ID');
+        const BLOKS_BULANAN = ['pl', 'px'];
+        let simMode = { pl: 'bagi', px: 'bagi' };
+        let lastOver = { pl: false, px: false };
+        let clearTimer = { pl: null, px: null };
 
         function switchTab(tab) {
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
             document.getElementById('tab-harian').classList.toggle('hidden', tab !== 'harian');
             document.getElementById('tab-bulanan').classList.toggle('hidden', tab !== 'bulanan');
+            document.getElementById('tab-penjualan').classList.toggle('hidden', tab !== 'penjualan');
             document.getElementById('tab-pengaturan').classList.toggle('hidden', tab !== 'pengaturan');
             if (tab === 'pengaturan') updateStorageInfo();
+            if (tab === 'penjualan') initPenjualan();
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // Parse angka dengan format Indonesia (koma = desimal, titik = ribuan)
         function parseNum(v) {
             if (v === null || v === undefined) return 0;
             const n = parseFloat(String(v).trim().replace(/\./g, '').replace(',', '.'));
@@ -2314,10 +1644,10 @@
             if (el) el.textContent = fmtNum.format(v);
         }
 
-const BLOKS_BULANAN = ['pl', 'px'];
-        let simMode = { pl: 'bagi', px: 'bagi' };
-let lastOver = { pl: false, px: false };
-        let clearTimer = { pl: null, px: null };
+        function setVal(id, v) {
+            const el = document.getElementById(id);
+            if (el) el.value = (v === undefined || v === null) ? '' : v;
+        }
 
         function fmtPersen(n) {
             if (!isFinite(n) || n <= 0) return '0';
@@ -2326,16 +1656,13 @@ let lastOver = { pl: false, px: false };
             return s.replace('.', ',');
         }
 
-        // Aturan: % produk wajib DI BAWAH 1%. Jika ≥ 1% → alert + simulasi perbaikan.
         function checkProduk(p, sub, hasilJual) {
             const KODE = p.toUpperCase();
             const NAMA = p === 'pl' ? 'PERTALITE' : 'PERTAMAX';
             const per = numVal(p + 'Per100');
             const hs = sub > 0 ? Math.abs(sub - hasilJual) : 0;
-            // Aturan: persentase tidak boleh minus — jepit ke 0
             const persen = Math.max(0, (sub > 0 && per > 0) ? hs * per / sub : 0);
             const persenBulat = Math.round(persen * 10000) / 10000;
-
             setText('hasilSet' + KODE, hs);
             const elPersen = document.getElementById('persen' + KODE);
             elPersen.textContent = fmtPersen(persen);
@@ -2346,14 +1673,9 @@ let lastOver = { pl: false, px: false };
                 const d = hs - batas;
                 const kurang = Math.floor(d) + 1;
                 const btnSalin = v => `<button class="modal-btn secondary" style="padding:6px 12px;font-size:12px;border-radius:9px" onclick="salinAngka(${v})">📋 Salin</button>`;
-
-                // ── Opsi 1: ubah Stok Akhir ──
                 const saranStok = hasilJual > sub
-                    ? `naikkan Stok Akhir \u2265 ${fmtNum.format(kurang)} liter \u2192 Hasil turun, selisih mengecil`
-                    : `turunkan Stok Akhir \u2265 ${fmtNum.format(kurang)} liter \u2192 Hasil naik, selisih mengecil`;
-
-                // ── Opsi 2: ubah totalisator \u2014 rincian ketiga baris, siap salin ──
-                // ATURAN KHUSUS: perubahan hanya pada totalisator baris 1 & 2
+                    ? `naikkan Stok Akhir \u2265 ${fmtNum.format(kurang)} liter \u2192 Hasil turun`
+                    : `turunkan Stok Akhir \u2265 ${fmtNum.format(kurang)} liter \u2192 Hasil naik`;
                 const baris = [];
                 for (let i = 1; i <= 2; i++) {
                     const aw = Math.round(numVal(p + 'Awal' + i));
@@ -2374,9 +1696,7 @@ let lastOver = { pl: false, px: false };
                 };
                 const renderBaris = bagian =>
                     bagian.map(({ d, delta }) => {
-                        if (delta <= 0) {
-                            return `<b>Akhir baris ${d.i}</b>: <span style="color:#94a3b8">tanpa perubahan (tetap ${fmtNum.format(d.ak)})</span>`;
-                        }
+                        if (delta <= 0) return `<b>Akhir baris ${d.i}</b>: <span style="color:#94a3b8">tanpa perubahan</span>`;
                         const baru = d.ak + (tambahMode ? delta : -delta);
                         const ket = (tambahMode ? 'tambah ' : 'kurangi ') + fmtNum.format(delta);
                         return `<b>Akhir baris ${d.i}</b>: ${fmtNum.format(d.ak)} \u2192 <b>${fmtNum.format(baru)}</b> ${btnSalin(baru)} <span style="color:#64748b">(${ket})</span>`;
@@ -2384,69 +1704,49 @@ let lastOver = { pl: false, px: false };
 
                 let htmlTotalisator = '';
                 if (!baris.length) {
-                    htmlTotalisator = `isi salah satu baris totalisator terlebih dahulu untuk melihat opsi perubahan.`;
+                    htmlTotalisator = `isi salah satu baris totalisator terlebih dahulu.`;
                 } else if (hasilJual <= 0) {
-                    // Hasil negatif: mengubah totalisator tidak dapat memperbaiki
-                    htmlTotalisator = `Hasil perhitungan \u2264 0 liter (Stok Akhir melebihi Total M) \u2014 mengubah totalisator <b>tidak dapat</b> memperbaiki. <b>Gunakan opsi 1: turunkan Stok Akhir.</b>`;
+                    htmlTotalisator = `Hasil \u2264 0 L \u2014 gunakan opsi 1: turunkan Stok Akhir.`;
                 } else if (hasilJual > sub) {
                     tambahMode = true;
                     const targetT = Math.floor(hasilJual * per / (per + 1)) + 1;
                     const tambah = targetT - sub;
                     const bagian = bagiProporsional(baris, tambah, 'ak');
                     if (!bagian.some(b => b.delta > 0)) bagian[0].delta = tambah;
-                    htmlTotalisator =
-                        `perlu <b>TAMBAH ${fmtNum.format(tambah)} liter</b> \u2014 rincian angka baru per baris (salin sesuai kebutuhan):<br>` +
-                        renderBaris(bagian) +
-                        `<br><span style="color:#64748b">(agar total \u2265 ${fmtNum.format(targetT)} L)</span>`;
+                    htmlTotalisator = `perlu <b>TAMBAH ${fmtNum.format(tambah)} liter</b>:<br>` + renderBaris(bagian);
                 } else {
                     const targetT = per > 1 ? Math.ceil(hasilJual * per / (per - 1)) - 1 : sub;
                     const sisa = Math.max(0, sub - targetT);
                     const totalRuang = baris.reduce((a, b) => a + Math.max(0, b.ruang), 0);
                     const bagian = bagiProporsional(baris, Math.min(sisa, totalRuang), 'ruang');
-                    let catatan = `<br><span style="color:#64748b">(agar total \u2264 ${fmtNum.format(targetT)} L)</span>`;
-                    if (totalRuang < sisa) {
-                        catatan = `<br><span style="color:#b91c1c">ruang seluruh baris hanya ${fmtNum.format(totalRuang)} liter \u2014 tidak mencukupi. Selisih sisanya wajib diperbaiki lewat Stok Akhir (opsi 1).</span>`;
-                    }
-                    htmlTotalisator =
-                        `perlu <b>KURANGI ${fmtNum.format(sisa)} liter</b> \u2014 rincian angka baru per baris (salin sesuai kebutuhan):<br>` +
-                        renderBaris(bagian) + catatan;
+                    let catatan = '';
+                    if (totalRuang < sisa) catatan = `<br><span style="color:#b91c1c">ruang tidak mencukupi. Gunakan opsi 1.</span>`;
+                    htmlTotalisator = `perlu <b>KURANGI ${fmtNum.format(sisa)} liter</b>:<br>` + renderBaris(bagian) + catatan;
                 }
 
                 alertEl.className = 'alert-banner';
-                const hanyaStok = p === 'pl'; // Aturan: PERTALITE hanya stok akhir, PERTAMAX hanya totalisator
+                const hanyaStok = p === 'pl';
                 let stokSkrTot = 0;
                 for (let i = 1; i <= 3; i++) stokSkrTot += Math.round(numVal(p + 'STAkr' + i));
-                const stokAman = stokSkrTot - kurang >= 1; // stok tidak boleh minus/0
-                const saranStokFinal = !stokAman && !hanyaStok
-                    ? saranStok
-                    : (!stokAman
-                        ? saranStok + ` <span style="color:#b45309">\u26a0\ufe0f stok akhir tidak boleh minus/0 (stok saat ini hanya ${fmtNum.format(stokSkrTot)} L)</span>`
-                        : saranStok);
+                const stokAman = stokSkrTot - kurang >= 1;
+                const saranStokFinal = !stokAman
+                    ? saranStok + ` <span style="color:#b45309">\u26a0\ufe0f stok tidak boleh minus (saat ini ${fmtNum.format(stokSkrTot)} L)</span>`
+                    : saranStok;
                 const opsiHtml = hanyaStok
-                    ? `<b>1\ufe0f\u20e3 Ubah stok</b> (Stok Akhir): ${saranStokFinal}<br>` +
-                      `<span style="color:#94a3b8;font-size:12px">Aturan: PERTALITE hanya dapat diperbaiki lewat <b>Stok Akhir</b>.</span>`
-                    : `<b>2\ufe0f\u20e3 Ubah totalisator</b> (kolom Akhir, baris 1 &amp; 2):<br>${htmlTotalisator}<br>` +
-                      `<span style="color:#94a3b8;font-size:12px">Aturan: PERTAMAX hanya dapat diperbaiki lewat <b>totalisator</b>.</span>`;
+                    ? `<b>1\ufe0f\u20e3 Ubah stok</b> (Stok Akhir): ${saranStokFinal}<br><span style="color:#94a3b8;font-size:12px">Aturan: PERTALITE hanya lewat <b>Stok Akhir</b>.</span>`
+                    : `<b>2\ufe0f\u20e3 Ubah totalisator</b> (kolom Akhir baris 1 &amp; 2):<br>${htmlTotalisator}<br><span style="color:#94a3b8;font-size:12px">Aturan: PERTAMAX hanya lewat <b>totalisator</b>.</span>`;
                 alertEl.innerHTML =
                     `<b>% ${NAMA} = ${fmtPersen(persen)}% \u2014 MELEBIHI BATAS 1%!</b><br>` +
-                    `Hasil set = |Total \u2212 Hasil| = |${fmtNum.format(sub)} \u2212 ${fmtNum.format(hasilJual)}| = <b>${fmtNum.format(hs)} liter</b> \u00b7 ` +
-                    `Batas aman &lt; ${fmtNum.format(Math.round(batas))} liter \u00b7 Kelebihan <b>${fmtNum.format(Math.ceil(d))} liter</b><br><br>` +
-                    opsiHtml;
+                    `Hasil set = |Total \u2212 Hasil| = <b>${fmtNum.format(hs)} L</b> \u00b7 Batas < ${fmtNum.format(Math.round(batas))} L \u00b7 Kelebihan <b>${fmtNum.format(Math.ceil(d))} L</b><br><br>` + opsiHtml;
                 alertEl.classList.remove('hidden');
                 elPersen.classList.add('over');
                 elPersen.classList.remove('zero-pct');
-                if (!lastOver[p]) {
-                    showToast(`\u26a0\ufe0f % ${NAMA} di atas 1% \u2014 2 opsi perbaikan tersedia`);
-                }
+                if (!lastOver[p]) showToast(`\u26a0\ufe0f % ${NAMA} di atas 1%`);
                 clearTimeout(clearTimer[p]);
                 lastOver[p] = true;
             } else if (persenBulat < 0.1 && sub > 0) {
-                // ATURAN: persentase minimal 0,1% \u2014 tidak boleh 0,01% dan seterusnya
                 alertEl.className = 'alert-banner zero';
-                alertEl.innerHTML =
-                    `\u26a0\ufe0f <b>% ${NAMA} = ${fmtPersen(persen)}% \u2014 tidak boleh minus atau di bawah 0,1%!</b><br>` +
-                    `Aturan: tidak boleh menjadi minus (misalnya -0,8%), minimal 0,1% dan maksimal 1%. ` +
-                    `Hasil set terlalu kecil (Total terlalu mendekati Hasil) \u2014 periksa kembali kolom Akhir &amp; Stok Akhir.`;
+                alertEl.innerHTML = `\u26a0\ufe0f <b>% ${NAMA} = ${fmtPersen(persen)}% \u2014 minimal 0,1%!</b><br>Hasil set terlalu kecil \u2014 periksa kolom Akhir &amp; Stok Akhir.`;
                 alertEl.classList.remove('hidden');
                 elPersen.classList.add('zero-pct');
                 clearTimeout(clearTimer[p]);
@@ -2454,22 +1754,22 @@ let lastOver = { pl: false, px: false };
             } else {
                 elPersen.classList.remove('over');
                 elPersen.classList.remove('zero-pct');
-                if (alertEl && alertEl.classList.contains('zero')) {
-                    alertEl.classList.add('hidden');
-                }
+                if (alertEl && alertEl.classList.contains('zero')) alertEl.classList.add('hidden');
                 if (lastOver[p] && alertEl) {
                     alertEl.className = 'alert-banner ok';
-                    alertEl.innerHTML =
-                        `\u2705 <b>CLEAR \u2014 % ${NAMA} = ${fmtPersen(persen)}%</b> sudah kembali di bawah 1%. Data aman.`;
+                    alertEl.innerHTML = `\u2705 <b>CLEAR \u2014 % ${NAMA} = ${fmtPersen(persen)}%</b> sudah di bawah 1%.`;
                     alertEl.classList.remove('hidden');
                     clearTimeout(clearTimer[p]);
-                    clearTimer[p] = setTimeout(() => {
-                        if (!lastOver[p]) alertEl.classList.add('hidden');
-                    }, 6000);
-                    showToast(`\u2705 % ${NAMA} clear \u2014 di bawah 1%`);
+                    clearTimer[p] = setTimeout(() => { if (!lastOver[p]) alertEl.classList.add('hidden'); }, 6000);
+                    showToast(`\u2705 % ${NAMA} clear`);
                 }
                 lastOver[p] = false;
             }
+        }
+
+        function salinAngka(v) {
+            const t = String(v);
+            navigator.clipboard.writeText(t).then(() => showToast(`✅ ${t} disalin`)).catch(() => {});
         }
 
         function hitungBulanan() {
@@ -2499,12 +1799,11 @@ let lastOver = { pl: false, px: false };
                 setText(p + 'TM', sTM);
                 setText(p + 'STAkr', sSTak);
                 setText(p + 'Hasil', sHasil);
-                dataBlok[p] = { sub: sTot, hasil: sHasil, sST: sST, sDO: sDO, sTera: sTera, sSTak: sSTak };
+                dataBlok[p] = { sub: sTot, hasil: sHasil, sST, sDO, sTera, sSTak };
                 checkProduk(p, sTot, sHasil);
             });
 
-            // Rekap persentase pada kartu bawah
-            const labelKartu = { pl: 'PL', px: 'PX Real', pxg: 'PX Gantungan' };
+            const labelKartu = { pl: 'PL', px: 'PX Real' };
             BLOKS_BULANAN.forEach(p => {
                 const elR = document.getElementById('rekap' + p.toUpperCase());
                 if (elR) {
@@ -2524,60 +1823,42 @@ let lastOver = { pl: false, px: false };
                 }
             }
             setText('grandTotalBulanan', BLOKS_BULANAN.reduce((a, p) => a + dataBlok[p].sub, 0));
-
             if (document.getElementById('hasilSim-pl')) hitungSimulasiPersen();
             persistBulanan();
         }
 
-        function isiPerbandingan(db) {
-            const fmtS = n => (n > 0 ? '+' : n < 0 ? '\u2212' : '') + fmtNum.format(Math.abs(n));
-            const fmtSPct = n => (n > 0 ? '+' : n < 0 ? '\u2212' : '') + fmtPersen(Math.abs(n)) + '%';
-            const r = db.px, g = db.pxg;
-            const row = (idR, idG, idS, vr, vg, pct) => {
-                setText(idR, vr);
-                setText(idG, vg);
-                const elS = document.getElementById(idS);
-                if (elS) elS.textContent = pct ? fmtSPct(vr - vg) : fmtS(vr - vg);
-            };
-            row('cmpTotalR', 'cmpTotalG', 'cmpTotalS', r.sub, g.sub);
-            row('cmpSTR', 'cmpSTG', 'cmpSTS', r.sST, g.sST);
-            row('cmpDOR', 'cmpDOG', 'cmpDOS', r.sDO, g.sDO);
-            row('cmpTeraR', 'cmpTeraG', 'cmpTeraS', r.sTera, g.sTera);
-            row('cmpSTakR', 'cmpSTakG', 'cmpSTakS', r.sSTak, g.sSTak);
-            row('cmpHasilR', 'cmpHasilG', 'cmpHasilS', r.hasil, g.hasil);
-            row('cmpHSR', 'cmpHSG', 'cmpHSS', Math.abs(r.sub - r.hasil), Math.abs(g.sub - g.hasil));
-            row('cmpPctR', 'cmpPctG', 'cmpPctS',
-                parseNum(document.getElementById('persenPX').textContent),
-                parseNum(document.getElementById('persenPXG').textContent), true);
+        function hitungSimulasiPersen() {
+            BLOKS_BULANAN.forEach(p => {
+                const target = parseNum(document.getElementById('target-' + p).value);
+                if (!target || target <= 0) { document.getElementById('hasilSim-' + p).innerHTML = ''; return; }
+                const sub = numVal(p + 'Sub') || parseNum(document.getElementById(p + 'Sub').textContent);
+                const hasil = numVal(p + 'Hasil') || parseNum(document.getElementById(p + 'Hasil').textContent);
+                const hs = Math.abs(sub - hasil);
+                const hasilTarget = Math.round(sub * target / 100);
+                const selisih = hasilTarget - hs;
+                const action = selisih > 0 ? `tambah hasil set ${fmtNum.format(selisih)} L` : selisih < 0 ? `kurangi hasil set ${fmtNum.format(Math.abs(selisih))} L` : 'sudah sesuai';
+                document.getElementById('hasilSim-' + p).innerHTML =
+                    `<div class="sim-hasil-box">
+                        Target <b>${target}%</b> \u2192 Hasil set harus <b>${fmtNum.format(hasilTarget)} L</b><br>
+                        Hasil set saat ini: ${fmtNum.format(hs)} L<br>
+                        Tindakan: <b>${action}</b>
+                    </div>`;
+            });
         }
 
-        // Logika silang: jika gantungan sudah sesuai (0,1\u20131%) \u2192 perbaikan fokus ke real, dan sebaliknya
-        function catatanSilang() {
-            const elPctR = document.getElementById('persenPX');
-            const elPctG = document.getElementById('persenPXG');
-            if (!elPctR || !elPctG) return;
-            const adaR = parseNum(document.getElementById('pxSub').textContent) > 0;
-            const adaG = parseNum(document.getElementById('pxgSub').textContent) > 0;
-            const pctR = parseNum(elPctR.textContent);
-            const pctG = parseNum(elPctG.textContent);
-            const okR = adaR && pctR >= 0.1 && pctR < 1;
-            const okG = adaG && pctG >= 0.1 && pctG < 1;
-            const elR = document.getElementById('alertPX');
-            const elG = document.getElementById('alertPXG');
-            if (elR && !elR.classList.contains('hidden') && okG && !okR) {
-                elR.innerHTML += `<br><span style="color:#166534;font-size:12.5px">\u2705 Stok Gantungan sudah sesuai (${elPctG.textContent}%) \u2014 perbaikan difokuskan pada tabel Stok Real ini.</span>`;
-            }
-            if (elG && !elG.classList.contains('hidden') && okR && !okG) {
-                elG.innerHTML += `<br><span style="color:#166534;font-size:12.5px">\u2705 Stok Real sudah sesuai (${elPctR.textContent}%) \u2014 perbaikan difokuskan pada tabel Stok Gantungan ini.</span>`;
-            }
+        function setModeSimulasi(p, mode) {
+            simMode[p] = mode;
+            document.querySelectorAll(`.sim-mode[data-mode]`).forEach(b => {
+                if (b.closest('.card') && b.closest('.card').querySelector(`#target-${p}`)) {
+                    b.classList.toggle('active', b.dataset.mode === mode);
+                }
+            });
         }
 
         function resetBulanan() {
             const cols = ['Awal', 'Akhir', 'ST', 'DO', 'Tera', 'STAkr'];
             BLOKS_BULANAN.forEach(p => {
-                for (let i = 1; i <= 3; i++) {
-                    cols.forEach(s => { document.getElementById(p + s + i).value = ''; });
-                }
+                for (let i = 1; i <= 3; i++) cols.forEach(s => { document.getElementById(p + s + i).value = ''; });
                 setVal(p + 'Per100', '100');
             });
             hitungBulanan();
@@ -2589,47 +1870,17 @@ let lastOver = { pl: false, px: false };
             let labelBulan = bulanVal || '-';
             if (bulanVal) {
                 const parts = bulanVal.split('-');
-                const namaBulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-                    'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+                const namaBulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
                 labelBulan = `${namaBulan[parseInt(parts[1], 10) - 1]} ${parts[0]}`;
             }
             const g = id => document.getElementById(id).textContent;
             const sect = (judul, p) =>
-                `${judul}\n` +
-                `Total Liter : ${g(p + 'Sub')}\n` +
-                `Stok Awal   : ${g(p + 'ST')}\n` +
-                `DO          : ${g(p + 'DO')}\n` +
-                `Tera        : ${g(p + 'Tera')}\n` +
-                `Stok Akhir  : ${g(p + 'STAkr')}\n` +
-                `Hasil       : ${g(p + 'Hasil')}\n` +
-                `Hasil Set   : ${g('hasilSet' + p.toUpperCase())} L (% ${g('persen' + p.toUpperCase())}%)`;
-            const text =
-                `TOTALISATOR BULANAN \u2014 ${labelBulan}\n${isBulanPenuh() ? '' : 'Periode   : ' + periodeLabel() + '\n'}\n` +
-                sect('PERTALITE (PL)', 'pl') + `\n\n` +
-                sect('PERTAMAX', 'px') + `\n\n` +
-                `RINCIAN PERSENTASE (minimal 0,1% \u2013 maksimal 1%)\n` +
-                `PERTALITE : ${g('persenPL')}% \u00b7 PERTAMAX : ${g('persenPX')}%\n\n` +
-                `TOTAL LITER BULANAN : ${g('grandTotalBulanan')} L`;
-
-            const done = () => showToast('\u2705 Rekap bulanan disalin');
-            const fallback = () => {
-                const textarea = document.createElement('textarea');
-                textarea.value = text;
-                document.body.appendChild(textarea);
-                textarea.select();
-                try { document.execCommand('copy'); } catch (e) {}
-                document.body.removeChild(textarea);
-                done();
-            };
-            if (navigator.clipboard && navigator.clipboard.writeText) {
-                navigator.clipboard.writeText(text).then(done).catch(fallback);
-            } else {
-                fallback();
-            }
+                `${judul}\nTotal Liter : ${g(p + 'Sub')}\nStok Awal   : ${g(p + 'ST')}\nDO          : ${g(p + 'DO')}\nTera        : ${g(p + 'Tera')}\nStok Akhir  : ${g(p + 'STAkr')}\nHasil       : ${g(p + 'Hasil')}\nHasil Set   : ${g('hasilSet' + p.toUpperCase())} L (% ${g('persen' + p.toUpperCase())}%)`;
+            const text = `TOTALISATOR BULANAN \u2014 ${labelBulan}\n\n` + sect('PERTALITE (PL)', 'pl') + `\n\n` + sect('PERTAMAX', 'px') + `\n\nRINCIAN PERSENTASE\nPERTALITE : ${g('persenPL')}% \u00b7 PERTAMAX : ${g('persenPX')}%\n\nTOTAL LITER : ${g('grandTotalBulanan')} L`;
+            navigator.clipboard.writeText(text).then(() => showToast('\u2705 Rekap disalin')).catch(() => {});
         }
 
-
-        // ─── PENYIMPANAN LOKAL BULANAN (auto-fill antar bulan) ───
+        // ─── Penyimpanan lokal bulanan ───
         const BULANAN_STORE_KEY = 'spbu3417603_bulanan_v1';
 
         function loadStore() {
@@ -2639,11 +1890,6 @@ let lastOver = { pl: false, px: false };
 
         function saveStore(store) {
             try { localStorage.setItem(BULANAN_STORE_KEY, JSON.stringify(store)); } catch (e) {}
-        }
-
-        function setVal(id, v) {
-            const el = document.getElementById(id);
-            if (el) el.value = (v === undefined || v === null) ? '' : v;
         }
 
         function prevMonthKey(key) {
@@ -2656,8 +1902,7 @@ let lastOver = { pl: false, px: false };
 
         function blockData(p) {
             const cols = ['Awal', 'Akhir', 'ST', 'DO', 'Tera', 'STAkr'];
-            const rows = [];
-            let hasAny = false;
+            const rows = []; let hasAny = false;
             for (let i = 1; i <= 3; i++) {
                 const vals = cols.map(s => document.getElementById(p + s + i).value.trim());
                 rows.push(vals);
@@ -2665,7 +1910,7 @@ let lastOver = { pl: false, px: false };
             }
             const per100 = document.getElementById(p + 'Per100').value.trim();
             if (!hasAny) return null;
-            return { rows: rows, per100: per100 };
+            return { rows, per100 };
         }
 
         function persistBulanan() {
@@ -2674,13 +1919,9 @@ let lastOver = { pl: false, px: false };
             const store = loadStore();
             const data = {};
             let ada = false;
-            BLOKS_BULANAN.forEach(p => {
-                data[p] = blockData(p);
-                if (data[p]) ada = true;
-            });
-            if (!ada) {
-                delete store[key];
-            } else {
+            BLOKS_BULANAN.forEach(p => { data[p] = blockData(p); if (data[p]) ada = true; });
+            if (!ada) { delete store[key]; }
+            else {
                 const fa = document.getElementById('filterAwal');
                 const fk = document.getElementById('filterAkhir');
                 const fs = document.getElementById('filterShift');
@@ -2696,81 +1937,106 @@ let lastOver = { pl: false, px: false };
                 const r = (b.rows && b.rows[i]) || [];
                 rows.push([r[0] || '', r[1] || '', r[2] || '', r[3] || '', r[4] || '', r[5] || '']);
             }
-            // Data versi lama: kolom kanan (ST/DO/Tera/ST akr) tersimpan di level blok → pindahkan ke baris 1 agar total tetap sama
-            if (b.st !== undefined || b.do !== undefined || b.tera !== undefined || b.stakr !== undefined) {
-                if (!rows[0][2] && !rows[0][3] && !rows[0][4] && !rows[0][5]) {
-                    rows[0][2] = b.st || '';
-                    rows[0][3] = b.do || '';
-                    rows[0][4] = b.tera || '';
-                    rows[0][5] = b.stakr || '';
-                }
-            }
-            return { rows: rows, per100: b.per100 || '100', persen: b.persen || '', hasilSet: b.hasilSet || '' };
+            return { rows, per100: b.per100 || '100' };
         }
 
         function loadBulanan() {
             const key = document.getElementById('bulanBulanan').value;
             const cols = ['Awal', 'Akhir', 'ST', 'DO', 'Tera', 'STAkr'];
-            const valOf = id => { const e = document.getElementById(id); return e ? e.value.trim() : ''; };
-            // Kosongkan semua field dulu
             BLOKS_BULANAN.forEach(p => {
-                for (let i = 1; i <= 3; i++) {
-                    cols.forEach(s => setVal(p + s + i, ''));
-                }
+                for (let i = 1; i <= 3; i++) cols.forEach(s => setVal(p + s + i, ''));
                 setVal(p + 'Per100', '100');
             });
-
             const store = loadStore();
             if (!key) { hitungBulanan(); return; }
-
             const data = store[key];
             const prev = store[prevMonthKey(key)];
             let terisiOtomatis = false;
-
             BLOKS_BULANAN.forEach(p => {
                 const b = (data && data[p]) ? normalizeBlockBulanan(data[p]) : null;
                 const pb = (prev && prev[p]) ? normalizeBlockBulanan(prev[p]) : null;
                 if (!b && !pb) return;
                 for (let i = 0; i < 3; i++) {
-                    if (b) {
-                        cols.forEach((s, j) => setVal(p + s + (i + 1), b.rows[i][j]));
-                    }
+                    if (b) cols.forEach((s, j) => setVal(p + s + (i + 1), b.rows[i][j]));
                     if (pb) {
-                        // Lengkapi field awal yang masih kosong dari bulan sebelumnya
-                        if (!valOf(p + 'Awal' + (i + 1)) && pb.rows[i][1]) {
-                            setVal(p + 'Awal' + (i + 1), pb.rows[i][1]);
-                            terisiOtomatis = true;
+                        if (!document.getElementById(p + 'Awal' + (i + 1)).value && pb.rows[i][1]) {
+                            setVal(p + 'Awal' + (i + 1), pb.rows[i][1]); terisiOtomatis = true;
                         }
-                        if (!valOf(p + 'ST' + (i + 1)) && pb.rows[i][5]) {
-                            setVal(p + 'ST' + (i + 1), pb.rows[i][5]);
-                            terisiOtomatis = true;
+                        if (!document.getElementById(p + 'ST' + (i + 1)).value && pb.rows[i][5]) {
+                            setVal(p + 'ST' + (i + 1), pb.rows[i][5]); terisiOtomatis = true;
                         }
                     }
                 }
                 setVal(p + 'Per100', (b && b.per100) || '100');
             });
-
-            // Pulihkan filter tanggal & shift (atau default penuh bulan + shift bulan sebelumnya)
             const f = (data && data.filter) ? data.filter : ((prev && prev.filter) || null);
             setFilterDefaults(key, f);
-            const elKet = document.getElementById('filterKeterangan');
-            if (elKet) {
-                elKet.innerHTML = `📅 Periode aktif: <b>${periodeLabel()}</b>. Rincian perhitungan totalisator ini berpacu sesuai filter waktu dan shift yang diinput.`;
-            }
-
-            if (terisiOtomatis) {
-                showToast('↻ Totalisator akhir & stok akhir bulan sebelumnya otomatis terisi');
-            }
+            if (terisiOtomatis) showToast('↻ Totalisator & stok terisi dari bulan sebelumnya');
             hitungBulanan();
         }
 
-        // ─── KOLEKSI DATA UNTUK EXPORT ───
+        function setFilterDefaults(key, filter) {
+            const fa = document.getElementById('filterAwal');
+            const fk = document.getElementById('filterAkhir');
+            const fs = document.getElementById('filterShift');
+            if (filter) {
+                if (fa) fa.value = filter.awal || '';
+                if (fk) fk.value = filter.akhir || '';
+                if (fs) fs.value = filter.shift || 'all';
+            } else if (key) {
+                const [y, m] = key.split('-').map(Number);
+                const last = new Date(y, m, 0).getDate();
+                if (fa) fa.value = `${key}-01`;
+                if (fk) fk.value = `${key}-${String(last).padStart(2, '0')}`;
+                if (fs) fs.value = 'all';
+            }
+            updateFilterInfo();
+        }
+
+        function updateFilterInfo() {
+            const el = document.getElementById('filterKeterangan');
+            if (el) el.innerHTML = `📅 Periode aktif: <b>${periodeLabel()}</b>.`;
+        }
+
+        function periodeLabel() {
+            const fa = document.getElementById('filterAwal').value;
+            const fk = document.getElementById('filterAkhir').value;
+            const fs = document.getElementById('filterShift').value;
+            let s = '';
+            if (fa && fk) s = `${fa} s/d ${fk}`;
+            else if (fa) s = `dari ${fa}`;
+            else if (fk) s = `sampai ${fk}`;
+            else s = 'semua tanggal';
+            if (fs && fs !== 'all') s += ` · Shift ${fs}`;
+            return s;
+        }
+
+        function isBulanPenuh() {
+            const key = document.getElementById('bulanBulanan').value;
+            const fa = document.getElementById('filterAwal').value;
+            const fk = document.getElementById('filterAkhir').value;
+            if (!key || !fa || !fk) return false;
+            const [y, m] = key.split('-').map(Number);
+            const last = new Date(y, m, 0).getDate();
+            return fa === `${key}-01` && fk === `${key}-${String(last).padStart(2, '0')}`;
+        }
+
+        function setFilterBulanPenuh() {
+            const key = document.getElementById('bulanBulanan').value;
+            if (!key) return;
+            const [y, m] = key.split('-').map(Number);
+            const last = new Date(y, m, 0).getDate();
+            document.getElementById('filterAwal').value = `${key}-01`;
+            document.getElementById('filterAkhir').value = `${key}-${String(last).padStart(2, '0')}`;
+            updateFilterInfo();
+            showToast('📅 Filter diatur satu bulan penuh');
+        }
+
         function bulanLabel() {
             const v = document.getElementById('bulanBulanan').value;
             if (!v) return '-';
             const parts = v.split('-');
-            const namaBulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-                'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+            const namaBulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
             return `${namaBulan[parseInt(parts[1], 10) - 1]} ${parts[0]}`;
         }
 
@@ -2780,19 +2046,15 @@ let lastOver = { pl: false, px: false };
             const block = p => ({
                 rows: [1, 2, 3].map(i => ({
                     aw: gv(p + 'Awal' + i), ak: gv(p + 'Akhir' + i), tot: gt(p + 'Tot' + i),
-                    st: gv(p + 'ST' + i), do: gv(p + 'DO' + i),
-                    tera: gv(p + 'Tera' + i),
+                    st: gv(p + 'ST' + i), do: gv(p + 'DO' + i), tera: gv(p + 'Tera' + i),
                     stakr: gv(p + 'STAkr' + i), hasil: gt(p + 'Hasil' + i)
                 })),
                 sub: gt(p + 'Sub'), st: gt(p + 'ST'), do: gt(p + 'DO'),
                 tera: gt(p + 'Tera'), stakr: gt(p + 'STAkr'), hasil: gt(p + 'Hasil')
             });
-            const info = p => ({
-                hs: gt('hasilSet' + p.toUpperCase()), per: gv(p + 'Per100'), ps: gt('persen' + p.toUpperCase())
-            });
+            const info = p => ({ hs: gt('hasilSet' + p.toUpperCase()), per: gv(p + 'Per100'), ps: gt('persen' + p.toUpperCase()) });
             return {
-                bulan: bulanLabel(),
-                bulanVal: gv('bulanBulanan'),
+                bulan: bulanLabel(), bulanVal: gv('bulanBulanan'),
                 periode: isBulanPenuh() ? '' : periodeLabel(),
                 pl: block('pl'), px: block('px'),
                 infPL: info('pl'), infPX: info('px'),
@@ -2800,110 +2062,58 @@ let lastOver = { pl: false, px: false };
             };
         }
 
-        function rekapTextBulanan(d) {
-            const line = b =>
-                `Total Liter : ${b.sub}\nST Awal     : ${b.st || '0'}\nDO          : ${b.do || '0'}\n` +
-                `Total Ril   : ${b.ril}\nTera        : ${b.tera || '0'}\nTotal M     : ${b.tm}\n` +
-                `ST Akhir    : ${b.stakr || '0'}\nHasil       : ${b.hasil}`;
-            return `*TOTALISATOR BULANAN — ${d.bulan.toUpperCase()}*\nSPBU 34-17603\n\n` +
-                `*PERTALITE (PL)*\n${line(d.pl)}\n\n` +
-                `*PERTAMAX (PX)*\n${line(d.px)}\n\n` +
-                `*PRODUK*\nPL — Hasil Set : ${d.hsPL} (% ${d.psPL || '-'})\n` +
-                `PX — Hasil Set : ${d.hsPX} (% ${d.psPX || '-'})\n\n` +
-                `*TOTAL LITER BULANAN : ${d.grand} L*`;
-        }
-
-        // ─── EXPORT PDF ───
         function buildPDF() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF({ orientation: 'portrait', unit: 'pt', format: 'a4' });
-            if (typeof doc.autoTable !== 'function') {
-                showToast('❌ Plugin tabel PDF belum termuat — cek koneksi lalu muat ulang halaman');
-                return null;
-            }
+            if (typeof doc.autoTable !== 'function') { showToast('❌ Plugin tabel PDF belum termuat'); return null; }
             const d = collectBulanan();
-
             const tglPenuh = isBulanPenuh();
             doc.setFont('helvetica', 'bold');
             doc.setFontSize(20);
-            doc.setTextColor(0, 0, 0);
             doc.text('SPBU 34.17603', 40, 50);
+            doc.setFontSize(15);
             doc.text('Totalisator Bulanan', 40, 76);
             doc.setFont('helvetica', 'normal');
             doc.setFontSize(10.5);
             doc.setTextColor(100, 116, 139);
             doc.text(`Bulan : ${d.bulan}`, 40, 96);
-            if (!tglPenuh) {
-                doc.text(`Periode : ${periodeLabel()}`, 40, 110);
-            }
+            if (!tglPenuh) doc.text(`Periode : ${d.periode}`, 40, 110);
             doc.setTextColor(30, 41, 59);
 
             const base = {
                 theme: 'grid',
-                styles: {
-                    fontSize: 9.5,
-                    halign: 'right',
-                    cellPadding: 4.5,
-                    textColor: [0, 0, 0],
-                    lineColor: [0, 0, 0],
-                    lineWidth: 0.8,
-                    fillColor: [255, 255, 255]
-                },
-                columnStyles: {
-                    0: { cellWidth: 70 }, 1: { cellWidth: 70 }, 2: { cellWidth: 60 },
-                    3: { cellWidth: 65 }, 4: { cellWidth: 65 }, 5: { cellWidth: 40 },
-                    6: { cellWidth: 65 }, 7: { cellWidth: 60 }
-                },
+                styles: { fontSize: 9.5, halign: 'right', cellPadding: 4.5, textColor: [0,0,0], lineColor: [0,0,0], lineWidth: 0.8 },
+                headStyles: { fillColor: [11, 26, 46], textColor: [255,255,255], fontStyle: 'bold' },
                 margin: { left: 40, right: 40 }
             };
-            const judulBagian = label => [{ content: label, colSpan: 8, styles: { fontStyle: 'bold', fontSize: 11.5, halign: 'left', cellPadding: 5 } }];
-            const judulKolom = ['Awal', 'Akhir', 'Total', 'Stok Awal', 'DO', 'Tera', 'Stok Akhir', 'Hasil']
-                .map(h => ({ content: h, styles: { fontStyle: 'bold', halign: 'center' } }));
-            const strip = v => (v && String(v).trim() !== '') ? v : '-';
-            const tebal = v => ({ content: String(v), styles: { fontStyle: 'bold' } });
-            const bodyTabel = (judul, b) => [
-                judulBagian(judul),
-                judulKolom,
-                ...b.rows.map(r => [r.aw || '', r.ak || '', r.tot, strip(r.st), strip(r.do), strip(r.tera), strip(r.stakr), r.hasil]),
-                [tebal('Subtotal'), '', tebal(b.sub), tebal(b.st), tebal(b.do), tebal(b.tera), tebal(b.stakr), tebal(b.hasil)]
-            ];
             const bodyTabelFix = (judul, b) => {
-                const body = bodyTabel(judul, b);
-                const last = body[body.length - 1];
-                last[0] = { content: 'Subtotal', colSpan: 2, styles: { fontStyle: 'bold', halign: 'left' } };
-                last.splice(1, 1);
+                const body = [
+                    [{ content: judul, colSpan: 8, styles: { fontStyle: 'bold', fontSize: 11.5, halign: 'left', cellPadding: 5 } }],
+                    ['Awal', 'Akhir', 'Total', 'Stok Awal', 'DO', 'Tera', 'Stok Akhir', 'Hasil'],
+                    ...b.rows.map(r => [r.aw || '', r.ak || '', r.tot, r.st || '-', r.do || '-', r.tera || '-', r.stakr || '-', r.hasil]),
+                    ['Subtotal', '', b.sub, b.st, b.do, b.tera, b.stakr, b.hasil]
+                ];
                 return body;
             };
-
             let y = tglPenuh ? 112 : 126;
-                        doc.autoTable({ ...base, body: bodyTabelFix('Rincian Totalisator Pertalite', d.pl), startY: y });
+            doc.autoTable({ ...base, body: bodyTabelFix('Rincian Totalisator Pertalite', d.pl), startY: y });
             doc.autoTable({ ...base, body: bodyTabelFix('Rincian Totalisator Pertamax', d.px), startY: doc.lastAutoTable.finalY + 20 });
-
-            // Hasil Set & Persentase (ringkas)
-            const baseHS = {
+            doc.autoTable({
                 ...base,
                 styles: { ...base.styles, halign: 'center' },
-                columnStyles: { 0: { cellWidth: 200, halign: 'left' }, 1: { cellWidth: 150, halign: 'right' }, 2: { cellWidth: 145, halign: 'right' } }
-            };
-            doc.autoTable({
-                ...baseHS,
                 body: [
                     [{ content: 'Hasil Set & Persentase', colSpan: 3, styles: { fontStyle: 'bold', fontSize: 11.5, halign: 'left', cellPadding: 5 } }],
-                    ['Produk', 'Hasil Set (Liter)', 'Persentase'].map(h => ({ content: h, styles: { fontStyle: 'bold', halign: 'center' } })),
+                    ['Produk', 'Hasil Set (Liter)', 'Persentase'],
                     ['PERTALITE', d.infPL.hs, d.infPL.ps + '%'],
                     ['PERTAMAX', d.infPX.hs, d.infPX.ps + '%']
                 ],
                 startY: doc.lastAutoTable.finalY + 20
             });
-
             return doc;
         }
 
         function exportPDF() {
-            if (!window.jspdf) {
-                showToast('❌ Library PDF belum termuat — cek koneksi lalu muat ulang halaman');
-                return;
-            }
+            if (!window.jspdf) { showToast('❌ Library PDF belum termuat'); return; }
             try {
                 const d = collectBulanan();
                 const doc = buildPDF();
@@ -2911,196 +2121,125 @@ let lastOver = { pl: false, px: false };
                 doc.save(`Totalisator-Bulanan-${d.bulanVal || 'undated'}.pdf`);
                 showToast('📄 PDF berhasil diunduh');
             } catch (e) {
-                console.error('exportPDF:', e);
-                showToast('❌ PDF gagal: ' + (e && e.message ? e.message : e));
+                console.error(e);
+                showToast('❌ PDF gagal: ' + (e.message || e));
             }
         }
 
-        // ─── EXPORT EXCEL ───
         function exportExcel() {
-            if (typeof XLSX === 'undefined') {
-                showToast('\u274c Library Excel belum termuat \u2014 cek koneksi lalu muat ulang halaman');
-                return;
-            }
+            if (typeof XLSX === 'undefined') { showToast('\u274c Library Excel belum termuat'); return; }
             try {
-            const d = collectBulanan();
-            const raw = v => (v && String(v).trim() !== '') ? parseNum(v) : '';
-
-            const head = ['Awal', 'Akhir', 'Total', 'Stok Awal', 'DO', 'Tera', 'Stok Akhir', 'Hasil'];
-            const blockAoa = (judul, b) => [
-                [judul],
-                head,
-                ...b.rows.map(r => [raw(r.aw), raw(r.ak), raw(r.tot), raw(r.st), raw(r.do), raw(r.tera), raw(r.stakr), raw(r.hasil)]),
-                ['Subtotal', '', raw(b.sub), raw(b.st), raw(b.do), raw(b.tera), raw(b.stakr), raw(b.hasil)]
-            ];
-            const aoa = [
-                ['SPBU 34.17603'],
-                ['Totalisator Bulanan'],
-                [`Bulan : ${d.bulan}${d.periode ? ' \u00b7 ' + d.periode : ''}`],
-                [],
-                ...blockAoa('Rincian Totalisator Pertalite', d.pl),
-                [],
-                ...blockAoa('Rincian Totalisator Pertamax', d.px),
-                [],
-                ['Produk'],
-                ['Produk', 'Hasil Set', 'Per 100 %', '%'],
-                ['PERTALITE', raw(d.infPL.hs), raw(d.infPL.per) || 100, d.infPL.ps],
-                ['PERTAMAX', raw(d.infPX.hs), raw(d.infPX.per) || 100, d.infPX.ps]
-            ];
-            const ws = XLSX.utils.aoa_to_sheet(aoa);
-
-            const ensureCells = (r, n) => {
-                for (let c = 0; c < n; c++) {
-                    const addr = XLSX.utils.encode_cell({ r: r, c: c });
-                    if (!ws[addr]) ws[addr] = { t: 's', v: '' };
-                }
-            };
-            [0, 1, 2, 4, 12, 20].forEach(r => ensureCells(r, 8));
-
-            const thin = { style: 'thin', color: { rgb: '000000' } };
-            const allBorder = { top: thin, bottom: thin, left: thin, right: thin };
-            const put = (r, c, s) => {
-                const addr = XLSX.utils.encode_cell({ r: r, c: c });
-                if (ws[addr]) ws[addr].s = s;
-            };
-            const rowStyle = (r, s, c0, c1) => { for (let c = c0; c <= c1; c++) put(r, c, s); };
-            const cellNum = r => {
-                const out = [];
-                for (let c = 0; c < 8; c++) {
-                    const cell = ws[XLSX.utils.encode_cell({ r: r, c: c })];
-                    if (!cell) continue;
-                    const isNum = typeof cell.v === 'number';
-                    cell.s = { border: allBorder, alignment: { horizontal: isNum ? 'right' : 'left', vertical: 'center' } };
-                    if (isNum) cell.z = '#,##0';
-                    out.push(cell);
-                }
-                return out;
-            };
-
-            rowStyle(0, { font: { bold: true, sz: 16, color: { rgb: '0B1A2E' } }, alignment: { horizontal: 'left', vertical: 'center' } }, 0, 7);
-            rowStyle(1, { font: { bold: true, sz: 13, color: { rgb: '0B1A2E' } }, alignment: { horizontal: 'left', vertical: 'center' } }, 0, 7);
-            rowStyle(2, { font: { sz: 11, color: { rgb: '64748B' } }, alignment: { horizontal: 'left', vertical: 'center' } }, 0, 7);
-
-            const styleTabel = (rJudul, rHead, rData0, rSub) => {
-                rowStyle(rJudul, { font: { bold: true, sz: 11 }, border: allBorder, alignment: { horizontal: 'left', vertical: 'center' } }, 0, 7);
-                rowStyle(rHead, { font: { bold: true }, border: allBorder, alignment: { horizontal: 'center', vertical: 'center' } }, 0, 7);
-                for (let r = rData0; r < rSub; r++) cellNum(r);
-                cellNum(rSub).forEach(cell => { cell.s.font = { bold: true }; });
-            };
-            styleTabel(4, 5, 6, 10);
-            styleTabel(12, 13, 14, 18);
-
-            rowStyle(20, { font: { bold: true, sz: 11 }, border: allBorder, alignment: { horizontal: 'left', vertical: 'center' } }, 0, 3);
-            rowStyle(21, { font: { bold: true }, border: allBorder, alignment: { horizontal: 'center', vertical: 'center' } }, 0, 3);
-            [22, 23].forEach(cellNum);
-
-            ws['!merges'] = [
-                { s: { r: 0, c: 0 }, e: { r: 0, c: 7 } },
-                { s: { r: 1, c: 0 }, e: { r: 1, c: 7 } },
-                { s: { r: 2, c: 0 }, e: { r: 2, c: 7 } },
-                { s: { r: 4, c: 0 }, e: { r: 4, c: 7 } },
-                { s: { r: 10, c: 0 }, e: { r: 10, c: 1 } },
-                { s: { r: 12, c: 0 }, e: { r: 12, c: 7 } },
-                { s: { r: 18, c: 0 }, e: { r: 18, c: 1 } },
-                { s: { r: 20, c: 0 }, e: { r: 20, c: 3 } }
-            ];
-            ws['!cols'] = [{ wch: 14 }, { wch: 14 }, { wch: 11 }, { wch: 11 }, { wch: 11 }, { wch: 8 }, { wch: 11 }, { wch: 11 }];
-
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, 'Totalisator Bulanan');
-            XLSX.writeFile(wb, `Totalisator-Bulanan-${d.bulanVal || 'undated'}.xlsx`, { cellStyles: true });
-            showToast('📗 Excel berhasil diunduh');
+                const d = collectBulanan();
+                const raw = v => (v && String(v).trim() !== '') ? parseNum(v) : '';
+                const head = ['Awal', 'Akhir', 'Total', 'Stok Awal', 'DO', 'Tera', 'Stok Akhir', 'Hasil'];
+                const blockAoa = (judul, b) => [
+                    [judul], head,
+                    ...b.rows.map(r => [raw(r.aw), raw(r.ak), raw(r.tot), raw(r.st), raw(r.do), raw(r.tera), raw(r.stakr), raw(r.hasil)]),
+                    ['Subtotal', '', raw(b.sub), raw(b.st), raw(b.do), raw(b.tera), raw(b.stakr), raw(b.hasil)]
+                ];
+                const aoa = [
+                    ['SPBU 34.17603'], ['Totalisator Bulanan'],
+                    [`Bulan : ${d.bulan}${d.periode ? ' \u00b7 ' + d.periode : ''}`], [],
+                    ...blockAoa('Rincian Totalisator Pertalite', d.pl), [],
+                    ...blockAoa('Rincian Totalisator Pertamax', d.px), [],
+                    ['Produk'], ['Produk', 'Hasil Set', 'Per 100 %', '%'],
+                    ['PERTALITE', raw(d.infPL.hs), raw(d.infPL.per) || 100, d.infPL.ps],
+                    ['PERTAMAX', raw(d.infPX.hs), raw(d.infPX.per) || 100, d.infPX.ps]
+                ];
+                const ws = XLSX.utils.aoa_to_sheet(aoa);
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, 'Totalisator Bulanan');
+                XLSX.writeFile(wb, `Totalisator-Bulanan-${d.bulanVal || 'undated'}.xlsx`, { cellStyles: true });
+                showToast('📗 Excel berhasil diunduh');
             } catch (e) {
-                console.error('exportExcel:', e);
-                showToast('\u274c Excel gagal: ' + (e && e.message ? e.message : e));
+                console.error(e);
+                showToast('\u274c Excel gagal: ' + (e.message || e));
             }
         }
 
-        // ─── BAGIKAN KE WHATSAPP ───
         async function shareWA() {
             const d = collectBulanan();
-            const text = rekapTextBulanan(d);
+            const line = b =>
+                `Total Liter : ${b.sub}\nST Awal     : ${b.st || '0'}\nDO          : ${b.do || '0'}\n` +
+                `Total Ril   : ${b.ril || '-'}\nTera        : ${b.tera || '0'}\nTotal M     : ${b.tm || '-'}\n` +
+                `ST Akhir    : ${b.stakr || '0'}\nHasil       : ${b.hasil}`;
+            const text = `*TOTALISATOR BULANAN — ${d.bulan.toUpperCase()}*\nSPBU 34-17603\n\n` +
+                `*PERTALITE (PL)*\n${line(d.pl)}\n\n` +
+                `*PERTAMAX (PX)*\n${line(d.px)}\n\n` +
+                `*PRODUK*\nPL — Hasil Set : ${d.infPL.hs} (% ${d.infPL.ps}%)\nPX — Hasil Set : ${d.infPX.hs} (% ${d.infPX.ps}%)\n\n` +
+                `*TOTAL LITER : ${d.grand} L*`;
             if (window.jspdf) {
                 try {
                     const blob = buildPDF().output('blob');
                     const file = new File([blob], `Totalisator-Bulanan-${d.bulanVal || 'undated'}.pdf`, { type: 'application/pdf' });
                     if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                        await navigator.share({ files: [file], title: 'Totalisator Bulanan', text: text });
+                        await navigator.share({ files: [file], title: 'Totalisator Bulanan', text });
                         return;
                     }
-                } catch (e) {
-                    if (e && e.name === 'AbortError') return; // user membatalkan
-                }
-                // Fallback: unduh PDF + buka WhatsApp berisi teks rekap
+                } catch (e) { if (e && e.name === 'AbortError') return; }
                 try { buildPDF().save(`Totalisator-Bulanan-${d.bulanVal || 'undated'}.pdf`); } catch (e) {}
             }
             window.open('https://wa.me/?text=' + encodeURIComponent(text), '_blank');
-            showToast('📤 PDF diunduh & WhatsApp dibuka — lampirkan file-nya di chat');
+            showToast('📤 PDF diunduh & WhatsApp dibuka');
         }
 
-// ══════════════════════════════════════════════════════
-        // ─── PENGATURAN: BACKUP & RESTORE ───
+        function openRumusModal() {
+            const html = `
+                <h3>Rumus Perhitungan</h3>
+                <p><b>Total</b> = Akhir − Awal</p>
+                <p><b>Total Ril</b> = Stok Awal + DO</p>
+                <p><b>Total M</b> = Total Ril + Tera</p>
+                <p><b>Hasil</b> = Total M − Stok Akhir</p>
+                <p><b>Hasil Set</b> = |Total − Hasil|</p>
+                <p><b>Persen</b> = (Hasil Set × per 100%) ÷ Total</p>
+                <h3>Aturan</h3>
+                <ul>
+                    <li>Persentase harus <b>di bawah 1%</b> dan <b>minimal 0,1%</b>.</li>
+                    <li>Jika ≥ 1%: perbaiki stok akhir (Pertalite) atau totalisator (Pertamax).</li>
+                    <li>Jika < 0,1%: periksa kembali input.</li>
+                </ul>
+            `;
+            showInfoModal('Rumus & Aturan', html);
+        }
+
+        function showInfoModal(title, html) {
+            document.getElementById('infoModalTitle').textContent = title;
+            document.getElementById('infoModalBody').innerHTML = html;
+            document.getElementById('infoModal').classList.add('open');
+        }
+
+        function closeInfoModal() {
+            document.getElementById('infoModal').classList.remove('open');
+        }
+
         // ══════════════════════════════════════════════════════
-
-        function bulanLabelFromKey(key) {
-            const nama = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
-            const parts = key.split('-');
-            return `${nama[parseInt(parts[1], 10) - 1]} ${parts[0]}`;
-        }
-
+        // ─── TAB: PENGATURAN ───
+        // ══════════════════════════════════════════════════════
         function updateStorageInfo() {
             const el = document.getElementById('storageInfo');
             if (!el) return;
             const store = loadStore();
             const keys = Object.keys(store).sort();
-            if (!keys.length) {
-                el.textContent = 'Belum ada data bulanan tersimpan di perangkat ini.';
-                return;
-            }
-            el.textContent = `${keys.length} bulan tersimpan: ${keys.map(bulanLabelFromKey).join(', ')}`;
+            if (!keys.length) { el.textContent = 'Belum ada data bulanan tersimpan.'; return; }
+            const nama = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+            el.textContent = `${keys.length} bulan tersimpan: ${keys.map(k => {
+                const p = k.split('-');
+                return `${nama[parseInt(p[1], 10) - 1]} ${p[0]}`;
+            }).join(', ')}`;
         }
 
         function backupData() {
             const store = loadStore();
             const keys = Object.keys(store);
-            if (!keys.length) {
-                showToast('\u26a0\ufe0f Belum ada data untuk di-backup');
-                return;
-            }
-            const payload = {
-                app: 'SPBU 34-17603 Totalisator',
-                versi: 2,
-                dibuat: new Date().toISOString(),
-                data: store
-            };
+            if (!keys.length) { showToast('\u26a0\ufe0f Belum ada data untuk di-backup'); return; }
+            const payload = { app: 'SPBU 34-17603 Totalisator', versi: 2, dibuat: new Date().toISOString(), data: store };
             const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
             const a = document.createElement('a');
             a.href = URL.createObjectURL(blob);
             a.download = `Backup-Totalisator-SPBU-34-17603-${new Date().toISOString().slice(0, 10)}.json`;
-            document.body.appendChild(a);
-            a.click();
-            a.remove();
+            document.body.appendChild(a); a.click(); a.remove();
             setTimeout(() => URL.revokeObjectURL(a.href), 1500);
             showToast(`💾 Backup diunduh (${keys.length} bulan)`);
-        }
-
-        // Validasi & terapkan data restore; mengembalikan {ok, count?, cancelled?}
-        function applyRestore(parsed) {
-            const data = (parsed && parsed.data) ? parsed.data : parsed;
-            if (!data || typeof data !== 'object' || Array.isArray(data)) return { ok: false };
-            const validKeys = Object.keys(data).filter(k => /^\d{4}-\d{2}$/.test(k) && data[k] && typeof data[k] === 'object');
-            if (!validKeys.length) return { ok: false };
-            const cleaned = {};
-            validKeys.forEach(k => {
-                cleaned[k] = { pl: data[k].pl || null, px: data[k].px || null };
-            });
-            if (!confirm(`Restore ${validKeys.length} bulan data?\nData bulan yang sama di perangkat ini akan ditimpa.`)) {
-                return { ok: false, cancelled: true };
-            }
-            saveStore(cleaned);
-            loadBulanan();
-            updateStorageInfo();
-            return { ok: true, count: validKeys.length };
         }
 
         function triggerRestore() {
@@ -3115,18 +2254,21 @@ let lastOver = { pl: false, px: false };
             const reader = new FileReader();
             reader.onload = () => {
                 let parsed;
-                try {
-                    parsed = JSON.parse(reader.result);
-                } catch (e) {
-                    showToast('\u274c File backup tidak valid (bukan JSON)');
-                    return;
+                try { parsed = JSON.parse(reader.result); }
+                catch (e) { showToast('\u274c File backup tidak valid'); return; }
+                const data = (parsed && parsed.data) ? parsed.data : parsed;
+                if (!data || typeof data !== 'object' || Array.isArray(data)) {
+                    showToast('\u274c Isi file backup tidak dikenali'); return;
                 }
-                const res = applyRestore(parsed);
-                if (res.ok) {
-                    showToast(`\u2705 Restore berhasil \u2014 ${res.count} bulan dimuat`);
-                } else if (!res.cancelled) {
-                    showToast('\u274c Isi file backup tidak dikenali');
-                }
+                const validKeys = Object.keys(data).filter(k => /^\d{4}-\d{2}$/.test(k) && data[k] && typeof data[k] === 'object');
+                if (!validKeys.length) { showToast('\u274c Tidak ada data bulanan valid'); return; }
+                if (!confirm(`Restore ${validKeys.length} bulan data?\nData bulan yang sama akan ditimpa.`)) return;
+                const cleaned = {};
+                validKeys.forEach(k => { cleaned[k] = { pl: data[k].pl || null, px: data[k].px || null, filter: data[k].filter || null }; });
+                saveStore(cleaned);
+                loadBulanan();
+                updateStorageInfo();
+                showToast(`\u2705 Restore berhasil \u2014 ${validKeys.length} bulan`);
             };
             reader.onerror = () => showToast('\u274c Gagal membaca file');
             reader.readAsText(file);
@@ -3135,372 +2277,389 @@ let lastOver = { pl: false, px: false };
         function hapusSemuaData() {
             const store = loadStore();
             const n = Object.keys(store).length;
-            if (!n) {
-                showToast('\u26a0\ufe0f Tidak ada data tersimpan');
-                return;
-            }
-            if (!confirm(`Hapus SEMUA data (${n} bulan)?\nTindakan ini tidak bisa dibatalkan. Pastikan sudah backup.`)) return;
+            if (!n) { showToast('\u26a0\ufe0f Tidak ada data tersimpan'); return; }
+            if (!confirm(`Hapus SEMUA data (${n} bulan)?\nTidak bisa dibatalkan.`)) return;
             saveStore({});
             loadBulanan();
             updateStorageInfo();
             showToast('🗑\ufe0f Semua data dihapus');
         }
 
-        // ─── Init ───
-
-// ─── INFO MODAL: popup rumus & simulasi ───
-        let infoModalProduct = null;
-
-        function showInfoModal(title, html, product) {
-            document.getElementById('infoModalTitle').textContent = title;
-            document.getElementById('infoModalBody').innerHTML = html;
-            infoModalProduct = product || null;
-            document.getElementById('infoModal').classList.add('open');
-        }
-
-        function closeInfoModal() {
-            document.getElementById('infoModal').classList.remove('open');
-            infoModalProduct = null;
-        }
-
-function salinFallback(teks) {
-            const ta = document.createElement('textarea');
-            ta.value = teks;
-            ta.style.position = 'fixed';
-            ta.style.opacity = '0';
-            document.body.appendChild(ta);
-            ta.select();
-            try { document.execCommand('copy'); } catch (e) {}
-            document.body.removeChild(ta);
-        }
-
-        function salinAngka(nilai) {
-            const teks = String(nilai);
-            const selesai = () => showToast(`\u2705 ${fmtNum.format(nilai)} disalin`);
-            if (navigator.clipboard && navigator.clipboard.writeText) {
-                navigator.clipboard.writeText(teks).then(selesai).catch(() => { salinFallback(teks); selesai(); });
-            } else {
-                salinFallback(teks);
-                selesai();
-            }
-        }
-
-        function openRumusModal() {
-            showInfoModal('Rumus & Aturan Perhitungan', `
-                <div style="line-height:2">
-                    <b>Total</b> = Akhir \u2212 Awal<br>
-                    <b>Total ril</b> = Stok Awal + DO<br>
-                    <b>Total M</b> = Total ril + Tera<br>
-                    <b>Hasil</b> = Total M \u2212 Stok Akhir<br>
-                    <b>Hasil set</b> = |Total \u2212 Hasil| <span style="color:#64748b">(terisi otomatis)</span><br>
-                    <b>%</b> = Hasil set \u00d7 per 100 % \u00f7 Total
-                </div>
-                <div style="background:#fef2f2;border:1.5px solid #fca5a5;border-radius:12px;padding:10px 14px;color:#7f1d1d;margin-top:14px">
-                    \u26a0\ufe0f <b>Aturan: % tiap produk tidak boleh minus (misalnya -0,8%), minimal 0,1% dan maksimal 1% (di bawah 1%).</b><br>
-                    Jika melebihi 1%, popup simulasi perbaikan stok/totalisator muncul otomatis.
-                </div>
-                <button class="modal-btn primary" style="width:100%;margin-top:14px" onclick="closeInfoModal()">Mengerti</button>
-            `);
-        }
-
-
         // ══════════════════════════════════════════════════════
-        // ─── SIMULASI PERSENTASE: target 0,5 / 0,6 / 0,7 % ───
+        // ─── TAB: PENJUALAN ───
         // ══════════════════════════════════════════════════════
+        const PENJUALAN_STORE_KEY = 'spbu3417603_penjualan_v1';
+        const MESIN_PERTALITE = ['A1', 'A2', 'C'];
+        const MESIN_PERTAMAX = ['B1', 'B2', 'D'];
+        let lockHarga = false;
+        let shiftCustom = [
+            { id: 's1', nama: 'Shift 1', jam: '06:00-14:00' },
+            { id: 's2', nama: 'Shift 2', jam: '14:00-22:00' },
+            { id: 's3', nama: 'Shift 3', jam: '22:00-06:00' }
+        ];
+        let shiftAktifId = 's1';
+        let penjualanInitialized = false;
 
-
-
-
-
-        
-
-
-        function setTargetPersen(p, v) {
-            const input = document.getElementById('target-' + p);
-            if (input) input.value = String(v).replace('.', ',');
-            hitungSimulasiPersen();
+        function loadPenjualanStore() {
+            try { return JSON.parse(localStorage.getItem(PENJUALAN_STORE_KEY)) || {}; }
+            catch (e) { return {}; }
         }
 
-        function setModeSimulasi(p, mode) {
-            simMode[p] = mode;
-            const wrap = document.getElementById('hasilSim-' + p);
-            if (wrap) {
-                const row = wrap.previousElementSibling;
-                if (row && row.querySelectorAll) {
-                    row.querySelectorAll('.sim-mode').forEach(b => b.classList.toggle('active', b.dataset.mode === mode));
-                }
-            }
-            hitungSimulasiPersen();
+        function savePenjualanStore(s) {
+            try { localStorage.setItem(PENJUALAN_STORE_KEY, JSON.stringify(s)); } catch (e) {}
         }
 
-        function hitungSimulasiPersen() {
-            const btnSalin = v => `<button class="modal-btn secondary" style="padding:6px 12px;font-size:12px;border-radius:9px" onclick="salinAngka(${v})">📋 Salin</button>`;
-            const bagi = (daftar, totalDelta, basisKey) => {
-                const totalBasis = daftar.reduce((a, b) => a + Math.max(0, b[basisKey]), 0);
-                if (totalBasis <= 0 || totalDelta <= 0) return daftar.map(d => ({ d: d, delta: 0 }));
-                const bagian = daftar.map(d => {
-                    const raw = totalDelta * Math.max(0, d[basisKey]) / totalBasis;
-                    return { d: d, delta: Math.floor(raw), frac: raw - Math.floor(raw) };
-                });
-                let sisa = totalDelta - bagian.reduce((a, b) => a + b.delta, 0);
-                bagian.slice().sort((a, b) => b.frac - a.frac).forEach(x => { if (sisa > 0) { x.delta++; sisa--; } });
-                return bagian;
+        function initPenjualan() {
+            const renderRows = (containerId, mesinList, prefix) => {
+                const container = document.getElementById(containerId);
+                if (!container) return;
+                container.innerHTML = mesinList.map(m => `
+                    <div class="penjualan-mesin-row">
+                        <div class="mesin-name">${m}</div>
+                        <input type="number" id="${prefix}Awal${m}" oninput="hitungPenjualan()" placeholder="0" min="0" />
+                        <input type="number" id="${prefix}Akhir${m}" oninput="hitungPenjualan()" placeholder="0" min="0" />
+                        <div class="compute" id="${prefix}Tot${m}">0</div>
+                        <div class="compute rp" id="${prefix}Rp${m}">Rp 0</div>
+                    </div>`).join('');
             };
-            const MIN_P = 0.1;
-            const NAMA_BLOK = { pl: 'PERTALITE', px: 'PERTAMAX STOK REAL', pxg: 'PERTAMAX STOK GANTUNGAN' };
+            renderRows('tbodyPertalite', MESIN_PERTALITE, 'penjPL');
+            renderRows('tbodyPertamax', MESIN_PERTAMAX, 'penjPX');
 
-            BLOKS_BULANAN.forEach(p => {
-                const elHasil = document.getElementById('hasilSim-' + p);
-                if (!elHasil) return;
-                const elTarget = document.getElementById('target-' + p);
-                const target = parseNum(elTarget ? elTarget.value : '0,5');
-                const NAMA = NAMA_BLOK[p];
+            const store = loadPenjualanStore();
+            if (store.shiftCustom && Array.isArray(store.shiftCustom) && store.shiftCustom.length) shiftCustom = store.shiftCustom;
+            if (store.shiftAktifId) shiftAktifId = store.shiftAktifId;
+            if (store.hargaPertalite) document.getElementById('hargaPertalite').value = store.hargaPertalite;
+            if (store.hargaPertamax) document.getElementById('hargaPertamax').value = store.hargaPertamax;
+            if (store.lockHarga) {
+                lockHarga = true;
+                const btn = document.getElementById('lockHarga');
+                btn.textContent = '🔓';
+                btn.classList.add('lock-active');
+            }
+            if (store.tglPenjualan) document.getElementById('tglPenjualan').value = store.tglPenjualan;
+            else if (!document.getElementById('tglPenjualan').value) {
+                document.getElementById('tglPenjualan').value = new Date().toISOString().slice(0, 10);
+            }
+            if (store.mesin) {
+                Object.keys(store.mesin).forEach(k => {
+                    const el = document.getElementById(k);
+                    if (el) el.value = store.mesin[k];
+                });
+            }
+            applyLockHarga();
+            renderDaftarShift();
+            hitungPenjualan();
+            penjualanInitialized = true;
+        }
 
-                if (!target || target < MIN_P || target >= 100) {
-                    elHasil.innerHTML = '<div class="scan-tip">\u26a0\ufe0f Target minimal 0,1% dan maksimal 1% \u2014 masukkan target yang valid (contoh: 0,5).</div>';
-                    return;
-                }
+        function renderDaftarShift() {
+            const wrap = document.getElementById('daftarShift');
+            const sel = document.getElementById('shiftAktif');
+            if (!wrap || !sel) return;
+            wrap.innerHTML = shiftCustom.map(s => `
+                <div class="shift-item">
+                    <input class="shift-nama" value="${s.nama}" onchange="updateShift('${s.id}','nama',this.value)" />
+                    <input class="shift-jam" value="${s.jam}" onchange="updateShift('${s.id}','jam',this.value)" placeholder="06:00-14:00" />
+                    ${s.id === shiftAktifId ? '<span class="shift-aktif-badge">AKTIF</span>' : ''}
+                    <button class="shift-del" onclick="hapusShift('${s.id}')" title="Hapus">🗑️</button>
+                </div>`).join('');
+            sel.innerHTML = shiftCustom.map(s =>
+                `<option value="${s.id}" ${s.id === shiftAktifId ? 'selected' : ''}>${s.nama} (${s.jam})</option>`
+            ).join('');
+        }
 
-                const sub = parseNum(document.getElementById(p + 'Sub').textContent);
-                const hasilJual = parseNum(document.getElementById(p + 'Hasil').textContent);
-                const per = numVal(p + 'Per100') || 100;
-                if (sub <= 0) {
-                    elHasil.innerHTML = `<div class="scan-tip" style="margin-top:10px"><b>${NAMA}</b>: totalisator belum terisi.</div>`;
-                    return;
-                }
-                const hs = Math.abs(sub - hasilJual);
-                const persenSkr = Math.max(0, hs * per / sub);
-                const persenSkrBulat = Math.round(persenSkr * 10000) / 10000;
-                const targetHs = sub * target / per;
+        function tambahShift() {
+            const id = 's' + Date.now();
+            const n = shiftCustom.length + 1;
+            shiftCustom.push({ id, nama: `Shift ${n}`, jam: '00:00-00:00' });
+            renderDaftarShift();
+            persistPenjualan();
+            showToast('✅ Shift ditambahkan');
+        }
 
-                const diBawahMin = persenSkrBulat < MIN_P;
-                if (!diBawahMin && hs <= targetHs) {
-                    elHasil.innerHTML = `<div class="sim-hasil-box" style="background:#f0fdf4;border-color:#bbf7d0;color:#166534">` +
-                        `<b>${NAMA}</b> \u2014 hasil set ${fmtNum.format(hs)} liter (${fmtPersen(persenSkr)}%) ` +
-                        `sudah di bawah target ${fmtPersen(target)}%. <b>Tidak perlu perubahan.</b></div>`;
-                    return;
-                }
+        function updateShift(id, field, val) {
+            const s = shiftCustom.find(x => x.id === id);
+            if (s) { s[field] = val; renderDaftarShift(); persistPenjualan(); }
+        }
 
-                const hanyaStok = p === 'pl';  // Aturan: PERTALITE hanya stok akhir
-                const hanyaTot = p !== 'pl';   // Aturan: PERTAMAX (real & gantungan) hanya totalisator
-                if (hanyaStok) {
-                    const signed0 = hasilJual - sub;
-                    const sT0 = target * sub / per;
-                    const dRaw0 = signed0 - sT0;
-                    const deltaStok0 = Math.max(1, Math.ceil(Math.abs(dRaw0)));
-                    const stokNaik0 = dRaw0 > 0;
-                    const stokSkr0 = parseNum(document.getElementById(p + 'STAkr').textContent);
-                    const stokBaru0 = stokNaik0 ? stokSkr0 + deltaStok0 : stokSkr0 - deltaStok0;
-                    const alertBox0 = diBawahMin
-                        ? `<div class="sim-hasil-box" style="background:#fef2f2;border-color:#fca5a5;color:#7f1d1d">` +
-                          `\u26a0\ufe0f <b>% ${NAMA} = ${fmtPersen(persenSkr)}% \u2014 di bawah batas minimal 0,1%!</b> Wajib dinaikkan.</div>`
-                        : '';
-                    if (stokBaru0 < 1) {
-                        elHasil.innerHTML = alertBox0 + `<div class="sim-hasil-box" style="background:#fef2f2;border-color:#fca5a5;color:#7f1d1d">` +
-                            `<b>${NAMA}</b> \u2014 <b>Stok Akhir tidak boleh minus atau 0!</b> ` +
-                            `(perhitungan membutuhkan stok ${fmtNum.format(stokBaru0)} L). Periksa kembali data / target.</div>`;
-                        return;
-                    }
-                    // Rincian teoritis Stok Akhir per baris
-                    const barisStok = [];
-                    for (let i = 1; i <= 3; i++) {
-                        const v = Math.round(numVal(p + 'STAkr' + i));
-                        if (v > 0) barisStok.push({ i: i, v: v });
-                    }
-                    let rincianHtml = '';
-                    if (barisStok.length) {
-                        const bagianStok = bagi(barisStok, deltaStok0, 'v');
-                        rincianHtml = bagianStok.map(({ d, delta }) => {
-                            if (delta <= 0) {
-                                return `\u2022 <b>Stok Akhir baris ${d.i}</b>: <span style="color:#94a3b8">tanpa perubahan (tetap ${fmtNum.format(d.v)})</span>`;
-                            }
-                            const baru = d.v + (stokNaik0 ? delta : -delta);
-                            if (baru < 0) {
-                                return `\u2022 <b>Stok Akhir baris ${d.i}</b>: <span style="color:#b45309">tidak cukup (stok ${fmtNum.format(d.v)} L)</span>`;
-                            }
-                            const ket = (stokNaik0 ? 'naikkan ' : 'turunkan ') + fmtNum.format(delta);
-                            return `\u2022 <b>Stok Akhir baris ${d.i}</b>: ${fmtNum.format(d.v)} \u2192 <b>${fmtNum.format(baru)}</b> ${btnSalin(baru)} <span style="color:#64748b">(${ket})</span>`;
-                        }).join('<br>') + '<br>';
-                    }
-                    elHasil.innerHTML = alertBox0 + `<div class="sim-hasil-box">` +
-                        `<b>${NAMA}</b> \u2014 ${fmtPersen(persenSkr)}% \u2192 target <b>${fmtPersen(target)}%</b>: ` +
-                        `<b>Stok Akhir total: ${fmtNum.format(stokSkr0)} \u2192 ${fmtNum.format(stokBaru0)}</b> ` +
-                        `<span style="color:#64748b">(${stokNaik0 ? 'naikkan' : 'turunkan'} ${fmtNum.format(deltaStok0)} \u2192 Hasil ${stokNaik0 ? 'turun' : 'naik'}, % menjadi ${fmtPersen(target)}%)</span><br>` +
-                        rincianHtml +
-                        `<span style="color:#64748b;font-size:12px">Rincian teoritis per baris \u2014 salin satu baris ke kolom Stok Akhir yang sesuai. Aturan: PERTALITE hanya dapat diubah lewat <b>Stok Akhir</b>.</span></div>`;
-                    return;
-                }
+        function hapusShift(id) {
+            if (shiftCustom.length <= 1) { showToast('⚠️ Minimal 1 shift'); return; }
+            if (!confirm('Hapus shift ini?')) return;
+            shiftCustom = shiftCustom.filter(x => x.id !== id);
+            if (shiftAktifId === id) shiftAktifId = shiftCustom[0].id;
+            renderDaftarShift();
+            hitungPenjualan();
+            persistPenjualan();
+            showToast('🗑️ Shift dihapus');
+        }
 
-                // Arah: naikkan % (menjauhkan Total dari Hasil) atau turunkan % (mendekatkan)
-                const perluNaik = diBawahMin || persenSkrBulat < target;
-                let shift, tambah;
-                if (perluNaik) {
-                    tambah = hasilJual <= sub;
-                    shift = tambah
-                        ? Math.max(0, Math.ceil(target * hasilJual / (per - target) - 1e-9))
-                        : Math.max(0, Math.ceil(target * hasilJual / (per + target) - 1e-9));
-                } else {
-                    tambah = hasilJual > sub;
-                    shift = tambah
-                        ? Math.max(0, Math.ceil((per * hs - target * sub) / (per + target) - 1e-9))
-                        : Math.max(0, Math.ceil((per * hs - target * sub) / (per - target) - 1e-9));
-                }
-                const totalBaru = perluNaik
-                    ? (tambah ? hasilJual + shift : hasilJual - shift)
-                    : (tambah ? sub + shift : sub - shift);
-                if (totalBaru <= 0) {
-                    elHasil.innerHTML = `<div class="sim-hasil-box" style="background:#fef2f2;border-color:#fca5a5;color:#7f1d1d">` +
-                        `<b>${NAMA}</b> \u2014 target ${fmtPersen(target)}% tidak dapat dicapai lewat totalisator (total baru \u2264 0). ` +
-                        `Perbaiki lewat Stok Akhir.</div>`;
-                    return;
-                }
-                const persenBaru = Math.max(0, Math.abs(totalBaru - hasilJual) * per / totalBaru);
+        function toggleLockHarga() {
+            lockHarga = !lockHarga;
+            const btn = document.getElementById('lockHarga');
+            btn.textContent = lockHarga ? '🔓' : '🔒';
+            btn.classList.toggle('lock-active', lockHarga);
+            applyLockHarga();
+            persistPenjualan();
+        }
 
-                // ATURAN KHUSUS: hanya baris 1 & 2 yang dapat diubah
-                const baris = [];
-                for (let i = 1; i <= 2; i++) {
-                    const aw = Math.round(numVal(p + 'Awal' + i));
-                    const ak = Math.round(numVal(p + 'Akhir' + i));
-                    if (ak > 0 || aw > 0) baris.push({ i: i, aw: aw, ak: ak, ruang: ak - aw });
-                }
-                let bagian = null;
-                if (simMode[p] === 'bagi') {
-                    if (!baris.length) {
-                        elHasil.innerHTML = `<div class="scan-tip" style="margin-top:10px"><b>${NAMA}</b>: isi totalisator baris 1 atau 2 terlebih dahulu.</div>`;
-                        return;
-                    }
-                    bagian = bagi(baris, shift, tambah ? 'ak' : 'ruang');
-                } else {
-                    const idx = simMode[p] === 'baris1' ? 1 : 2;
-                    const d = baris.find(b => b.i === idx);
-                    if (!d) {
-                        elHasil.innerHTML = `<div class="sim-hasil-box" style="background:#fef2f2;border-color:#fca5a5;color:#7f1d1d">` +
-                            `<b>${NAMA}</b> \u2014 baris ${idx} belum terisi totalisator.</div>`;
-                        return;
-                    }
-                    if (!tambah && Math.max(0, d.ruang) < shift) {
-                        elHasil.innerHTML = `<div class="sim-hasil-box" style="background:#fef2f2;border-color:#fca5a5;color:#7f1d1d">` +
-                            `<b>${NAMA}</b> \u2014 baris ${idx} tidak cukup ruang (hanya ${fmtNum.format(Math.max(0, d.ruang))} L, butuh ${fmtNum.format(shift)} L). ` +
-                            `Gunakan mode <b>"Bagi baris 1 &amp; 2"</b>.</div>`;
-                        return;
-                    }
-                    bagian = [{ d: d, delta: shift }];
-                }
-                const rowsHtml = bagian.map(({ d, delta }) => {
-                    if (delta <= 0) {
-                        return `\u2022 <b>Akhir baris ${d.i}</b>: <span style="color:#94a3b8">tanpa perubahan (tetap ${fmtNum.format(d.ak)})</span>`;
-                    }
-                    const baru = d.ak + (tambah ? delta : -delta);
-                    const ket = (tambah ? 'tambah ' : 'kurangi ') + fmtNum.format(delta);
-                    return `\u2022 <b>Akhir baris ${d.i}</b>: ${fmtNum.format(d.ak)} \u2192 <b>${fmtNum.format(baru)}</b> ${btnSalin(baru)} <span style="color:#64748b">(${ket})</span>`;
-                }).join('<br>');
+        function applyLockHarga() {
+            document.getElementById('hargaPertalite').disabled = lockHarga;
+            document.getElementById('hargaPertamax').disabled = lockHarga;
+        }
 
-                let htmlStok;
-                if (hanyaTot) {
-                    htmlStok = `<span style="color:#64748b;font-size:12px">Aturan: ${NAMA} hanya dapat diubah lewat <b>totalisator</b> (kolom Akhir, baris 1 &amp; 2).</span>`;
-                }
+        function hitungPenjualan() {
+            if (!penjualanInitialized && !document.getElementById('tbodyPertalite').children.length) return;
+            const hargaPL = parseFloat(document.getElementById('hargaPertalite').value) || 0;
+            const hargaPX = parseFloat(document.getElementById('hargaPertamax').value) || 0;
 
-                const labelMode = simMode[p] === 'bagi' ? '' :
-                    ` <span style="color:#64748b">(mode: baris ${simMode[p] === 'baris1' ? '1' : '2'} saja)</span>`;
-                const alertBox = diBawahMin
-                    ? `<div class="sim-hasil-box" style="background:#fef2f2;border-color:#fca5a5;color:#7f1d1d">` +
-                      `\u26a0\ufe0f <b>% ${NAMA} = ${fmtPersen(persenSkr)}% \u2014 di bawah batas minimal 0,1%!</b> Wajib dinaikkan.</div>`
-                    : '';
-                const arahLabel = perluNaik
-                    ? `perlu <b>${tambah ? 'TAMBAH' : 'KURANGI'} ${fmtNum.format(shift)} liter</b> total (menjauh dari Hasil)`
-                    : `perlu <b>${tambah ? 'TAMBAH' : 'KURANGI'} ${fmtNum.format(shift)} liter</b> total`;
-                elHasil.innerHTML = alertBox + `<div class="sim-hasil-box">` +
-                    `<b>${NAMA}</b>${labelMode} \u2014 ${fmtPersen(persenSkr)}% \u2192 target <b>${fmtPersen(target)}%</b>: ${arahLabel} ` +
-                    `(total ${fmtNum.format(sub)} \u2192 ${fmtNum.format(totalBaru)} L, % menjadi ${fmtPersen(persenBaru)}%)<br>` +
-                    rowsHtml + `<br>` + htmlStok + `</div>`;
+            const hitungList = (list, prefix, harga) => {
+                let totalL = 0, totalRp = 0;
+                list.forEach(m => {
+                    const awEl = document.getElementById(`${prefix}Awal${m}`);
+                    const akEl = document.getElementById(`${prefix}Akhir${m}`);
+                    if (!awEl || !akEl) return;
+                    const aw = parseFloat(awEl.value) || 0;
+                    const ak = parseFloat(akEl.value) || 0;
+                    const tot = Math.max(0, ak - aw);
+                    const rp = tot * harga;
+                    totalL += tot; totalRp += rp;
+                    const elTot = document.getElementById(`${prefix}Tot${m}`);
+                    const elRp = document.getElementById(`${prefix}Rp${m}`);
+                    if (elTot) elTot.textContent = fmtNum.format(tot);
+                    if (elRp) elRp.textContent = 'Rp ' + fmtNum.format(rp);
+                });
+                return { totalL, totalRp };
+            };
+
+            const pl = hitungList(MESIN_PERTALITE, 'penjPL', hargaPL);
+            const px = hitungList(MESIN_PERTAMAX, 'penjPX', hargaPX);
+
+            setText('plPenjTotal', pl.totalL);
+            setText('pxPenjTotal', px.totalL);
+            const elPLRp = document.getElementById('plPenjRp');
+            const elPXRp = document.getElementById('pxPenjRp');
+            if (elPLRp) elPLRp.textContent = 'Rp ' + fmtNum.format(pl.totalRp);
+            if (elPXRp) elPXRp.textContent = 'Rp ' + fmtNum.format(px.totalRp);
+
+            const grand = pl.totalRp + px.totalRp;
+            const grandL = pl.totalL + px.totalL;
+            const elGrand = document.getElementById('grandTotalPenjualan');
+            if (elGrand) elGrand.textContent = 'Rp ' + fmtNum.format(grand);
+            const elDetL = document.getElementById('detailLiterPenjualan');
+            if (elDetL) elDetL.textContent = `PL ${fmtNum.format(pl.totalL)} L · PX ${fmtNum.format(px.totalL)} L · Total ${fmtNum.format(grandL)} L`;
+
+            const shift = shiftCustom.find(s => s.id === shiftAktifId);
+            const elShift = document.getElementById('detailShiftPenjualan');
+            if (elShift) elShift.textContent = shift ? `${shift.nama} (${shift.jam})` : '-';
+
+            persistPenjualan();
+        }
+
+        function resetPenjualan() {
+            const resetList = (list, prefix) => {
+                list.forEach(m => {
+                    const awEl = document.getElementById(`${prefix}Awal${m}`);
+                    const akEl = document.getElementById(`${prefix}Akhir${m}`);
+                    if (awEl) awEl.value = '';
+                    if (akEl) akEl.value = '';
+                });
+            };
+            resetList(MESIN_PERTALITE, 'penjPL');
+            resetList(MESIN_PERTAMAX, 'penjPX');
+            hitungPenjualan();
+            showToast('↺ Penjualan direset');
+        }
+
+        function persistPenjualan() {
+            if (!penjualanInitialized) return;
+            const mesin = {};
+            MESIN_PERTALITE.forEach(m => {
+                const aw = document.getElementById(`penjPLAwal${m}`);
+                const ak = document.getElementById(`penjPLAkhir${m}`);
+                if (aw) mesin[`penjPLAwal${m}`] = aw.value;
+                if (ak) mesin[`penjPLAkhir${m}`] = ak.value;
+            });
+            MESIN_PERTAMAX.forEach(m => {
+                const aw = document.getElementById(`penjPXAwal${m}`);
+                const ak = document.getElementById(`penjPXAkhir${m}`);
+                if (aw) mesin[`penjPXAwal${m}`] = aw.value;
+                if (ak) mesin[`penjPXAkhir${m}`] = ak.value;
+            });
+            savePenjualanStore({
+                mesin, shiftCustom, shiftAktifId,
+                hargaPertalite: document.getElementById('hargaPertalite').value,
+                hargaPertamax: document.getElementById('hargaPertamax').value,
+                lockHarga,
+                tglPenjualan: document.getElementById('tglPenjualan').value
             });
         }
 
-// ─── FILTER TANGGAL & SHIFT ───
-        function formatTanggalID(iso) {
-            if (!iso) return '-';
-            const parts = iso.split('-').map(Number);
-            const nama = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-                'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
-            return `${parts[2]} ${nama[parts[1] - 1]} ${parts[0]}`;
+        function buildPenjualanPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF({ orientation: 'portrait', unit: 'pt', format: 'a4' });
+            if (typeof doc.autoTable !== 'function') { showToast('❌ Plugin tabel PDF belum termuat'); return null; }
+            const tgl = document.getElementById('tglPenjualan').value || '-';
+            const shift = shiftCustom.find(s => s.id === shiftAktifId);
+            const shiftLabel = shift ? `${shift.nama} (${shift.jam})` : '-';
+            const hargaPL = parseFloat(document.getElementById('hargaPertalite').value) || 0;
+            const hargaPX = parseFloat(document.getElementById('hargaPertamax').value) || 0;
+
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(20);
+            doc.text('SPBU 34.17603', 40, 50);
+            doc.setFontSize(15);
+            doc.text('Laporan Penjualan Harian', 40, 74);
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(10.5);
+            doc.setTextColor(100, 116, 139);
+            doc.text(`Tanggal : ${tgl}`, 40, 94);
+            doc.text(`Shift   : ${shiftLabel}`, 40, 108);
+            doc.setTextColor(30, 41, 59);
+
+            const base = {
+                theme: 'grid',
+                styles: { fontSize: 9.5, cellPadding: 4.5, textColor: [0,0,0], lineColor: [0,0,0], lineWidth: 0.6 },
+                headStyles: { fillColor: [11, 26, 46], textColor: [255,255,255], fontStyle: 'bold', halign: 'center' },
+                margin: { left: 40, right: 40 }
+            };
+
+            const buildBody = (list, prefix, harga) => {
+                const rows = list.map(m => {
+                    const awEl = document.getElementById(`${prefix}Awal${m}`);
+                    const akEl = document.getElementById(`${prefix}Akhir${m}`);
+                    const aw = awEl ? (parseFloat(awEl.value) || 0) : 0;
+                    const ak = akEl ? (parseFloat(akEl.value) || 0) : 0;
+                    const tot = Math.max(0, ak - aw);
+                    return [m, aw ? fmtNum.format(aw) : '-', ak ? fmtNum.format(ak) : '-', fmtNum.format(tot), 'Rp ' + fmtNum.format(tot * harga)];
+                });
+                const totalL = list.reduce((a, m) => {
+                    const awEl = document.getElementById(`${prefix}Awal${m}`);
+                    const akEl = document.getElementById(`${prefix}Akhir${m}`);
+                    return a + Math.max(0, (akEl ? parseFloat(akEl.value) || 0 : 0) - (awEl ? parseFloat(awEl.value) || 0 : 0));
+                }, 0);
+                return { rows, totalL, totalRp: totalL * harga };
+            };
+
+            const pl = buildBody(MESIN_PERTALITE, 'penjPL', hargaPL);
+            const px = buildBody(MESIN_PERTAMAX, 'penjPX', hargaPX);
+
+            doc.autoTable({
+                ...base,
+                startY: 124,
+                head: [['Mesin', 'Awal', 'Akhir', 'Total (L)', 'Subtotal (Rp)']],
+                body: [
+                    [{ content: 'PERTALITE', colSpan: 5, styles: { fontStyle: 'bold', halign: 'left', fillColor: [254, 243, 199] } }],
+                    ...pl.rows,
+                    [{ content: 'Subtotal Pertalite', colSpan: 3, styles: { fontStyle: 'bold', halign: 'left' } },
+                     { content: fmtNum.format(pl.totalL), styles: { fontStyle: 'bold' } },
+                     { content: 'Rp ' + fmtNum.format(pl.totalRp), styles: { fontStyle: 'bold' } }],
+                    [{ content: 'PERTAMAX', colSpan: 5, styles: { fontStyle: 'bold', halign: 'left', fillColor: [226, 232, 240] } }],
+                    ...px.rows,
+                    [{ content: 'Subtotal Pertamax', colSpan: 3, styles: { fontStyle: 'bold', halign: 'left' } },
+                     { content: fmtNum.format(px.totalL), styles: { fontStyle: 'bold' } },
+                     { content: 'Rp ' + fmtNum.format(px.totalRp), styles: { fontStyle: 'bold' } }],
+                    [{ content: 'GRAND TOTAL', colSpan: 3, styles: { fontStyle: 'bold', halign: 'left', fillColor: [245, 158, 11] } },
+                     { content: fmtNum.format(pl.totalL + px.totalL), styles: { fontStyle: 'bold', fillColor: [245, 158, 11] } },
+                     { content: 'Rp ' + fmtNum.format(pl.totalRp + px.totalRp), styles: { fontStyle: 'bold', fillColor: [245, 158, 11] } }]
+                ],
+                columnStyles: { 0: { halign: 'left' }, 1: { halign: 'right' }, 2: { halign: 'right' }, 3: { halign: 'right' }, 4: { halign: 'right' } }
+            });
+
+            return doc;
         }
 
-        function periodeLabel() {
-            const awal = document.getElementById('filterAwal').value;
-            const akhir = document.getElementById('filterAkhir').value;
-            const shift = document.getElementById('filterShift').value;
-            let tgl = '\u2014';
-            if (awal && akhir) {
-                tgl = awal === akhir ? formatTanggalID(awal) : `${formatTanggalID(awal)} \u2013 ${formatTanggalID(akhir)}`;
-            } else if (awal) { tgl = formatTanggalID(awal); }
-            else if (akhir) { tgl = formatTanggalID(akhir); }
-            const sh = shift === '1' ? 'Shift 1' : shift === '2' ? 'Shift 2' : 'Semua Shift';
-            return `${tgl} \u00b7 ${sh}`;
-        }
-
-        function updateFilterInfo() {
-            const awal = document.getElementById('filterAwal').value;
-            const akhir = document.getElementById('filterAkhir').value;
-            const el = document.getElementById('filterKeterangan');
-            if (el) {
-                if (awal && akhir && awal > akhir) {
-                    el.style.background = '#fef2f2';
-                    el.style.borderColor = '#fca5a5';
-                    el.style.color = '#7f1d1d';
-                    el.innerHTML = '\u26a0\ufe0f Tanggal awal tidak boleh melebihi tanggal akhir.';
-                } else {
-                    el.style.background = '';
-                    el.style.borderColor = '';
-                    el.style.color = '';
-                    el.innerHTML = `📅 Periode aktif: <b>${periodeLabel()}</b>. Rincian perhitungan totalisator ini berpacu sesuai filter waktu dan shift yang diinput.`;
-                }
+        function exportPenjualanPDF() {
+            if (!window.jspdf) { showToast('❌ Library PDF belum termuat'); return; }
+            try {
+                const doc = buildPenjualanPDF();
+                if (!doc) return;
+                const tgl = document.getElementById('tglPenjualan').value || 'undated';
+                doc.save(`Penjualan-SPBU-34-17603-${tgl}.pdf`);
+                showToast('📄 PDF penjualan berhasil diunduh');
+            } catch (e) {
+                console.error(e);
+                showToast('❌ PDF gagal: ' + (e.message || e));
             }
-            hitungBulanan();
         }
 
-        function setFilterDefaults(key, prevFilter) {
-            let y = 2026, m = 10;
-            if (key) { const parts = key.split('-').map(Number); y = parts[0]; m = parts[1]; }
-            const lastDay = new Date(y, m, 0).getDate();
-            setVal('filterAwal', `${y}-${String(m).padStart(2, '0')}-01`);
-            setVal('filterAkhir', `${y}-${String(m).padStart(2, '0')}-${String(lastDay).padStart(2, '0')}`);
-            setVal('filterShift', (prevFilter && prevFilter.shift) || 'all');
+        async function sharePenjualanWA() {
+            const tgl = document.getElementById('tglPenjualan').value || '-';
+            const shift = shiftCustom.find(s => s.id === shiftAktifId);
+            const shiftLabel = shift ? `${shift.nama} (${shift.jam})` : '-';
+            const hargaPL = parseFloat(document.getElementById('hargaPertalite').value) || 0;
+            const hargaPX = parseFloat(document.getElementById('hargaPertamax').value) || 0;
+
+            const lineMesin = (list, prefix, harga) => list.map(m => {
+                const awEl = document.getElementById(`${prefix}Awal${m}`);
+                const akEl = document.getElementById(`${prefix}Akhir${m}`);
+                const aw = awEl ? (parseFloat(awEl.value) || 0) : 0;
+                const ak = akEl ? (parseFloat(akEl.value) || 0) : 0;
+                const tot = Math.max(0, ak - aw);
+                return `  ${m}: ${fmtNum.format(tot)} L = Rp ${fmtNum.format(tot * harga)}`;
+            }).join('\n');
+
+            const totalL = (list, prefix) => list.reduce((a, m) => {
+                const awEl = document.getElementById(`${prefix}Awal${m}`);
+                const akEl = document.getElementById(`${prefix}Akhir${m}`);
+                return a + Math.max(0, (akEl ? parseFloat(akEl.value) || 0 : 0) - (awEl ? parseFloat(awEl.value) || 0 : 0));
+            }, 0);
+
+            const plL = totalL(MESIN_PERTALITE, 'penjPL');
+            const pxL = totalL(MESIN_PERTAMAX, 'penjPX');
+            const plRp = plL * hargaPL;
+            const pxRp = pxL * hargaPX;
+
+            const text =
+`*LAPORAN PENJUALAN HARIAN*
+SPBU 34-17603
+
+Tanggal : ${tgl}
+Shift   : ${shiftLabel}
+
+*PERTALITE* (Rp ${fmtNum.format(hargaPL)}/L)
+${lineMesin(MESIN_PERTALITE, 'penjPL', hargaPL)}
+  ─ Subtotal: ${fmtNum.format(plL)} L = *Rp ${fmtNum.format(plRp)}*
+
+*PERTAMAX* (Rp ${fmtNum.format(hargaPX)}/L)
+${lineMesin(MESIN_PERTAMAX, 'penjPX', hargaPX)}
+  ─ Subtotal: ${fmtNum.format(pxL)} L = *Rp ${fmtNum.format(pxRp)}*
+
+*GRAND TOTAL: Rp ${fmtNum.format(plRp + pxRp)}*
+Total Liter: ${fmtNum.format(plL + pxL)} L`;
+
+            if (window.jspdf) {
+                try {
+                    const blob = buildPenjualanPDF().output('blob');
+                    const file = new File([blob], `Penjualan-${tgl}.pdf`, { type: 'application/pdf' });
+                    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                        await navigator.share({ files: [file], title: 'Laporan Penjualan', text });
+                        return;
+                    }
+                } catch (e) { if (e && e.name === 'AbortError') return; }
+                try { buildPenjualanPDF().save(`Penjualan-${tgl}.pdf`); } catch (e) {}
+            }
+            window.open('https://wa.me/?text=' + encodeURIComponent(text), '_blank');
+            showToast('📤 PDF diunduh & WhatsApp dibuka');
         }
 
-        // ─── Init ───
-
-        function setFilterBulanPenuh() {
+        // ══════════════════════════════════════════════════════
+        // ─── INIT ───
+        // ══════════════════════════════════════════════════════
+        document.addEventListener('DOMContentLoaded', () => {
             const key = document.getElementById('bulanBulanan').value;
-            const shiftSekarang = document.getElementById('filterShift').value;
-            setFilterDefaults(key, { shift: shiftSekarang });
+            if (key) {
+                const [y, m] = key.split('-').map(Number);
+                const last = new Date(y, m, 0).getDate();
+                if (!document.getElementById('filterAwal').value)
+                    document.getElementById('filterAwal').value = `${key}-01`;
+                if (!document.getElementById('filterAkhir').value)
+                    document.getElementById('filterAkhir').value = `${key}-${String(last).padStart(2, '0')}`;
+            }
             updateFilterInfo();
-            showToast('📅 Filter diset ke satu bulan penuh');
-        }
-
-        function isBulanPenuh() {
-            const key = document.getElementById('bulanBulanan').value;
-            if (!key) return false;
-            const awal = document.getElementById('filterAwal').value;
-            const akhir = document.getElementById('filterAkhir').value;
-            const parts = key.split('-').map(Number);
-            const lastDay = new Date(parts[0], parts[1], 0).getDate();
-            return awal === `${key}-01` && akhir === `${key}-${String(lastDay).padStart(2, '0')}`;
-        }
-
-        // ─── Init ───
-        hitung();
-        document.querySelectorAll('input[type="number"]').forEach(input => {
-            input.addEventListener('change', hitung);
+            hitung();
+            hitungBulanan();
+            updateStorageInfo();
         });
-
-        loadBulanan();
-
-        if (typeof Tesseract === 'undefined') {
-            console.warn('Tesseract.js tidak ditemukan. Pastikan library di-load.');
-        } else {
-            console.log('✅ Tesseract.js siap digunakan.');
-        }
     </script>
-
 </body>
 </html>
