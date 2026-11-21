@@ -401,7 +401,7 @@
         .tab-btn:hover { color: #0b1a2e; }
         .tab-btn.active { background: #0b1a2e; color: #ffffff; box-shadow: 0 6px 16px rgba(11, 26, 46, 0.28); }
 
-        /* ═══ TABEL TOTALISATOR BULANAN ═══ */
+        /* ═══ TABEL TOTALISATOR BULANAN & PENJUALAN ═══ */
         .table-wrap { overflow-x: auto; border: 1px solid #e9edf2; border-radius: 16px; -webkit-overflow-scrolling: touch; }
 
         table.tot { border-collapse: collapse; width: 100%; min-width: 660px; font-size: 13px; }
@@ -443,6 +443,12 @@
         table.tot input { min-width: 120px; padding: 12px 10px; font-size: 15px; border-radius: 11px; }
         table.tot td.compute { font-size: 15px; padding-right: 12px; }
         table.tot tr.subtotal td { font-size: 15px; }
+
+        /* Khusus tabel penjualan agar muat di mobile tanpa scroll berlebihan */
+        .table-penjualan table.tot { min-width: 100%; }
+        .table-penjualan table.tot th, .table-penjualan table.tot td { font-size: 12.5px; }
+        .table-penjualan table.tot td:first-child { text-align: center; font-weight: 700; color: #0b1a2e; }
+        .table-penjualan table.tot input { min-width: 60px; padding: 10px 8px; font-size: 14px; text-align: right; }
 
         .result-value-wrap p { font-size: 52px; }
         .scan-tip { font-size: 13.5px; padding: 13px 16px; }
@@ -584,67 +590,6 @@
             background: #f0fdf4; border: 1px solid #86efac;
             padding: 2px 8px; border-radius: 20px; white-space: nowrap;
         }
-
-        .penjualan-mesin-row {
-            display: grid;
-            grid-template-columns: 50px 1fr 1fr 80px 110px;
-            gap: 6px;
-            align-items: center;
-            padding: 8px 0;
-            border-top: 1px solid #eef2f6;
-            font-size: 13px;
-        }
-        .penjualan-mesin-row:first-child { border-top: none; }
-        .penjualan-mesin-row .mesin-name { font-weight: 700; color: #0b1a2e; text-align: center; }
-        .penjualan-mesin-row input {
-            width: 100%; border: 1.5px solid #e2e8f0; background: #fafcff;
-            padding: 8px 10px; border-radius: 9px;
-            font-size: 14px; font-weight: 500; color: #0b1a2e;
-            outline: none; text-align: right;
-            font-family: 'Inter', sans-serif; transition: 0.2s ease;
-        }
-        .penjualan-mesin-row input:focus { border-color: #2563eb; background: #ffffff; box-shadow: 0 0 0 3px rgba(37,99,235,0.07); }
-        .penjualan-mesin-row .compute {
-            font-weight: 700; color: #0b1a2e; text-align: right;
-            padding: 4px 6px; font-size: 14px;
-        }
-        .penjualan-mesin-row .compute.rp { color: #b45309; font-size: 13px; }
-
-        .penjualan-header {
-            display: grid;
-            grid-template-columns: 50px 1fr 1fr 80px 110px;
-            gap: 6px;
-            padding: 8px 0;
-            font-size: 11px;
-            font-weight: 700;
-            color: #64748b;
-            text-transform: uppercase;
-            letter-spacing: 0.3px;
-            border-bottom: 2px solid #e2e8f0;
-            margin-bottom: 4px;
-        }
-        .penjualan-header .h { text-align: right; }
-        .penjualan-header .h.center { text-align: center; }
-
-        .subtotal-penjualan {
-            display: grid;
-            grid-template-columns: 1fr 80px 110px;
-            gap: 6px;
-            padding: 10px 0;
-            margin-top: 6px;
-            border-top: 2px solid #0b1a2e;
-            font-weight: 700;
-            font-size: 14px;
-            color: #0b1a2e;
-            background: #f8fafc;
-            margin-left: -22px;
-            margin-right: -22px;
-            padding-left: 22px;
-            padding-right: 22px;
-        }
-        .subtotal-penjualan .label { color: #64748b; font-size: 12px; text-transform: uppercase; letter-spacing: 0.4px; align-self: center; }
-        .subtotal-penjualan .val { text-align: right; }
-        .subtotal-penjualan .val.rp { color: #b45309; }
     </style>
 </head>
 <body>
@@ -1129,18 +1074,20 @@
                     <h2>Pertalite — A1, A2, C</h2>
                 </div>
             </div>
-            <div class="penjualan-header">
-                <div class="h center">Mesin</div>
-                <div class="h">Awal</div>
-                <div class="h">Akhir</div>
-                <div class="h">Total (L)</div>
-                <div class="h">Subtotal (Rp)</div>
-            </div>
-            <div id="tbodyPertalite"></div>
-            <div class="subtotal-penjualan">
-                <div class="label">Subtotal Pertalite</div>
-                <div class="val" id="plPenjTotal">0</div>
-                <div class="val rp" id="plPenjRp">Rp 0</div>
+            <div class="table-wrap table-penjualan">
+                <table class="tot">
+                    <thead>
+                        <tr>
+                            <th>Mesin</th><th>Awal</th><th>Akhir</th><th>Total (L)</th><th>Subtotal (Rp)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbodyPertalite"></tbody>
+                    <tr class="subtotal">
+                        <td colspan="3" class="sub-label" style="text-align:left">Subtotal Pertalite</td>
+                        <td class="compute" id="plPenjTotal">0</td>
+                        <td class="compute" id="plPenjRp">Rp 0</td>
+                    </tr>
+                </table>
             </div>
         </section>
 
@@ -1151,18 +1098,20 @@
                     <h2>Pertamax — B1, B2, D</h2>
                 </div>
             </div>
-            <div class="penjualan-header">
-                <div class="h center">Mesin</div>
-                <div class="h">Awal</div>
-                <div class="h">Akhir</div>
-                <div class="h">Total (L)</div>
-                <div class="h">Subtotal (Rp)</div>
-            </div>
-            <div id="tbodyPertamax"></div>
-            <div class="subtotal-penjualan">
-                <div class="label">Subtotal Pertamax</div>
-                <div class="val" id="pxPenjTotal">0</div>
-                <div class="val rp" id="pxPenjRp">Rp 0</div>
+            <div class="table-wrap table-penjualan">
+                <table class="tot">
+                    <thead>
+                        <tr>
+                            <th>Mesin</th><th>Awal</th><th>Akhir</th><th>Total (L)</th><th>Subtotal (Rp)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbodyPertamax"></tbody>
+                    <tr class="subtotal">
+                        <td colspan="3" class="sub-label" style="text-align:left">Subtotal Pertamax</td>
+                        <td class="compute" id="pxPenjTotal">0</td>
+                        <td class="compute" id="pxPenjRp">Rp 0</td>
+                    </tr>
+                </table>
             </div>
         </section>
 
@@ -2310,17 +2259,18 @@
         }
 
         function initPenjualan() {
-            const renderRows = (containerId, mesinList, prefix) => {
-                const container = document.getElementById(containerId);
-                if (!container) return;
-                container.innerHTML = mesinList.map(m => `
-                    <div class="penjualan-mesin-row">
-                        <div class="mesin-name">${m}</div>
-                        <input type="number" id="${prefix}Awal${m}" oninput="hitungPenjualan()" placeholder="0" min="0" />
-                        <input type="number" id="${prefix}Akhir${m}" oninput="hitungPenjualan()" placeholder="0" min="0" />
-                        <div class="compute" id="${prefix}Tot${m}">0</div>
-                        <div class="compute rp" id="${prefix}Rp${m}">Rp 0</div>
-                    </div>`).join('');
+            // Render baris tabel mesin menggunakan format tabel (seperti tab Harian/Bulanan)
+            const renderRows = (tbodyId, mesinList, prefix) => {
+                const tbody = document.getElementById(tbodyId);
+                if (!tbody) return;
+                tbody.innerHTML = mesinList.map(m => `
+                    <tr>
+                        <td style="font-weight:700; color:#0b1a2e; text-align:center;">${m}</td>
+                        <td><input type="number" id="${prefix}Awal${m}" oninput="hitungPenjualan()" placeholder="0" min="0" /></td>
+                        <td><input type="number" id="${prefix}Akhir${m}" oninput="hitungPenjualan()" placeholder="0" min="0" /></td>
+                        <td class="compute" id="${prefix}Tot${m}">0</td>
+                        <td class="compute" style="color:#b45309;" id="${prefix}Rp${m}">Rp 0</td>
+                    </tr>`).join('');
             };
             renderRows('tbodyPertalite', MESIN_PERTALITE, 'penjPL');
             renderRows('tbodyPertamax', MESIN_PERTAMAX, 'penjPX');
