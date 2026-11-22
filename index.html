@@ -1051,13 +1051,13 @@
                 <div class="input-group">
                     <label for="tglPenjualan"><span class="label-left"><span class="label-icon">📅</span> Tanggal</span></label>
                     <div class="input-wrap">
-                        <input type="date" id="tglPenjualan" onchange="hitungPenjualan()" />
+                        <input type="date" id="tglPenjualan" onchange="gantiPeriodePenjualan()" />
                     </div>
                 </div>
                 <div class="input-group">
                     <label for="shiftAktif"><span class="label-left"><span class="label-icon">⏰</span> Shift Aktif</span></label>
                     <div class="input-wrap">
-                        <select id="shiftAktif" onchange="hitungPenjualan()"></select>
+                        <select id="shiftAktif" onchange="gantiPeriodePenjualan()"></select>
                     </div>
                 </div>
             </div>
@@ -2278,6 +2278,7 @@
         ];
         let shiftAktifId = 's1';
         let penjualanInitialized = false;
+        let currentPenjualanDataKey = '';
 
         function loadPenjualanStore() {
             try { return JSON.parse(localStorage.getItem(PENJUALAN_STORE_KEY)) || {}; }
@@ -2319,16 +2320,35 @@
             else if (!document.getElementById('tglPenjualan').value) {
                 document.getElementById('tglPenjualan').value = new Date().toISOString().slice(0, 10);
             }
-            if (store.mesin) {
-                Object.keys(store.mesin).forEach(k => {
-                    const el = document.getElementById(k);
-                    if (el) el.value = store.mesin[k];
-                });
-            }
+            
             applyLockHarga();
             renderDaftarShift();
-            hitungPenjualan();
+            
+            // Tentukan key periode saat ini (tgl + shift)
+            currentPenjualanDataKey = `${document.getElementById('tglPenjualan').value}_${shiftAktifId}`;
+            
+            // Load data untuk periode ini
+            muatDataPeriodePenjualan();
+
             penjualanInitialized = true;
+        }
+
+        function muatDataPeriodePenjualan() {
+            const store = loadPenjualanStore();
+            const dataPeriode = store.historyData && store.historyData[currentPenjualanDataKey] ? store.historyData[currentPenjualanDataKey] : {};
+
+            const loadList = (list, prefix) => {
+                list.forEach(m => {
+                    const awEl = document.getElementById(`${prefix}Awal${m}`);
+                    const akEl = document.getElementById(`${prefix}Akhir${m}`);
+                    if (awEl) awEl.value = dataPeriode[`${prefix}Awal${m}`] || '';
+                    if (akEl) akEl.value = dataPeriode[`${prefix}Akhir${m}`] || '';
+                });
+            };
+            loadList(MESIN_PERTALITE, 'penjPL');
+            loadList(MESIN_PERTAMAX, 'penjPX');
+            
+            hitungPenjualan();
         }
 
         function renderDaftarShift() {
@@ -2352,13 +2372,13 @@
             const n = shiftCustom.length + 1;
             shiftCustom.push({ id, nama: `Shift ${n}`, jam: '00:00-00:00' });
             renderDaftarShift();
-            persistPenjualan();
+            persistPengaturanPenjualan();
             showToast('✅ Shift ditambahkan');
         }
 
         function updateShift(id, field, val) {
             const s = shiftCustom.find(x => x.id === id);
-            if (s) { s[field] = val; renderDaftarShift(); persistPenjualan(); }
+            if (s) { s[field] = val; renderDaftarShift(); persistPengaturanPenjualan(); }
         }
 
         function hapusShift(id) {
@@ -2367,8 +2387,7 @@
             shiftCustom = shiftCustom.filter(x => x.id !== id);
             if (shiftAktifId === id) shiftAktifId = shiftCustom[0].id;
             renderDaftarShift();
-            hitungPenjualan();
-            persistPenjualan();
+            gantiPeriodePenjualan();
             showToast('🗑️ Shift dihapus');
         }
 
@@ -2378,7 +2397,7 @@
             btn.textContent = lockHarga ? '🔓' : '🔒';
             btn.classList.toggle('lock-active', lockHarga);
             applyLockHarga();
-            persistPenjualan();
+            persistPengaturanPenjualan();
         }
 
         function applyLockHarga() {
@@ -2386,6 +2405,58 @@
             document.getElementById('hargaPertamax').disabled = lockHarga;
         }
 
+        // Fungsi saat Tanggal / Shift diganti
+        function gantiPeriodePenjualan() {
+            // Simpan data yang sedang diketik ke periode lama
+            simpanDataPeriodePenjualan();
+            
+            // Update Key Periode baru
+            const tgl = document.getElementById('tglPenjualan').value || new Date().toISOString().slice(0,10);
+            const shift = document.getElementById('shiftAktif').value;
+            currentPenjualanDataKey = `${tgl}_${shift}`;
+            
+            // Load data baru (jika ada, atau kosongkan)
+            muatDataPeriodePenjualan();
+            showToast('🔄 Memuat data periode terpilih');
+        }
+
+        // Menyimpan data mesin ke historyData berdasarkan key saat ini
+        function simpanDataPeriodePenjualan() {
+            if (!penjualanInitialized) return;
+            const store = loadPenjualanStore();
+            if (!store.historyData) store.historyData = {};
+            
+            const dataMesin = {};
+            MESIN_PERTALITE.forEach(m => {
+                const aw = document.getElementById(`penjPLAwal${m}`);
+                const ak = document.getElementById(`penjPLAkhir${m}`);
+                dataMesin[`penjPLAwal${m}`] = aw ? aw.value : '';
+                dataMesin[`penjPLAkhir${m}`] = ak ? ak.value : '';
+            });
+            MESIN_PERTAMAX.forEach(m => {
+                const aw = document.getElementById(`penjPXAwal${m}`);
+                const ak = document.getElementById(`penjPXAkhir${m}`);
+                dataMesin[`penjPXAwal${m}`] = aw ? aw.value : '';
+                dataMesin[`penjPXAkhir${m}`] = ak ? ak.value : '';
+            });
+            
+            store.historyData[currentPenjualanDataKey] = dataMesin;
+            savePenjualanStore(store);
+        }
+
+        // Menyimpan pengaturan (harga, shift list, tanggal terakhir dipilih)
+        function persistPengaturanPenjualan() {
+            const store = loadPenjualanStore();
+            store.shiftCustom = shiftCustom;
+            store.shiftAktifId = document.getElementById('shiftAktif').value || shiftAktifId;
+            store.hargaPertalite = document.getElementById('hargaPertalite').value;
+            store.hargaPertamax = document.getElementById('hargaPertamax').value;
+            store.lockHarga = lockHarga;
+            store.tglPenjualan = document.getElementById('tglPenjualan').value;
+            savePenjualanStore(store);
+        }
+
+        // Dipanggil setiap input berubah
         function hitungPenjualan() {
             if (!penjualanInitialized && !document.getElementById('tbodyPertalite').children.length) return;
             const hargaPL = parseFloat(document.getElementById('hargaPertalite').value) || 0;
@@ -2431,10 +2502,12 @@
             const elShift = document.getElementById('detailShiftPenjualan');
             if (elShift) elShift.textContent = shift ? `${shift.nama} (${shift.jam})` : '-';
 
-            persistPenjualan();
+            // Simpan otomatis data mesin ke periode ini
+            simpanDataPeriodePenjualan();
         }
 
         function resetPenjualan() {
+            if (!confirm('Kosongkan data totalisator untuk shift ini?')) return;
             const resetList = (list, prefix) => {
                 list.forEach(m => {
                     const awEl = document.getElementById(`${prefix}Awal${m}`);
@@ -2447,30 +2520,6 @@
             resetList(MESIN_PERTAMAX, 'penjPX');
             hitungPenjualan();
             showToast('↺ Penjualan direset');
-        }
-
-        function persistPenjualan() {
-            if (!penjualanInitialized) return;
-            const mesin = {};
-            MESIN_PERTALITE.forEach(m => {
-                const aw = document.getElementById(`penjPLAwal${m}`);
-                const ak = document.getElementById(`penjPLAkhir${m}`);
-                if (aw) mesin[`penjPLAwal${m}`] = aw.value;
-                if (ak) mesin[`penjPLAkhir${m}`] = ak.value;
-            });
-            MESIN_PERTAMAX.forEach(m => {
-                const aw = document.getElementById(`penjPXAwal${m}`);
-                const ak = document.getElementById(`penjPXAkhir${m}`);
-                if (aw) mesin[`penjPXAwal${m}`] = aw.value;
-                if (ak) mesin[`penjPXAkhir${m}`] = ak.value;
-            });
-            savePenjualanStore({
-                mesin, shiftCustom, shiftAktifId,
-                hargaPertalite: document.getElementById('hargaPertalite').value,
-                hargaPertamax: document.getElementById('hargaPertamax').value,
-                lockHarga,
-                tglPenjualan: document.getElementById('tglPenjualan').value
-            });
         }
 
         function buildPenjualanPDF() {
