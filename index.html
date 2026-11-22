@@ -547,7 +547,7 @@
 
         .sim-blok { margin-top: 12px; }
 
-        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar { width: 4px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
 
@@ -585,87 +585,40 @@
             padding: 2px 8px; border-radius: 20px; white-space: nowrap;
         }
 
-        /* ─── STRUKTUR TABEL PENJUALAN (DESKTOP) ─── */
-        .table-penjualan table.tot { min-width: 100%; }
-        .table-penjualan table.tot th, .table-penjualan table.tot td { font-size: 13px; }
-        .table-penjualan table.tot input { min-width: 80px; padding: 10px 8px; font-size: 14px; text-align: right; }
-
-        /* ─── PERBAIKAN RESPONSIVE MOBILE: Card per Baris ─── */
-        @media (max-width: 600px) {
-            .table-penjualan { border: none; overflow: visible; }
-            .table-penjualan table.tot { min-width: 100%; display: block; }
-            .table-penjualan table.tot thead { display: none; }
-            .table-penjualan table.tot tbody { display: block; }
-            
-            /* Baris Mesin */
-            .table-penjualan table.tot tbody tr:not(.subtotal) {
-                display: grid;
-                grid-template-columns: 40px 1fr 1fr;
-                grid-template-rows: auto auto;
-                gap: 8px;
-                padding: 12px 0;
-                border-bottom: 1px solid #eef2f6;
-                align-items: center;
-            }
-            .table-penjualan table.tot tbody tr:not(.subtotal):last-child { border-bottom: none; }
-            
-            /* Kolom Mesin (kiri) span 2 baris */
-            .table-penjualan table.tot tbody tr:not(.subtotal) td:nth-child(1) {
-                grid-row: span 2;
-                text-align: center;
-                font-size: 15px;
-                font-weight: 700;
-                color: #0b1a2e;
-                padding: 0;
-            }
-            
-            /* Input Awal & Akhir */
-            .table-penjualan table.tot tbody tr:not(.subtotal) td:nth-child(2),
-            .table-penjualan table.tot tbody tr:not(.subtotal) td:nth-child(3) {
-                padding: 0;
-                width: 100%;
-            }
-            .table-penjualan table.tot tbody tr:not(.subtotal) input {
-                padding: 12px 10px;
-                font-size: 14.5px;
-                border-radius: 10px;
-            }
-            /* Label Awal/Akhir di mobile */
-            .table-penjualan table.tot tbody tr:not(.subtotal) td:nth-child(2)::before { content: 'Awal'; display: block; font-size: 10px; font-weight: 600; color: #64748b; margin-bottom: 3px; text-transform: uppercase; }
-            .table-penjualan table.tot tbody tr:not(.subtotal) td:nth-child(3)::before { content: 'Akhir'; display: block; font-size: 10px; font-weight: 600; color: #64748b; margin-bottom: 3px; text-transform: uppercase; }
-            
-            /* Total & Subtotal Rp (Baris ke-2) */
-            .table-penjualan table.tot tbody tr:not(.subtotal) td:nth-child(4),
-            .table-penjualan table.tot tbody tr:not(.subtotal) td:nth-child(5) {
-                grid-row: 2;
-                text-align: right;
-                font-size: 13.5px;
-                background: #f8fafc;
-                padding: 8px 10px;
-                border-radius: 8px;
-                border: 1px solid #eef2f6;
-            }
-            .table-penjualan table.tot tbody tr:not(.subtotal) td:nth-child(4)::before { content: 'Total '; font-size: 11px; color: #64748b; font-weight: 500;}
-            .table-penjualan table.tot tbody tr:not(.subtotal) td:nth-child(5)::before { content: 'Rp '; font-size: 11px; color: #64748b; font-weight: 500;}
-            /* Sembunyikan Rp default string dari JS di mobile */
-            .table-penjualan table.tot tbody tr:not(.subtotal) td:nth-child(5) { font-size: 0; }
-            .table-penjualan table.tot tbody tr:not(.subtotal) td:nth-child(5)::before { font-size: 11px; }
-            .table-penjualan table.tot tbody tr:not(.subtotal) td:nth-child(5) .rp-val { font-size: 13.5px; font-weight: 700; color: #b45309; }
-
-            /* Baris Subtotal */
-            .table-penjualan table.tot tr.subtotal {
-                display: flex;
-                justify-content: space-between;
-                background: #f8fafc;
-                padding: 12px 10px;
-                border-radius: 12px;
-                margin-top: 12px;
-                border: 1px solid #e2e8f0;
-            }
-            .table-penjualan table.tot tr.subtotal td { display: none; }
-            .table-penjualan table.tot tr.subtotal td.sub-label { display: block; font-size: 12px; font-weight: 700; color: #64748b; text-transform: uppercase; }
-            .table-penjualan table.tot tr.subtotal td.compute { display: block; font-size: 15px; font-weight: 700; color: #0b1a2e; }
-            .table-penjualan table.tot tr.subtotal td.compute:nth-child(3) { color: #b45309; }
+        /* ─── PERBAIKAN TABEL PENJUALAN (SLIDER HORIZONTAL) ─── */
+        .table-penjualan { 
+            border: none; 
+            overflow-x: auto; 
+            -webkit-overflow-scrolling: touch;
+            padding-bottom: 4px;
+        }
+        .table-penjualan table.tot { 
+            min-width: 600px; /* Memaksa tabel melebar agar slider berfungsi */
+            width: 100%;
+        }
+        .table-penjualan table.tot th { 
+            text-align: center;
+            padding: 10px 6px;
+        }
+        .table-penjualan table.tot td { 
+            padding: 8px 6px; 
+        }
+        .table-penjualan table.tot td:first-child { 
+            text-align: center; 
+            width: 60px;
+        }
+        .table-penjualan table.tot input { 
+            min-width: 100px; /* Input dipaksa lebar agar angka 15 digit muat */
+            width: 100%; 
+            padding: 10px 8px; 
+            font-size: 14px; 
+            text-align: right;
+            border-radius: 8px;
+        }
+        .table-penjualan table.tot td.compute { 
+            font-size: 14px;
+            padding: 0 6px;
+            white-space: nowrap;
         }
     </style>
 </head>
@@ -2339,14 +2292,13 @@
             const renderRows = (tbodyId, mesinList, prefix) => {
                 const tbody = document.getElementById(tbodyId);
                 if (!tbody) return;
-                // Tambahan span dengan class rp-val untuk menangani format angka di mobile
                 tbody.innerHTML = mesinList.map(m => `
                     <tr>
                         <td style="font-weight:700; color:#0b1a2e; text-align:center;">${m}</td>
                         <td><input type="number" id="${prefix}Awal${m}" oninput="hitungPenjualan()" placeholder="0" min="0" /></td>
                         <td><input type="number" id="${prefix}Akhir${m}" oninput="hitungPenjualan()" placeholder="0" min="0" /></td>
                         <td class="compute" id="${prefix}Tot${m}">0</td>
-                        <td class="compute" style="color:#b45309;" id="${prefix}Rp${m}"><span class="rp-val">Rp 0</span></td>
+                        <td class="compute" style="color:#b45309;" id="${prefix}Rp${m}">Rp 0</td>
                     </tr>`).join('');
             };
             renderRows('tbodyPertalite', MESIN_PERTALITE, 'penjPL');
@@ -2453,7 +2405,7 @@
                     const elTot = document.getElementById(`${prefix}Tot${m}`);
                     const elRp = document.getElementById(`${prefix}Rp${m}`);
                     if (elTot) elTot.textContent = fmtNum.format(tot);
-                    if (elRp) elRp.innerHTML = `<span class="rp-val">Rp ${fmtNum.format(rp)}</span>`;
+                    if (elRp) elRp.textContent = 'Rp ' + fmtNum.format(rp);
                 });
                 return { totalL, totalRp };
             };
