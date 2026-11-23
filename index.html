@@ -2526,7 +2526,7 @@
         }
 
         // ══════════════════════════════════════════════════════
-        // ─── EXPORT PDF MULTI-SHIFT ───
+        // ─── EXPORT PDF MULTI-SHIFT (1 HALAMAN RINGKAS) ───
         // ══════════════════════════════════════════════════════
         function buildPenjualanPDF() {
             const { jsPDF } = window.jspdf;
@@ -2544,17 +2544,32 @@
 
             const baseStyles = {
                 theme: 'grid',
-                styles: { fontSize: 9.5, cellPadding: 4.5, textColor: [0,0,0], lineColor: [0,0,0], lineWidth: 0.6 },
+                styles: { fontSize: 9, cellPadding: 3.5, textColor: [0,0,0], lineColor: [0,0,0], lineWidth: 0.5 },
                 headStyles: { fillColor: [11, 26, 46], textColor: [255,255,255], fontStyle: 'bold', halign: 'center' },
-                margin: { left: 40, right: 40 }
+                margin: { left: 30, right: 30 } // Margin diperkecil agar muat 1 halaman
             };
 
-            const rekapDataAllShifts = [];
+            let rekapDataAllShifts = [];
             let totalGrandRp = 0;
             let totalGrandL = 0;
+            let currentY = 0;
 
-            // 1. LOOPING SETIAP SHIFT UNTUK DIBUATKAN HALAMAN PDF-NYA
-            shiftCustom.forEach((shift, index) => {
+            // --- HEADER PDF (HANYA 1 KALI DI AWAL) ---
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(18);
+            doc.text('SPBU 34.17603', 30, 40);
+            doc.setFontSize(14);
+            doc.text('Laporan Penjualan Harian', 30, 60);
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(10.5);
+            doc.setTextColor(100, 116, 139);
+            doc.text(`Tanggal : ${tgl}`, 30, 78);
+            doc.setTextColor(30, 41, 59);
+            currentY = 95;
+
+            // 1. LOOPING SETIAP SHIFT UNTUK DIBUATKAN TABEL
+            let adaDataTampil = false;
+            shiftCustom.forEach((shift) => {
                 const key = `${tgl}_${shift.id}`;
                 const dataMesin = historyData[key] || {};
                 
@@ -2563,21 +2578,14 @@
                 Object.values(dataMesin).forEach(v => { if(v && parseFloat(v) > 0) adaIsi = true; });
                 if (!adaIsi) return; // Skip jika kosong sama sekali
 
-                // Buat halaman baru untuk setiap shift (kecuali halaman pertama)
-                if (rekapDataAllShifts.length > 0) doc.addPage();
-                
-                // --- HEADER PDF ---
+                adaDataTampil = true;
+
+                // --- SUB-JUDUL SHIFT ---
                 doc.setFont('helvetica', 'bold');
-                doc.setFontSize(20);
-                doc.text('SPBU 34.17603', 40, 50);
-                doc.setFontSize(15);
-                doc.text('Laporan Penjualan Harian', 40, 74);
-                doc.setFont('helvetica', 'normal');
-                doc.setFontSize(10.5);
-                doc.setTextColor(100, 116, 139);
-                doc.text(`Tanggal : ${tgl}`, 40, 94);
-                doc.text(`Shift   : ${shift.nama} (${shift.jam})`, 40, 108);
-                doc.setTextColor(30, 41, 59);
+                doc.setFontSize(12);
+                doc.setTextColor(180, 83, 9); // Warna amber
+                doc.text(`${shift.nama} (${shift.jam})`, 30, currentY);
+                currentY += 8;
 
                 const buildBody = (list, prefix) => {
                     const rows = list.map(m => {
@@ -2607,10 +2615,10 @@
                 totalGrandRp += (pl.totalRp + px.totalRp);
                 totalGrandL += (pl.totalL + px.totalL);
 
-                // --- TABEL PDF ---
+                // --- TABEL PDF (Menyambung tanpa addPage) ---
                 doc.autoTable({
                     ...baseStyles,
-                    startY: 124,
+                    startY: currentY,
                     head: [['Mesin', 'Awal', 'Akhir', 'Total (L)', 'Subtotal (Rp)']],
                     body: [
                         [{ content: 'PERTALITE', colSpan: 5, styles: { fontStyle: 'bold', halign: 'left', fillColor: [254, 243, 199] } }],
@@ -2629,34 +2637,24 @@
                     ],
                     columnStyles: { 0: { halign: 'left' }, 1: { halign: 'right' }, 2: { halign: 'right' }, 3: { halign: 'right' }, 4: { halign: 'right' } }
                 });
+                
+                // Update currentY untuk tabel selanjutnya agar tidak menumpuk
+                currentY = doc.lastAutoTable.finalY + 20; 
             });
 
-            // Jika sama sekali tidak ada data
-            if (rekapDataAllShifts.length === 0) {
-                doc.setFont('helvetica', 'bold');
-                doc.setFontSize(20);
-                doc.text('SPBU 34.17603', 40, 50);
-                doc.setFontSize(15);
-                doc.text('Laporan Penjualan Harian', 40, 74);
+            if (!adaDataTampil) {
                 doc.setFont('helvetica', 'normal');
                 doc.setFontSize(10.5);
-                doc.text(`Tanggal : ${tgl}`, 40, 94);
-                doc.text('Tidak ada data penjualan pada tanggal ini.', 40, 130);
+                doc.text('Tidak ada data penjualan pada tanggal ini.', 30, 110);
                 return doc;
             }
 
-            // 2. BUAT HALAMAN REKAP GABUNGAN (GRAND TOTAL) DI AKHIR
-            doc.addPage();
+            // 2. BUAT TABEL REKAP GABUNGAN (GRAND TOTAL) DI BAGIAN PALING BAWAH
             doc.setFont('helvetica', 'bold');
-            doc.setFontSize(20);
-            doc.text('SPBU 34.17603', 40, 50);
-            doc.setFontSize(15);
-            doc.text('Rekap Penjualan Harian (Semua Shift)', 40, 74);
-            doc.setFont('helvetica', 'normal');
-            doc.setFontSize(10.5);
-            doc.setTextColor(100, 116, 139);
-            doc.text(`Tanggal : ${tgl}`, 40, 94);
-            doc.setTextColor(30, 41, 59);
+            doc.setFontSize(12);
+            doc.setTextColor(11, 26, 46);
+            doc.text('Rekap Total Keseluruhan', 30, currentY);
+            currentY += 8;
 
             const bodyRekap = rekapDataAllShifts.map(r => [
                 r.nama, r.jam, fmtNum.format(r.plL), 'Rp ' + fmtNum.format(r.plRp), fmtNum.format(r.pxL), 'Rp ' + fmtNum.format(r.pxRp)
@@ -2676,7 +2674,7 @@
 
             doc.autoTable({
                 ...baseStyles,
-                startY: 124,
+                startY: currentY,
                 head: [['Shift', 'Jam', 'Pertalite (L)', 'Pertalite (Rp)', 'Pertamax (L)', 'Pertamax (Rp)']],
                 body: bodyRekap,
                 columnStyles: { 0: { halign: 'left', fontStyle: 'bold' }, 1: { halign: 'center' }, 2: { halign: 'right' }, 3: { halign: 'right' }, 4: { halign: 'right' }, 5: { halign: 'right' } }
@@ -2782,4 +2780,4 @@
         });
     </script>
 </body>
-</html> 
+</html>
