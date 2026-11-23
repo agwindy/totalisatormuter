@@ -2413,11 +2413,14 @@
             // Update Key Periode baru
             const tgl = document.getElementById('tglPenjualan').value || new Date().toISOString().slice(0,10);
             const shift = document.getElementById('shiftAktif').value;
+            shiftAktifId = shift; // update state
             currentPenjualanDataKey = `${tgl}_${shift}`;
             
             // Load data baru (jika ada, atau kosongkan)
             muatDataPeriodePenjualan();
+            renderDaftarShift();
             showToast('🔄 Memuat data periode terpilih');
+            persistPengaturanPenjualan();
         }
 
         // Menyimpan data mesin ke historyData berdasarkan key saat ini
@@ -2522,75 +2525,161 @@
             showToast('↺ Penjualan direset');
         }
 
+        // ══════════════════════════════════════════════════════
+        // ─── EXPORT PDF MULTI-SHIFT ───
+        // ══════════════════════════════════════════════════════
         function buildPenjualanPDF() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF({ orientation: 'portrait', unit: 'pt', format: 'a4' });
             if (typeof doc.autoTable !== 'function') { showToast('❌ Plugin tabel PDF belum termuat'); return null; }
+
+            // Simpan data saat ini agar yang terakhir diketik masuk ke store
+            simpanDataPeriodePenjualan();
+
+            const store = loadPenjualanStore();
+            const historyData = store.historyData || {};
             const tgl = document.getElementById('tglPenjualan').value || '-';
-            const shift = shiftCustom.find(s => s.id === shiftAktifId);
-            const shiftLabel = shift ? `${shift.nama} (${shift.jam})` : '-';
             const hargaPL = parseFloat(document.getElementById('hargaPertalite').value) || 0;
             const hargaPX = parseFloat(document.getElementById('hargaPertamax').value) || 0;
 
-            doc.setFont('helvetica', 'bold');
-            doc.setFontSize(20);
-            doc.text('SPBU 34.17603', 40, 50);
-            doc.setFontSize(15);
-            doc.text('Laporan Penjualan Harian', 40, 74);
-            doc.setFont('helvetica', 'normal');
-            doc.setFontSize(10.5);
-            doc.setTextColor(100, 116, 139);
-            doc.text(`Tanggal : ${tgl}`, 40, 94);
-            doc.text(`Shift   : ${shiftLabel}`, 40, 108);
-            doc.setTextColor(30, 41, 59);
-
-            const base = {
+            const baseStyles = {
                 theme: 'grid',
                 styles: { fontSize: 9.5, cellPadding: 4.5, textColor: [0,0,0], lineColor: [0,0,0], lineWidth: 0.6 },
                 headStyles: { fillColor: [11, 26, 46], textColor: [255,255,255], fontStyle: 'bold', halign: 'center' },
                 margin: { left: 40, right: 40 }
             };
 
-            const buildBody = (list, prefix, harga) => {
-                const rows = list.map(m => {
-                    const awEl = document.getElementById(`${prefix}Awal${m}`);
-                    const akEl = document.getElementById(`${prefix}Akhir${m}`);
-                    const aw = awEl ? (parseFloat(awEl.value) || 0) : 0;
-                    const ak = akEl ? (parseFloat(akEl.value) || 0) : 0;
-                    const tot = Math.max(0, ak - aw);
-                    return [m, aw ? fmtNum.format(aw) : '-', ak ? fmtNum.format(ak) : '-', fmtNum.format(tot), 'Rp ' + fmtNum.format(tot * harga)];
-                });
-                const totalL = list.reduce((a, m) => {
-                    const awEl = document.getElementById(`${prefix}Awal${m}`);
-                    const akEl = document.getElementById(`${prefix}Akhir${m}`);
-                    return a + Math.max(0, (akEl ? parseFloat(akEl.value) || 0 : 0) - (awEl ? parseFloat(awEl.value) || 0 : 0));
-                }, 0);
-                return { rows, totalL, totalRp: totalL * harga };
-            };
+            const rekapDataAllShifts = [];
+            let totalGrandRp = 0;
+            let totalGrandL = 0;
 
-            const pl = buildBody(MESIN_PERTALITE, 'penjPL', hargaPL);
-            const px = buildBody(MESIN_PERTAMAX, 'penjPX', hargaPX);
+            // 1. LOOPING SETIAP SHIFT UNTUK DIBUATKAN HALAMAN PDF-NYA
+            shiftCustom.forEach((shift, index) => {
+                const key = `${tgl}_${shift.id}`;
+                const dataMesin = historyData[key] || {};
+                
+                // Cek apakah shift ini ada isinya
+                let adaIsi = false;
+                Object.values(dataMesin).forEach(v => { if(v && parseFloat(v) > 0) adaIsi = true; });
+                if (!adaIsi) return; // Skip jika kosong sama sekali
+
+                // Buat halaman baru untuk setiap shift (kecuali halaman pertama)
+                if (rekapDataAllShifts.length > 0) doc.addPage();
+                
+                // --- HEADER PDF ---
+                doc.setFont('helvetica', 'bold');
+                doc.setFontSize(20);
+                doc.text('SPBU 34.17603', 40, 50);
+                doc.setFontSize(15);
+                doc.text('Laporan Penjualan Harian', 40, 74);
+                doc.setFont('helvetica', 'normal');
+                doc.setFontSize(10.5);
+                doc.setTextColor(100, 116, 139);
+                doc.text(`Tanggal : ${tgl}`, 40, 94);
+                doc.text(`Shift   : ${shift.nama} (${shift.jam})`, 40, 108);
+                doc.setTextColor(30, 41, 59);
+
+                const buildBody = (list, prefix) => {
+                    const rows = list.map(m => {
+                        const aw = parseFloat(dataMesin[`${prefix}Awal${m}`]) || 0;
+                        const ak = parseFloat(dataMesin[`${prefix}Akhir${m}`]) || 0;
+                        const tot = Math.max(0, ak - aw);
+                        const isPL = prefix === 'penjPL';
+                        const rp = tot * (isPL ? hargaPL : hargaPX);
+                        return [m, aw ? fmtNum.format(aw) : '-', ak ? fmtNum.format(ak) : '-', fmtNum.format(tot), 'Rp ' + fmtNum.format(rp)];
+                    });
+                    const totalL = list.reduce((a, m) => {
+                        const aw = parseFloat(dataMesin[`${prefix}Awal${m}`]) || 0;
+                        const ak = parseFloat(dataMesin[`${prefix}Akhir${m}`]) || 0;
+                        return a + Math.max(0, ak - aw);
+                    }, 0);
+                    const totalRp = totalL * (prefix === 'penjPL' ? hargaPL : hargaPX);
+                    return { rows, totalL, totalRp };
+                };
+
+                const pl = buildBody(MESIN_PERTALITE, 'penjPL');
+                const px = buildBody(MESIN_PERTAMAX, 'penjPX');
+                
+                rekapDataAllShifts.push({
+                    nama: shift.nama, jam: shift.jam, plL: pl.totalL, plRp: pl.totalRp, pxL: px.totalL, pxRp: px.totalRp
+                });
+
+                totalGrandRp += (pl.totalRp + px.totalRp);
+                totalGrandL += (pl.totalL + px.totalL);
+
+                // --- TABEL PDF ---
+                doc.autoTable({
+                    ...baseStyles,
+                    startY: 124,
+                    head: [['Mesin', 'Awal', 'Akhir', 'Total (L)', 'Subtotal (Rp)']],
+                    body: [
+                        [{ content: 'PERTALITE', colSpan: 5, styles: { fontStyle: 'bold', halign: 'left', fillColor: [254, 243, 199] } }],
+                        ...pl.rows,
+                        [{ content: 'Subtotal Pertalite', colSpan: 3, styles: { fontStyle: 'bold', halign: 'left' } },
+                         { content: fmtNum.format(pl.totalL), styles: { fontStyle: 'bold' } },
+                         { content: 'Rp ' + fmtNum.format(pl.totalRp), styles: { fontStyle: 'bold' } }],
+                        [{ content: 'PERTAMAX', colSpan: 5, styles: { fontStyle: 'bold', halign: 'left', fillColor: [226, 232, 240] } }],
+                        ...px.rows,
+                        [{ content: 'Subtotal Pertamax', colSpan: 3, styles: { fontStyle: 'bold', halign: 'left' } },
+                         { content: fmtNum.format(px.totalL), styles: { fontStyle: 'bold' } },
+                         { content: 'Rp ' + fmtNum.format(px.totalRp), styles: { fontStyle: 'bold' } }],
+                        [{ content: 'TOTAL SHIFT', colSpan: 3, styles: { fontStyle: 'bold', halign: 'left', fillColor: [245, 158, 11] } },
+                         { content: fmtNum.format(pl.totalL + px.totalL), styles: { fontStyle: 'bold', fillColor: [245, 158, 11] } },
+                         { content: 'Rp ' + fmtNum.format(pl.totalRp + px.totalRp), styles: { fontStyle: 'bold', fillColor: [245, 158, 11] } }]
+                    ],
+                    columnStyles: { 0: { halign: 'left' }, 1: { halign: 'right' }, 2: { halign: 'right' }, 3: { halign: 'right' }, 4: { halign: 'right' } }
+                });
+            });
+
+            // Jika sama sekali tidak ada data
+            if (rekapDataAllShifts.length === 0) {
+                doc.setFont('helvetica', 'bold');
+                doc.setFontSize(20);
+                doc.text('SPBU 34.17603', 40, 50);
+                doc.setFontSize(15);
+                doc.text('Laporan Penjualan Harian', 40, 74);
+                doc.setFont('helvetica', 'normal');
+                doc.setFontSize(10.5);
+                doc.text(`Tanggal : ${tgl}`, 40, 94);
+                doc.text('Tidak ada data penjualan pada tanggal ini.', 40, 130);
+                return doc;
+            }
+
+            // 2. BUAT HALAMAN REKAP GABUNGAN (GRAND TOTAL) DI AKHIR
+            doc.addPage();
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(20);
+            doc.text('SPBU 34.17603', 40, 50);
+            doc.setFontSize(15);
+            doc.text('Rekap Penjualan Harian (Semua Shift)', 40, 74);
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(10.5);
+            doc.setTextColor(100, 116, 139);
+            doc.text(`Tanggal : ${tgl}`, 40, 94);
+            doc.setTextColor(30, 41, 59);
+
+            const bodyRekap = rekapDataAllShifts.map(r => [
+                r.nama, r.jam, fmtNum.format(r.plL), 'Rp ' + fmtNum.format(r.plRp), fmtNum.format(r.pxL), 'Rp ' + fmtNum.format(r.pxRp)
+            ]);
+            bodyRekap.push([
+                { content: 'TOTAL KESELURUHAN', colSpan: 2, styles: { fontStyle: 'bold', halign: 'center', fillColor: [254, 243, 199] } },
+                { content: fmtNum.format(rekapDataAllShifts.reduce((a,b)=>a+b.plL,0)), styles: { fontStyle: 'bold', fillColor: [254, 243, 199] } },
+                { content: 'Rp ' + fmtNum.format(rekapDataAllShifts.reduce((a,b)=>a+b.plRp,0)), styles: { fontStyle: 'bold', fillColor: [254, 243, 199] } },
+                { content: fmtNum.format(rekapDataAllShifts.reduce((a,b)=>a+b.pxL,0)), styles: { fontStyle: 'bold', fillColor: [226, 232, 240] } },
+                { content: 'Rp ' + fmtNum.format(rekapDataAllShifts.reduce((a,b)=>a+b.pxRp,0)), styles: { fontStyle: 'bold', fillColor: [226, 232, 240] } }
+            ]);
+            bodyRekap.push([
+                { content: 'GRAND TOTAL (PERTALITE + PERTAMAX)', colSpan: 4, styles: { fontStyle: 'bold', halign: 'right', fillColor: [245, 158, 11] } },
+                { content: fmtNum.format(totalGrandL) + ' L', styles: { fontStyle: 'bold', fillColor: [245, 158, 11] } },
+                { content: 'Rp ' + fmtNum.format(totalGrandRp), styles: { fontStyle: 'bold', fillColor: [245, 158, 11] } }
+            ]);
 
             doc.autoTable({
-                ...base,
+                ...baseStyles,
                 startY: 124,
-                head: [['Mesin', 'Awal', 'Akhir', 'Total (L)', 'Subtotal (Rp)']],
-                body: [
-                    [{ content: 'PERTALITE', colSpan: 5, styles: { fontStyle: 'bold', halign: 'left', fillColor: [254, 243, 199] } }],
-                    ...pl.rows,
-                    [{ content: 'Subtotal Pertalite', colSpan: 3, styles: { fontStyle: 'bold', halign: 'left' } },
-                     { content: fmtNum.format(pl.totalL), styles: { fontStyle: 'bold' } },
-                     { content: 'Rp ' + fmtNum.format(pl.totalRp), styles: { fontStyle: 'bold' } }],
-                    [{ content: 'PERTAMAX', colSpan: 5, styles: { fontStyle: 'bold', halign: 'left', fillColor: [226, 232, 240] } }],
-                    ...px.rows,
-                    [{ content: 'Subtotal Pertamax', colSpan: 3, styles: { fontStyle: 'bold', halign: 'left' } },
-                     { content: fmtNum.format(px.totalL), styles: { fontStyle: 'bold' } },
-                     { content: 'Rp ' + fmtNum.format(px.totalRp), styles: { fontStyle: 'bold' } }],
-                    [{ content: 'GRAND TOTAL', colSpan: 3, styles: { fontStyle: 'bold', halign: 'left', fillColor: [245, 158, 11] } },
-                     { content: fmtNum.format(pl.totalL + px.totalL), styles: { fontStyle: 'bold', fillColor: [245, 158, 11] } },
-                     { content: 'Rp ' + fmtNum.format(pl.totalRp + px.totalRp), styles: { fontStyle: 'bold', fillColor: [245, 158, 11] } }]
-                ],
-                columnStyles: { 0: { halign: 'left' }, 1: { halign: 'right' }, 2: { halign: 'right' }, 3: { halign: 'right' }, 4: { halign: 'right' } }
+                head: [['Shift', 'Jam', 'Pertalite (L)', 'Pertalite (Rp)', 'Pertamax (L)', 'Pertamax (Rp)']],
+                body: bodyRekap,
+                columnStyles: { 0: { halign: 'left', fontStyle: 'bold' }, 1: { halign: 'center' }, 2: { halign: 'right' }, 3: { halign: 'right' }, 4: { halign: 'right' }, 5: { halign: 'right' } }
             });
 
             return doc;
@@ -2612,48 +2701,51 @@
 
         async function sharePenjualanWA() {
             const tgl = document.getElementById('tglPenjualan').value || '-';
-            const shift = shiftCustom.find(s => s.id === shiftAktifId);
-            const shiftLabel = shift ? `${shift.nama} (${shift.jam})` : '-';
+            simpanDataPeriodePenjualan();
+            const store = loadPenjualanStore();
+            const historyData = store.historyData || {};
             const hargaPL = parseFloat(document.getElementById('hargaPertalite').value) || 0;
             const hargaPX = parseFloat(document.getElementById('hargaPertamax').value) || 0;
 
-            const lineMesin = (list, prefix, harga) => list.map(m => {
-                const awEl = document.getElementById(`${prefix}Awal${m}`);
-                const akEl = document.getElementById(`${prefix}Akhir${m}`);
-                const aw = awEl ? (parseFloat(awEl.value) || 0) : 0;
-                const ak = akEl ? (parseFloat(akEl.value) || 0) : 0;
-                const tot = Math.max(0, ak - aw);
-                return `  ${m}: ${fmtNum.format(tot)} L = Rp ${fmtNum.format(tot * harga)}`;
-            }).join('\n');
+            let text = `*LAPORAN PENJUALAN HARIAN*\nSPBU 34-17603\nTanggal : ${tgl}\n\n`;
+            let totalGrandRp = 0;
+            let totalGrandL = 0;
+            let adaData = false;
 
-            const totalL = (list, prefix) => list.reduce((a, m) => {
-                const awEl = document.getElementById(`${prefix}Awal${m}`);
-                const akEl = document.getElementById(`${prefix}Akhir${m}`);
-                return a + Math.max(0, (akEl ? parseFloat(akEl.value) || 0 : 0) - (awEl ? parseFloat(awEl.value) || 0 : 0));
-            }, 0);
+            shiftCustom.forEach(shift => {
+                const key = `${tgl}_${shift.id}`;
+                const dataMesin = historyData[key] || {};
+                let adaIsi = false;
+                Object.values(dataMesin).forEach(v => { if(v && parseFloat(v) > 0) adaIsi = true; });
+                if (!adaIsi) return;
+                adaData = true;
 
-            const plL = totalL(MESIN_PERTALITE, 'penjPL');
-            const pxL = totalL(MESIN_PERTAMAX, 'penjPX');
-            const plRp = plL * hargaPL;
-            const pxRp = pxL * hargaPX;
+                const hitungList = (list, prefix, harga) => {
+                    let L = 0;
+                    list.forEach(m => {
+                        const aw = parseFloat(dataMesin[`${prefix}Awal${m}`]) || 0;
+                        const ak = parseFloat(dataMesin[`${prefix}Akhir${m}`]) || 0;
+                        L += Math.max(0, ak - aw);
+                    });
+                    return { L, Rp: L * harga };
+                };
+                const pl = hitungList(MESIN_PERTALITE, 'penjPL', hargaPL);
+                const px = hitungList(MESIN_PERTAMAX, 'penjPX', hargaPX);
+                
+                totalGrandL += pl.L + px.L;
+                totalGrandRp += pl.Rp + px.Rp;
 
-            const text =
-`*LAPORAN PENJUALAN HARIAN*
-SPBU 34-17603
+                text += `*${shift.nama}* (${shift.jam})\n`;
+                text += `Pertalite : ${fmtNum.format(pl.L)} L (Rp ${fmtNum.format(pl.Rp)})\n`;
+                text += `Pertamax  : ${fmtNum.format(px.L)} L (Rp ${fmtNum.format(px.Rp)})\n\n`;
+            });
 
-Tanggal : ${tgl}
-Shift   : ${shiftLabel}
-
-*PERTALITE* (Rp ${fmtNum.format(hargaPL)}/L)
-${lineMesin(MESIN_PERTALITE, 'penjPL', hargaPL)}
-  ─ Subtotal: ${fmtNum.format(plL)} L = *Rp ${fmtNum.format(plRp)}*
-
-*PERTAMAX* (Rp ${fmtNum.format(hargaPX)}/L)
-${lineMesin(MESIN_PERTAMAX, 'penjPX', hargaPX)}
-  ─ Subtotal: ${fmtNum.format(pxL)} L = *Rp ${fmtNum.format(pxRp)}*
-
-*GRAND TOTAL: Rp ${fmtNum.format(plRp + pxRp)}*
-Total Liter: ${fmtNum.format(plL + pxL)} L`;
+            if (!adaData) {
+                text += `_Belum ada data penjualan_`;
+            } else {
+                text += `*GRAND TOTAL: Rp ${fmtNum.format(totalGrandRp)}*\n`;
+                text += `Total Liter: ${fmtNum.format(totalGrandL)} L\n`;
+            }
 
             if (window.jspdf) {
                 try {
