@@ -2526,14 +2526,13 @@
         }
 
         // ══════════════════════════════════════════════════════
-        // ─── EXPORT PDF MULTI-SHIFT (1 HALAMAN RINGKAS) ───
+        // ─── EXPORT PDF MULTI-SHIFT (1 HALAMAN & FILTER KOSONG) ───
         // ══════════════════════════════════════════════════════
         function buildPenjualanPDF() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF({ orientation: 'portrait', unit: 'pt', format: 'a4' });
             if (typeof doc.autoTable !== 'function') { showToast('❌ Plugin tabel PDF belum termuat'); return null; }
 
-            // Simpan data saat ini agar yang terakhir diketik masuk ke store
             simpanDataPeriodePenjualan();
 
             const store = loadPenjualanStore();
@@ -2546,10 +2545,14 @@
                 theme: 'grid',
                 styles: { fontSize: 9, cellPadding: 3.5, textColor: [0,0,0], lineColor: [0,0,0], lineWidth: 0.5 },
                 headStyles: { fillColor: [11, 26, 46], textColor: [255,255,255], fontStyle: 'bold', halign: 'center' },
-                margin: { left: 30, right: 30 } // Margin diperkecil agar muat 1 halaman
+                margin: { left: 30, right: 30 }
             };
 
             let rekapDataAllShifts = [];
+            let mesinTotals = {}; // Untuk rekap per mesin
+            MESIN_PERTALITE.forEach(m => mesinTotals[m] = { L: 0, Rp: 0, nama: 'PL' });
+            MESIN_PERTAMAX.forEach(m => mesinTotals[m] = { L: 0, Rp: 0, nama: 'PX' });
+
             let totalGrandRp = 0;
             let totalGrandL = 0;
             let currentY = 0;
@@ -2567,8 +2570,9 @@
             doc.setTextColor(30, 41, 59);
             currentY = 95;
 
-            // 1. LOOPING SETIAP SHIFT UNTUK DIBUATKAN TABEL
             let adaDataTampil = false;
+
+            // 1. LOOPING SETIAP SHIFT UNTUK DIBUATKAN TABEL
             shiftCustom.forEach((shift) => {
                 const key = `${tgl}_${shift.id}`;
                 const dataMesin = historyData[key] || {};
@@ -2576,25 +2580,34 @@
                 // Cek apakah shift ini ada isinya
                 let adaIsi = false;
                 Object.values(dataMesin).forEach(v => { if(v && parseFloat(v) > 0) adaIsi = true; });
-                if (!adaIsi) return; // Skip jika kosong sama sekali
+                if (!adaIsi) return; 
 
                 adaDataTampil = true;
 
                 // --- SUB-JUDUL SHIFT ---
                 doc.setFont('helvetica', 'bold');
-                doc.setFontSize(12);
-                doc.setTextColor(180, 83, 9); // Warna amber
+                doc.setFontSize(11);
+                doc.setTextColor(180, 83, 9);
                 doc.text(`${shift.nama} (${shift.jam})`, 30, currentY);
-                currentY += 8;
+                currentY += 6;
 
                 const buildBody = (list, prefix) => {
-                    const rows = list.map(m => {
+                    let rows = [];
+                    list.forEach(m => {
                         const aw = parseFloat(dataMesin[`${prefix}Awal${m}`]) || 0;
                         const ak = parseFloat(dataMesin[`${prefix}Akhir${m}`]) || 0;
                         const tot = Math.max(0, ak - aw);
-                        const isPL = prefix === 'penjPL';
-                        const rp = tot * (isPL ? hargaPL : hargaPX);
-                        return [m, aw ? fmtNum.format(aw) : '-', ak ? fmtNum.format(ak) : '-', fmtNum.format(tot), 'Rp ' + fmtNum.format(rp)];
+                        
+                        // FILTER: Hanya tampilkan jika total > 0 (Mesin terpakai)
+                        if (tot > 0) {
+                            const isPL = prefix === 'penjPL';
+                            const rp = tot * (isPL ? hargaPL : hargaPX);
+                            rows.push([m, aw ? fmtNum.format(aw) : '-', ak ? fmtNum.format(ak) : '-', fmtNum.format(tot), 'Rp ' + fmtNum.format(rp)]);
+                            
+                            // Akumulasi rekap per mesin global
+                            mesinTotals[m].L += tot;
+                            mesinTotals[m].Rp += rp;
+                        }
                     });
                     const totalL = list.reduce((a, m) => {
                         const aw = parseFloat(dataMesin[`${prefix}Awal${m}`]) || 0;
@@ -2608,6 +2621,7 @@
                 const pl = buildBody(MESIN_PERTALITE, 'penjPL');
                 const px = buildBody(MESIN_PERTAMAX, 'penjPX');
                 
+                // Simpan untuk rekap bawah
                 rekapDataAllShifts.push({
                     nama: shift.nama, jam: shift.jam, plL: pl.totalL, plRp: pl.totalRp, pxL: px.totalL, pxRp: px.totalRp
                 });
@@ -2615,31 +2629,37 @@
                 totalGrandRp += (pl.totalRp + px.totalRp);
                 totalGrandL += (pl.totalL + px.totalL);
 
-                // --- TABEL PDF (Menyambung tanpa addPage) ---
+                // --- TABEL PDF ---
+                let bodyData = [];
+                if (pl.rows.length > 0) {
+                    bodyData.push([{ content: 'PERTALITE', colSpan: 5, styles: { fontStyle: 'bold', halign: 'left', fillColor: [254, 243, 199] } }]);
+                    bodyData = bodyData.concat(pl.rows);
+                    bodyData.push([{ content: 'Subtotal Pertalite', colSpan: 3, styles: { fontStyle: 'bold', halign: 'left' } },
+                                   { content: fmtNum.format(pl.totalL), styles: { fontStyle: 'bold' } },
+                                   { content: 'Rp ' + fmtNum.format(pl.totalRp), styles: { fontStyle: 'bold' } }]);
+                }
+                
+                if (px.rows.length > 0) {
+                    bodyData.push([{ content: 'PERTAMAX', colSpan: 5, styles: { fontStyle: 'bold', halign: 'left', fillColor: [226, 232, 240] } }]);
+                    bodyData = bodyData.concat(px.rows);
+                    bodyData.push([{ content: 'Subtotal Pertamax', colSpan: 3, styles: { fontStyle: 'bold', halign: 'left' } },
+                                   { content: fmtNum.format(px.totalL), styles: { fontStyle: 'bold' } },
+                                   { content: 'Rp ' + fmtNum.format(px.totalRp), styles: { fontStyle: 'bold' } }]);
+                }
+
+                bodyData.push([{ content: 'TOTAL SHIFT', colSpan: 3, styles: { fontStyle: 'bold', halign: 'left', fillColor: [245, 158, 11] } },
+                               { content: fmtNum.format(pl.totalL + px.totalL), styles: { fontStyle: 'bold', fillColor: [245, 158, 11] } },
+                               { content: 'Rp ' + fmtNum.format(pl.totalRp + px.totalRp), styles: { fontStyle: 'bold', fillColor: [245, 158, 11] } }]);
+
                 doc.autoTable({
                     ...baseStyles,
                     startY: currentY,
                     head: [['Mesin', 'Awal', 'Akhir', 'Total (L)', 'Subtotal (Rp)']],
-                    body: [
-                        [{ content: 'PERTALITE', colSpan: 5, styles: { fontStyle: 'bold', halign: 'left', fillColor: [254, 243, 199] } }],
-                        ...pl.rows,
-                        [{ content: 'Subtotal Pertalite', colSpan: 3, styles: { fontStyle: 'bold', halign: 'left' } },
-                         { content: fmtNum.format(pl.totalL), styles: { fontStyle: 'bold' } },
-                         { content: 'Rp ' + fmtNum.format(pl.totalRp), styles: { fontStyle: 'bold' } }],
-                        [{ content: 'PERTAMAX', colSpan: 5, styles: { fontStyle: 'bold', halign: 'left', fillColor: [226, 232, 240] } }],
-                        ...px.rows,
-                        [{ content: 'Subtotal Pertamax', colSpan: 3, styles: { fontStyle: 'bold', halign: 'left' } },
-                         { content: fmtNum.format(px.totalL), styles: { fontStyle: 'bold' } },
-                         { content: 'Rp ' + fmtNum.format(px.totalRp), styles: { fontStyle: 'bold' } }],
-                        [{ content: 'TOTAL SHIFT', colSpan: 3, styles: { fontStyle: 'bold', halign: 'left', fillColor: [245, 158, 11] } },
-                         { content: fmtNum.format(pl.totalL + px.totalL), styles: { fontStyle: 'bold', fillColor: [245, 158, 11] } },
-                         { content: 'Rp ' + fmtNum.format(pl.totalRp + px.totalRp), styles: { fontStyle: 'bold', fillColor: [245, 158, 11] } }]
-                    ],
+                    body: bodyData,
                     columnStyles: { 0: { halign: 'left' }, 1: { halign: 'right' }, 2: { halign: 'right' }, 3: { halign: 'right' }, 4: { halign: 'right' } }
                 });
                 
-                // Update currentY untuk tabel selanjutnya agar tidak menumpuk
-                currentY = doc.lastAutoTable.finalY + 20; 
+                currentY = doc.lastAutoTable.finalY + 15; 
             });
 
             if (!adaDataTampil) {
@@ -2649,12 +2669,40 @@
                 return doc;
             }
 
-            // 2. BUAT TABEL REKAP GABUNGAN (GRAND TOTAL) DI BAGIAN PALING BAWAH
+            // 2. BUAT TABEL REKAP GABUNGAN PER MESIN (GLOBAL MACHINE TOTAL)
             doc.setFont('helvetica', 'bold');
-            doc.setFontSize(12);
+            doc.setFontSize(11);
+            doc.setTextColor(11, 26, 46);
+            doc.text('Rekap Total Per Mesin', 30, currentY);
+            currentY += 6;
+
+            let bodyRekapMesin = [];
+            MESIN_PERTALITE.forEach(m => {
+                if (mesinTotals[m].L > 0) {
+                    bodyRekapMesin.push([m, 'PERTALITE', fmtNum.format(mesinTotals[m].L), 'Rp ' + fmtNum.format(mesinTotals[m].Rp)]);
+                }
+            });
+            MESIN_PERTAMAX.forEach(m => {
+                if (mesinTotals[m].L > 0) {
+                    bodyRekapMesin.push([m, 'PERTAMAX', fmtNum.format(mesinTotals[m].L), 'Rp ' + fmtNum.format(mesinTotals[m].Rp)]);
+                }
+            });
+
+            doc.autoTable({
+                ...baseStyles,
+                startY: currentY,
+                head: [['Mesin', 'Produk', 'Total (L)', 'Total (Rp)']],
+                body: bodyRekapMesin,
+                columnStyles: { 0: { halign: 'left', fontStyle: 'bold' }, 1: { halign: 'left' }, 2: { halign: 'right' }, 3: { halign: 'right' } }
+            });
+            currentY = doc.lastAutoTable.finalY + 15;
+
+            // 3. BUAT TABEL REKAP GABUNGAN (GRAND TOTAL SEMUA SHIFT)
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(11);
             doc.setTextColor(11, 26, 46);
             doc.text('Rekap Total Keseluruhan', 30, currentY);
-            currentY += 8;
+            currentY += 6;
 
             const bodyRekap = rekapDataAllShifts.map(r => [
                 r.nama, r.jam, fmtNum.format(r.plL), 'Rp ' + fmtNum.format(r.plRp), fmtNum.format(r.pxL), 'Rp ' + fmtNum.format(r.pxRp)
