@@ -560,7 +560,7 @@
         /* ═══ TAB PENJUALAN ═══ */
         .shift-item {
             display: flex; align-items: center; gap: 8px;
-            padding: 10px 12px; background: #f8fafc;
+            padding: 8px 12px; background: #f8fafc;
             border: 1.5px solid #e2e8f0; border-radius: 12px;
             margin-bottom: 8px; font-size: 13px;
         }
@@ -572,13 +572,21 @@
         }
         .shift-item input:focus { border-color: #2563eb; }
         .shift-item .shift-nama { flex: 1; min-width: 80px; font-weight: 600; }
-        .shift-item .shift-jam { width: 100px; text-align: center; }
-        .shift-item .shift-del {
-            border: none; background: #fee2e2; color: #b91c1c;
-            width: 30px; height: 30px; border-radius: 8px;
-            cursor: pointer; font-size: 14px; flex-shrink: 0;
+        
+        .shift-item .shift-actions {
+            display: flex; gap: 4px; flex-shrink: 0;
         }
-        .shift-item .shift-del:hover { background: #fecaca; }
+        .shift-item .btn-shift-action {
+            border: none; background: #e2e8f0; color: #475569;
+            width: 28px; height: 28px; border-radius: 6px;
+            cursor: pointer; font-size: 12px;
+            display: flex; align-items: center; justify-content: center;
+            transition: 0.2s ease;
+        }
+        .shift-item .btn-shift-action:hover { background: #cbd5e1; color: #0b1a2e; }
+        .shift-item .btn-shift-action.del { background: #fee2e2; color: #b91c1c; }
+        .shift-item .btn-shift-action.del:hover { background: #fecaca; }
+        
         .shift-item .shift-aktif-badge {
             font-size: 10px; font-weight: 700; color: #166534;
             background: #f0fdf4; border: 1px solid #86efac;
@@ -2272,9 +2280,9 @@
         const MESIN_PERTAMAX = ['B1', 'B2', 'D'];
         let lockHarga = false;
         let shiftCustom = [
-            { id: 's1', nama: 'Shift 1', jam: '06:00-14:00' },
-            { id: 's2', nama: 'Shift 2', jam: '14:00-22:00' },
-            { id: 's3', nama: 'Shift 3', jam: '22:00-06:00' }
+            { id: 's1', nama: 'Shift 1' },
+            { id: 's2', nama: 'Shift 2' },
+            { id: 's3', nama: 'Shift 3' }
         ];
         let shiftAktifId = 's1';
         let penjualanInitialized = false;
@@ -2306,7 +2314,12 @@
             renderRows('tbodyPertamax', MESIN_PERTAMAX, 'penjPX');
 
             const store = loadPenjualanStore();
-            if (store.shiftCustom && Array.isArray(store.shiftCustom) && store.shiftCustom.length) shiftCustom = store.shiftCustom;
+            if (store.shiftCustom && Array.isArray(store.shiftCustom) && store.shiftCustom.length) {
+                shiftCustom = store.shiftCustom;
+            }
+            // Pastikan objek shift lama (yang ada jam-nya) dibersihkan
+            shiftCustom.forEach(s => { delete s.jam; });
+
             if (store.shiftAktifId) shiftAktifId = store.shiftAktifId;
             if (store.hargaPertalite) document.getElementById('hargaPertalite').value = store.hargaPertalite;
             if (store.hargaPertamax) document.getElementById('hargaPertamax').value = store.hargaPertamax;
@@ -2324,10 +2337,7 @@
             applyLockHarga();
             renderDaftarShift();
             
-            // Tentukan key periode saat ini (tgl + shift)
             currentPenjualanDataKey = `${document.getElementById('tglPenjualan').value}_${shiftAktifId}`;
-            
-            // Load data untuk periode ini
             muatDataPeriodePenjualan();
 
             penjualanInitialized = true;
@@ -2355,22 +2365,27 @@
             const wrap = document.getElementById('daftarShift');
             const sel = document.getElementById('shiftAktif');
             if (!wrap || !sel) return;
-            wrap.innerHTML = shiftCustom.map(s => `
+            
+            wrap.innerHTML = shiftCustom.map((s, idx) => `
                 <div class="shift-item">
                     <input class="shift-nama" value="${s.nama}" onchange="updateShift('${s.id}','nama',this.value)" />
-                    <input class="shift-jam" value="${s.jam}" onchange="updateShift('${s.id}','jam',this.value)" placeholder="06:00-14:00" />
                     ${s.id === shiftAktifId ? '<span class="shift-aktif-badge">AKTIF</span>' : ''}
-                    <button class="shift-del" onclick="hapusShift('${s.id}')" title="Hapus">🗑️</button>
+                    <div class="shift-actions">
+                        <button class="btn-shift-action" onclick="pindahShift('${s.id}', -1)" title="Naik" ${idx === 0 ? 'disabled style="opacity:0.3"' : ''}>⬆</button>
+                        <button class="btn-shift-action" onclick="pindahShift('${s.id}', 1)" title="Turun" ${idx === shiftCustom.length - 1 ? 'disabled style="opacity:0.3"' : ''}>⬇</button>
+                        <button class="btn-shift-action del" onclick="hapusShift('${s.id}')" title="Hapus">🗑️</button>
+                    </div>
                 </div>`).join('');
+                
             sel.innerHTML = shiftCustom.map(s =>
-                `<option value="${s.id}" ${s.id === shiftAktifId ? 'selected' : ''}>${s.nama} (${s.jam})</option>`
+                `<option value="${s.id}" ${s.id === shiftAktifId ? 'selected' : ''}>${s.nama}</option>`
             ).join('');
         }
 
         function tambahShift() {
             const id = 's' + Date.now();
             const n = shiftCustom.length + 1;
-            shiftCustom.push({ id, nama: `Shift ${n}`, jam: '00:00-00:00' });
+            shiftCustom.push({ id, nama: `Shift ${n}` });
             renderDaftarShift();
             persistPengaturanPenjualan();
             showToast('✅ Shift ditambahkan');
@@ -2379,6 +2394,24 @@
         function updateShift(id, field, val) {
             const s = shiftCustom.find(x => x.id === id);
             if (s) { s[field] = val; renderDaftarShift(); persistPengaturanPenjualan(); }
+        }
+        
+        function pindahShift(id, arah) {
+            const idx = shiftCustom.findIndex(x => x.id === id);
+            if (idx < 0) return;
+            if (arah === -1 && idx > 0) {
+                // Tukar dengan atasnya
+                const temp = shiftCustom[idx - 1];
+                shiftCustom[idx - 1] = shiftCustom[idx];
+                shiftCustom[idx] = temp;
+            } else if (arah === 1 && idx < shiftCustom.length - 1) {
+                // Tukar dengan bawahnya
+                const temp = shiftCustom[idx + 1];
+                shiftCustom[idx + 1] = shiftCustom[idx];
+                shiftCustom[idx] = temp;
+            }
+            renderDaftarShift();
+            persistPengaturanPenjualan();
         }
 
         function hapusShift(id) {
@@ -2405,25 +2438,20 @@
             document.getElementById('hargaPertamax').disabled = lockHarga;
         }
 
-        // Fungsi saat Tanggal / Shift diganti
         function gantiPeriodePenjualan() {
-            // Simpan data yang sedang diketik ke periode lama
             simpanDataPeriodePenjualan();
             
-            // Update Key Periode baru
             const tgl = document.getElementById('tglPenjualan').value || new Date().toISOString().slice(0,10);
             const shift = document.getElementById('shiftAktif').value;
-            shiftAktifId = shift; // update state
+            shiftAktifId = shift;
             currentPenjualanDataKey = `${tgl}_${shift}`;
             
-            // Load data baru (jika ada, atau kosongkan)
             muatDataPeriodePenjualan();
             renderDaftarShift();
             showToast('🔄 Memuat data periode terpilih');
             persistPengaturanPenjualan();
         }
 
-        // Menyimpan data mesin ke historyData berdasarkan key saat ini
         function simpanDataPeriodePenjualan() {
             if (!penjualanInitialized) return;
             const store = loadPenjualanStore();
@@ -2447,7 +2475,6 @@
             savePenjualanStore(store);
         }
 
-        // Menyimpan pengaturan (harga, shift list, tanggal terakhir dipilih)
         function persistPengaturanPenjualan() {
             const store = loadPenjualanStore();
             store.shiftCustom = shiftCustom;
@@ -2459,7 +2486,6 @@
             savePenjualanStore(store);
         }
 
-        // Dipanggil setiap input berubah
         function hitungPenjualan() {
             if (!penjualanInitialized && !document.getElementById('tbodyPertalite').children.length) return;
             const hargaPL = parseFloat(document.getElementById('hargaPertalite').value) || 0;
@@ -2503,9 +2529,8 @@
 
             const shift = shiftCustom.find(s => s.id === shiftAktifId);
             const elShift = document.getElementById('detailShiftPenjualan');
-            if (elShift) elShift.textContent = shift ? `${shift.nama} (${shift.jam})` : '-';
+            if (elShift) elShift.textContent = shift ? shift.nama : '-';
 
-            // Simpan otomatis data mesin ke periode ini
             simpanDataPeriodePenjualan();
         }
 
@@ -2526,7 +2551,7 @@
         }
 
         // ══════════════════════════════════════════════════════
-        // ─── EXPORT PDF MULTI-SHIFT (1 HALAMAN & FILTER KOSONG) ───
+        // ─── EXPORT PDF MULTI-SHIFT (1 HALAMAN, FILTER KOSONG) ───
         // ══════════════════════════════════════════════════════
         function buildPenjualanPDF() {
             const { jsPDF } = window.jspdf;
@@ -2549,7 +2574,7 @@
             };
 
             let rekapDataAllShifts = [];
-            let mesinTotals = {}; // Untuk rekap per mesin
+            let mesinTotals = {};
             MESIN_PERTALITE.forEach(m => mesinTotals[m] = { L: 0, Rp: 0, nama: 'PL' });
             MESIN_PERTAMAX.forEach(m => mesinTotals[m] = { L: 0, Rp: 0, nama: 'PX' });
 
@@ -2557,7 +2582,6 @@
             let totalGrandL = 0;
             let currentY = 0;
 
-            // --- HEADER PDF (HANYA 1 KALI DI AWAL) ---
             doc.setFont('helvetica', 'bold');
             doc.setFontSize(18);
             doc.text('SPBU 34.17603', 30, 40);
@@ -2572,43 +2596,50 @@
 
             let adaDataTampil = false;
 
-            // 1. LOOPING SETIAP SHIFT UNTUK DIBUATKAN TABEL
             shiftCustom.forEach((shift) => {
                 const key = `${tgl}_${shift.id}`;
                 const dataMesin = historyData[key] || {};
                 
-                // Cek apakah shift ini ada isinya
+                // PENGECEKAN: Tampilkan jika ada minimal satu mesin yang terisi (walau hanya Awal atau Akhir)
                 let adaIsi = false;
-                Object.values(dataMesin).forEach(v => { if(v && parseFloat(v) > 0) adaIsi = true; });
-                if (!adaIsi) return; 
+                MESIN_PERTALITE.concat(MESIN_PERTAMAX).forEach(m => {
+                    const prefix = MESIN_PERTALITE.includes(m) ? 'penjPL' : 'penjPX';
+                    const aw = dataMesin[`${prefix}Awal${m}`];
+                    const ak = dataMesin[`${prefix}Akhir${m}`];
+                    if ((aw && aw.trim() !== '') || (ak && ak.trim() !== '')) adaIsi = true;
+                });
+                
+                if (!adaIsi) return;
 
                 adaDataTampil = true;
 
-                // --- SUB-JUDUL SHIFT ---
                 doc.setFont('helvetica', 'bold');
                 doc.setFontSize(11);
                 doc.setTextColor(180, 83, 9);
-                doc.text(`${shift.nama} (${shift.jam})`, 30, currentY);
+                doc.text(`${shift.nama}`, 30, currentY);
                 currentY += 6;
 
                 const buildBody = (list, prefix) => {
                     let rows = [];
                     list.forEach(m => {
-                        const aw = parseFloat(dataMesin[`${prefix}Awal${m}`]) || 0;
-                        const ak = parseFloat(dataMesin[`${prefix}Akhir${m}`]) || 0;
-                        const tot = Math.max(0, ak - aw);
+                        const awStr = dataMesin[`${prefix}Awal${m}`] || '';
+                        const akStr = dataMesin[`${prefix}Akhir${m}`] || '';
                         
-                        // FILTER: Hanya tampilkan jika total > 0 (Mesin terpakai)
-                        if (tot > 0) {
-                            const isPL = prefix === 'penjPL';
-                            const rp = tot * (isPL ? hargaPL : hargaPX);
-                            rows.push([m, aw ? fmtNum.format(aw) : '-', ak ? fmtNum.format(ak) : '-', fmtNum.format(tot), 'Rp ' + fmtNum.format(rp)]);
-                            
-                            // Akumulasi rekap per mesin global
-                            mesinTotals[m].L += tot;
-                            mesinTotals[m].Rp += rp;
-                        }
+                        // Logika filter: Jika awal dan akhir kosong, lewati
+                        if (awStr.trim() === '' && akStr.trim() === '') return;
+
+                        const aw = parseFloat(awStr) || 0;
+                        const ak = parseFloat(akStr) || 0;
+                        const tot = Math.max(0, ak - aw);
+                        const isPL = prefix === 'penjPL';
+                        const rp = tot * (isPL ? hargaPL : hargaPX);
+                        
+                        rows.push([m, aw ? fmtNum.format(aw) : '-', ak ? fmtNum.format(ak) : '-', fmtNum.format(tot), 'Rp ' + fmtNum.format(rp)]);
+                        
+                        mesinTotals[m].L += tot;
+                        mesinTotals[m].Rp += rp;
                     });
+                    
                     const totalL = list.reduce((a, m) => {
                         const aw = parseFloat(dataMesin[`${prefix}Awal${m}`]) || 0;
                         const ak = parseFloat(dataMesin[`${prefix}Akhir${m}`]) || 0;
@@ -2621,15 +2652,13 @@
                 const pl = buildBody(MESIN_PERTALITE, 'penjPL');
                 const px = buildBody(MESIN_PERTAMAX, 'penjPX');
                 
-                // Simpan untuk rekap bawah
                 rekapDataAllShifts.push({
-                    nama: shift.nama, jam: shift.jam, plL: pl.totalL, plRp: pl.totalRp, pxL: px.totalL, pxRp: px.totalRp
+                    nama: shift.nama, plL: pl.totalL, plRp: pl.totalRp, pxL: px.totalL, pxRp: px.totalRp
                 });
 
                 totalGrandRp += (pl.totalRp + px.totalRp);
                 totalGrandL += (pl.totalL + px.totalL);
 
-                // --- TABEL PDF ---
                 let bodyData = [];
                 if (pl.rows.length > 0) {
                     bodyData.push([{ content: 'PERTALITE', colSpan: 5, styles: { fontStyle: 'bold', halign: 'left', fillColor: [254, 243, 199] } }]);
@@ -2669,7 +2698,6 @@
                 return doc;
             }
 
-            // 2. BUAT TABEL REKAP GABUNGAN PER MESIN (GLOBAL MACHINE TOTAL)
             doc.setFont('helvetica', 'bold');
             doc.setFontSize(11);
             doc.setTextColor(11, 26, 46);
@@ -2697,7 +2725,6 @@
             });
             currentY = doc.lastAutoTable.finalY + 15;
 
-            // 3. BUAT TABEL REKAP GABUNGAN (GRAND TOTAL SEMUA SHIFT)
             doc.setFont('helvetica', 'bold');
             doc.setFontSize(11);
             doc.setTextColor(11, 26, 46);
@@ -2705,17 +2732,17 @@
             currentY += 6;
 
             const bodyRekap = rekapDataAllShifts.map(r => [
-                r.nama, r.jam, fmtNum.format(r.plL), 'Rp ' + fmtNum.format(r.plRp), fmtNum.format(r.pxL), 'Rp ' + fmtNum.format(r.pxRp)
+                r.nama, fmtNum.format(r.plL), 'Rp ' + fmtNum.format(r.plRp), fmtNum.format(r.pxL), 'Rp ' + fmtNum.format(r.pxRp)
             ]);
             bodyRekap.push([
-                { content: 'TOTAL KESELURUHAN', colSpan: 2, styles: { fontStyle: 'bold', halign: 'center', fillColor: [254, 243, 199] } },
+                { content: 'TOTAL KESELURUHAN', colSpan: 1, styles: { fontStyle: 'bold', halign: 'center', fillColor: [254, 243, 199] } },
                 { content: fmtNum.format(rekapDataAllShifts.reduce((a,b)=>a+b.plL,0)), styles: { fontStyle: 'bold', fillColor: [254, 243, 199] } },
                 { content: 'Rp ' + fmtNum.format(rekapDataAllShifts.reduce((a,b)=>a+b.plRp,0)), styles: { fontStyle: 'bold', fillColor: [254, 243, 199] } },
                 { content: fmtNum.format(rekapDataAllShifts.reduce((a,b)=>a+b.pxL,0)), styles: { fontStyle: 'bold', fillColor: [226, 232, 240] } },
                 { content: 'Rp ' + fmtNum.format(rekapDataAllShifts.reduce((a,b)=>a+b.pxRp,0)), styles: { fontStyle: 'bold', fillColor: [226, 232, 240] } }
             ]);
             bodyRekap.push([
-                { content: 'GRAND TOTAL (PERTALITE + PERTAMAX)', colSpan: 4, styles: { fontStyle: 'bold', halign: 'right', fillColor: [245, 158, 11] } },
+                { content: 'GRAND TOTAL (PERTALITE + PERTAMAX)', colSpan: 3, styles: { fontStyle: 'bold', halign: 'right', fillColor: [245, 158, 11] } },
                 { content: fmtNum.format(totalGrandL) + ' L', styles: { fontStyle: 'bold', fillColor: [245, 158, 11] } },
                 { content: 'Rp ' + fmtNum.format(totalGrandRp), styles: { fontStyle: 'bold', fillColor: [245, 158, 11] } }
             ]);
@@ -2723,9 +2750,9 @@
             doc.autoTable({
                 ...baseStyles,
                 startY: currentY,
-                head: [['Shift', 'Jam', 'Pertalite (L)', 'Pertalite (Rp)', 'Pertamax (L)', 'Pertamax (Rp)']],
+                head: [['Shift', 'Pertalite (L)', 'Pertalite (Rp)', 'Pertamax (L)', 'Pertamax (Rp)']],
                 body: bodyRekap,
-                columnStyles: { 0: { halign: 'left', fontStyle: 'bold' }, 1: { halign: 'center' }, 2: { halign: 'right' }, 3: { halign: 'right' }, 4: { halign: 'right' }, 5: { halign: 'right' } }
+                columnStyles: { 0: { halign: 'left', fontStyle: 'bold' }, 1: { halign: 'right' }, 2: { halign: 'right' }, 3: { halign: 'right' }, 4: { halign: 'right' } }
             });
 
             return doc;
@@ -2761,8 +2788,15 @@
             shiftCustom.forEach(shift => {
                 const key = `${tgl}_${shift.id}`;
                 const dataMesin = historyData[key] || {};
+                
                 let adaIsi = false;
-                Object.values(dataMesin).forEach(v => { if(v && parseFloat(v) > 0) adaIsi = true; });
+                MESIN_PERTALITE.concat(MESIN_PERTAMAX).forEach(m => {
+                    const prefix = MESIN_PERTALITE.includes(m) ? 'penjPL' : 'penjPX';
+                    const aw = dataMesin[`${prefix}Awal${m}`];
+                    const ak = dataMesin[`${prefix}Akhir${m}`];
+                    if ((aw && aw.trim() !== '') || (ak && ak.trim() !== '')) adaIsi = true;
+                });
+                
                 if (!adaIsi) return;
                 adaData = true;
 
@@ -2781,7 +2815,7 @@
                 totalGrandL += pl.L + px.L;
                 totalGrandRp += pl.Rp + px.Rp;
 
-                text += `*${shift.nama}* (${shift.jam})\n`;
+                text += `*${shift.nama}*\n`;
                 text += `Pertalite : ${fmtNum.format(pl.L)} L (Rp ${fmtNum.format(pl.Rp)})\n`;
                 text += `Pertamax  : ${fmtNum.format(px.L)} L (Rp ${fmtNum.format(px.Rp)})\n\n`;
             });
